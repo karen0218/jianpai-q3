@@ -1,0 +1,863 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI星球 20天优化Demo · Day 06-08 低保真Flow与页面结构</title>
+  <style>
+    :root {
+      --ink: #1d2433;
+      --muted: #657285;
+      --line: #dfe6ef;
+      --soft: #f6f8fb;
+      --blue: #2f70d0;
+      --green: #2f8f6b;
+      --amber: #b97817;
+      --red: #c84d4d;
+      --violet: #6f56c9;
+      --card: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.66;
+      background: #eef2f6;
+    }
+
+    .page {
+      display: grid;
+      grid-template-columns: 270px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    aside {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 28px 22px;
+      border-right: 1px solid var(--line);
+      background: #fff;
+      overflow: auto;
+    }
+
+    aside h1 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    aside p {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    nav a {
+      display: block;
+      padding: 9px 10px;
+      color: #435063;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    nav a:hover { background: var(--soft); color: var(--blue); }
+
+    main {
+      padding: 42px 52px 72px;
+      max-width: 1280px;
+    }
+
+    .hero {
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      margin-bottom: 10px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+
+    h2 {
+      margin: 34px 0 14px;
+      font-size: 25px;
+      line-height: 1.36;
+    }
+
+    h3 {
+      margin: 22px 0 10px;
+      font-size: 17px;
+    }
+
+    .hero h2 {
+      margin: 0 0 12px;
+      font-size: 34px;
+      line-height: 1.22;
+    }
+
+    .summary {
+      max-width: 920px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .callout {
+      margin: 18px 0;
+      padding: 16px 18px;
+      border-left: 4px solid var(--blue);
+      border-radius: 8px;
+      background: #eef5ff;
+    }
+
+    .callout strong { display: block; margin-bottom: 4px; }
+
+    .flow-block {
+      margin: 28px 0 34px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .flow-head {
+      margin-bottom: 18px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .flow-head h2 { margin: 0 0 8px; }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      margin: 0 6px 8px 0;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #eaf1fb;
+      color: var(--blue);
+    }
+
+    .tag.green { background: #e9f5ef; color: var(--green); }
+    .tag.amber { background: #fff4de; color: var(--amber); }
+    .tag.red { background: #fdeeee; color: var(--red); }
+    .tag.violet { background: #f0edff; color: var(--violet); }
+
+    .path {
+      margin: 10px 0 16px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: var(--soft);
+      font-weight: 700;
+    }
+
+    .flow-map {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 16px 0 22px;
+    }
+
+    .node {
+      position: relative;
+      min-height: 112px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfe;
+    }
+
+    .node::after {
+      content: "→";
+      position: absolute;
+      right: -13px;
+      top: 42px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .node:nth-child(4n)::after,
+    .node:last-child::after { display: none; }
+
+    .node-id {
+      display: inline-block;
+      margin-bottom: 6px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--blue);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .node-id.green { background: var(--green); }
+    .node-id.amber { background: var(--amber); }
+
+    .node strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .node p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    table {
+      width: 100%;
+      margin: 14px 0 22px;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 11px 12px;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      text-align: left;
+    }
+
+    th {
+      color: #334155;
+      background: #f7f9fc;
+      font-weight: 700;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+    th:last-child, td:last-child { border-right: 0; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+
+    .card {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+    }
+
+    .card h3 { margin-top: 0; }
+    ul, ol { padding-left: 20px; }
+
+    .copy {
+      margin: 8px 0;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: #f8fafc;
+      font-size: 14px;
+    }
+
+    .copy strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--ink);
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 1050px) {
+      .page { display: block; }
+      aside { position: static; height: auto; }
+      main { padding: 28px 18px 56px; }
+      .flow-map, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .node::after { display: none; }
+      .hero h2 { font-size: 28px; }
+      table { font-size: 13px; }
+      th, td { padding: 10px; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .page { display: block; }
+      aside { display: none; }
+      main { max-width: none; padding: 0; }
+      .flow-block { break-after: page; border: 0; padding: 0; }
+      .flow-block:last-of-type { break-after: auto; }
+      .card, table, .node { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <aside>
+      <h1>Day 06-08<br>结果版</h1>
+      <p>低保真Flow、页面结构与关键文案</p>
+      <nav>
+        <a href="#overview">产出说明</a>
+        <a href="#flow-a">Flow A：Pad首页中枢</a>
+        <a href="#flow-b">Flow B：AI伙伴</a>
+        <a href="#flow-c">Flow C：完成反馈</a>
+        <a href="#copy">关键文案合集</a>
+        <a href="#prototype">Demo原型结构</a>
+        <a href="#handoff">交付给Figma/HTML</a>
+      </nav>
+    </aside>
+
+    <main>
+      <section class="hero" id="overview">
+        <div class="eyebrow">AI星球 / 减压星球 · 20天优化Demo</div>
+        <h2>Day 06-08 · 低保真Flow、页面结构与关键文案</h2>
+        <p class="summary">本文件是可以进入原型制作的结果内容：每条 Flow 给出完整页面节点、用户看到什么、点击什么、系统反馈什么；同时明确页面清单、关键文案和 Demo 原型保真度。</p>
+      </section>
+
+      <section class="callout">
+        <strong>本阶段定稿结论</strong>
+        低保真阶段不追求视觉细节，重点把路径跑通：学生从哪里开始、看到什么、点哪里、系统如何回应、如何进入下一步。Flow A 已升级为 Pad 首页启动中枢，必须验证“主行动清楚 + 首页内容足够丰富”；Flow B 必须完整可测，Flow C 可做轻闭环。
+      </section>
+
+      <section class="flow-block" id="flow-a">
+        <div class="flow-head">
+          <span class="tag">Flow A</span>
+          <span class="tag violet">必做 / 高保真候选</span>
+          <h2>Pad 首页启动中枢</h2>
+          <p class="path">Pad首页中枢 → 今日状态主卡 → 情绪打卡 → AI接住 → 今日推荐/功能分流 → 今日小行动 → 完成反馈 → 首页回流</p>
+        </div>
+
+        <h3>低保真流程图</h3>
+        <div class="flow-map">
+          <div class="node"><span class="node-id">A1</span><strong>Pad首页中枢</strong><p>一个主行动 + 多个状态相关区域。</p></div>
+          <div class="node"><span class="node-id">A2</span><strong>状态选择</strong><p>选择情绪词，可选“说不清”。</p></div>
+          <div class="node"><span class="node-id">A3</span><strong>打卡确认</strong><p>展示当前状态，可补一句话。</p></div>
+          <div class="node"><span class="node-id">A4</span><strong>AI接住</strong><p>小星/吉塔回应状态。</p></div>
+          <div class="node"><span class="node-id">A5</span><strong>今日推荐分流</strong><p>推荐 1 个主行动 + 1-2 个次级入口。</p></div>
+          <div class="node"><span class="node-id">A6</span><strong>行动进行</strong><p>呼吸/写一句话/轻训练。</p></div>
+          <div class="node"><span class="node-id">A7</span><strong>完成反馈</strong><p>记录今天的一小步。</p></div>
+          <div class="node"><span class="node-id">A8</span><strong>首页回流</strong><p>首页状态区、AI区、成长区同步更新。</p></div>
+        </div>
+
+        <h3>页面节点说明</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>节点</th>
+              <th>用户看到什么</th>
+              <th>用户点什么</th>
+              <th>系统反馈什么</th>
+              <th>保真度</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>A1 Pad首页中枢</td>
+              <td>横向 Pad 布局：今日状态主卡、AI伙伴侧栏、今日推荐区、成长反馈条、次级功能入口。主行动仍是“今天感觉怎么样？”。</td>
+              <td>点击主卡“开始记录”或直接点一个状态词；也可从右侧 AI 伙伴进入 Flow B。</td>
+              <td>进入状态选择；首页其他区域保持可见但不抢主行动。</td>
+              <td>高保真</td>
+            </tr>
+            <tr>
+              <td>A2 状态选择</td>
+              <td>6-12 个状态词：还好、有点烦、累、紧张、开心、说不清。</td>
+              <td>选择状态词；可跳过补充说明。</td>
+              <td>选中状态高亮，出现“要不要再补一句？”</td>
+              <td>高保真</td>
+            </tr>
+            <tr>
+              <td>A3 打卡确认</td>
+              <td>“今天的状态：有点烦”，可写一句“可能是作业太多”。</td>
+              <td>点击“就这样记录”。</td>
+              <td>状态被保存，进入 AI 接住卡。</td>
+              <td>中高保真</td>
+            </tr>
+            <tr>
+              <td>A4 AI接住</td>
+              <td>小星/吉塔说一句回应，先接住感受，不急着分析。</td>
+              <td>点击“看看今天可以做什么”。</td>
+              <td>根据状态推荐小行动。</td>
+              <td>高保真</td>
+            </tr>
+            <tr>
+              <td>A5 今日推荐分流</td>
+              <td>一个主推荐，例如“2分钟呼吸放松”，旁边保留 1-2 个次级入口：脑之岛轻训练、继续找 AI 聊。</td>
+              <td>点击主推荐“开始”，或点次级入口。</td>
+              <td>主推荐进入小行动；次级入口进入对应假跳转或 Flow B，不展开功能列表。</td>
+              <td>高保真</td>
+            </tr>
+            <tr>
+              <td>A6 行动进行</td>
+              <td>简单进度、温和引导，不出现复杂功能。</td>
+              <td>点击完成，或等待进度结束。</td>
+              <td>显示完成反馈。</td>
+              <td>中保真</td>
+            </tr>
+            <tr>
+              <td>A7 完成反馈</td>
+              <td>“今天你完成了一次小小的照顾”，记录到成长本。</td>
+              <td>点击“回首页”或“继续聊聊”。</td>
+              <td>首页状态更新；也可进入 Flow B。</td>
+              <td>高保真</td>
+            </tr>
+            <tr>
+              <td>A8 首页回流</td>
+              <td>首页主卡变成“今天已记录”；AI伙伴显示一句延续反馈；今日推荐变成待完成/已完成状态；成长反馈条新增一小步。</td>
+              <td>点击“继续和小星聊”、查看成长记录，或浏览次级模块。</td>
+              <td>证明产品记得刚才的状态和行为，首页从入口页变成状态中枢。</td>
+              <td>高保真</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Flow A 页面清单</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>页面</th>
+              <th>首页怎么改 / 情绪打卡怎么走 / AI怎么接 / Pad空间怎么用</th>
+              <th>是否必须做</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Pad首页中枢</td><td>从功能平铺改为“今日状态主行动 + AI伙伴侧栏 + 今日推荐区 + 成长反馈条 + 次级功能入口”；丰富但不抢主线。</td><td>必须</td></tr>
+            <tr><td>情绪状态选择</td><td>低压力词库 + 可跳过文字输入；先选状态，再决定是否补充。</td><td>必须</td></tr>
+            <tr><td>AI接住卡</td><td>小星/吉塔复述状态、表达陪伴、给出下一步入口。</td><td>必须</td></tr>
+            <tr><td>今日推荐分流</td><td>基于状态推荐一个主动作，同时露出 1-2 个相关次级入口，不展开大菜单。</td><td>必须</td></tr>
+            <tr><td>行动完成反馈</td><td>反馈今天的一小步，并提示已记录。</td><td>必须</td></tr>
+            <tr><td>首页回流状态</td><td>首页从“开始打卡”变成“今天已记录”；AI、推荐、成长区域同步更新。</td><td>必须</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Pad 首页五区低保真结构</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>区域</th>
+              <th>用户看到什么</th>
+              <th>交互规则</th>
+              <th>保真度</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>今日状态主卡</td><td>“今天先从哪里开始？”+ 情绪快捷词 + 开始记录按钮。</td><td>首屏最大区域，承接 Flow A 第一点击。</td><td>高保真</td></tr>
+            <tr><td>AI伙伴侧栏</td><td>小星/吉塔/罗素今日一句话，根据是否打卡切换。</td><td>可进入 Flow B，但视觉权重低于主卡。</td><td>高保真</td></tr>
+            <tr><td>今日推荐区</td><td>1 个主推荐 + 1-2 个次级推荐，推荐理由来自当前状态。</td><td>只显示相关下一步，不展示完整功能库。</td><td>高保真</td></tr>
+            <tr><td>成长反馈条</td><td>今日已记录、已完成、获得星星或成长一小步。</td><td>完成后更新，用来验证模块之间是否连起来。</td><td>中高保真</td></tr>
+            <tr><td>次级功能入口</td><td>脑之岛、课程、测评、信箱、个人中心等入口。</td><td>可见但弱化，用于体现 Pad 信息量，不承担主流程。</td><td>中保真/假跳转</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="flow-block" id="flow-b">
+        <div class="flow-head">
+          <span class="tag green">Flow B</span>
+          <span class="tag violet">必做 / 高保真候选</span>
+          <h2>AI伙伴路径</h2>
+          <p class="path">全局AI入口 → 三IP选择 → 对话2-3轮 → 轻量记忆 → 安全边界 → 下一步建议</p>
+        </div>
+
+        <h3>低保真流程图</h3>
+        <div class="flow-map">
+          <div class="node"><span class="node-id green">B1</span><strong>全局AI入口</strong><p>首页/完成页/记录页都可进入。</p></div>
+          <div class="node"><span class="node-id green">B2</span><strong>选择伙伴</strong><p>按“我现在想…”选IP。</p></div>
+          <div class="node"><span class="node-id green">B3</span><strong>对话开场</strong><p>用户选择预设话题或输入。</p></div>
+          <div class="node"><span class="node-id green">B4</span><strong>角色回应</strong><p>三IP不同回复结构。</p></div>
+          <div class="node"><span class="node-id green">B5</span><strong>轻量记忆</strong><p>可记住/不记住/删除。</p></div>
+          <div class="node"><span class="node-id green">B6</span><strong>安全边界</strong><p>温和说明AI能力和风险边界。</p></div>
+          <div class="node"><span class="node-id green">B7</span><strong>下一步建议</strong><p>继续聊/练习/记录/找支持。</p></div>
+          <div class="node"><span class="node-id green">B8</span><strong>对话结束反馈</strong><p>保存一条成长记录。</p></div>
+        </div>
+
+        <h3>页面节点说明</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>节点</th>
+              <th>用户看到什么</th>
+              <th>用户点什么</th>
+              <th>系统反馈什么</th>
+              <th>保真度</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>B1 全局AI入口</td>
+              <td>页面右下/底部稳定入口，文案随场景变化。</td>
+              <td>点击“找小星聊聊”或“让吉塔帮我缓一下”。</td>
+              <td>进入伙伴选择或直接进入对应角色。</td>
+              <td>高保真</td>
+            </tr>
+            <tr>
+              <td>B2 三IP选择</td>
+              <td>不是角色设定说明，而是“想被陪陪/想先稳住/想拆问题”。</td>
+              <td>选择小星、吉塔或罗素。</td>
+              <td>进入对应对话开场；可随时切换。</td>
+              <td>高保真</td>
+            </tr>
+            <tr>
+              <td>B3 对话开场</td>
+              <td>预设话题 + 输入框，例如“学习有点累”“想不清楚”“只是想聊聊”。</td>
+              <td>点预设话题或输入一句。</td>
+              <td>AI开始 2-3 轮脚本化回应。</td>
+              <td>高保真</td>
+            </tr>
+            <tr>
+              <td>B4 角色回应</td>
+              <td>小星陪伴、吉塔稳定情绪、罗素拆解问题。</td>
+              <td>点击继续回复，或切换角色。</td>
+              <td>回复结构发生变化，学生能感知IP差异。</td>
+              <td>高保真</td>
+            </tr>
+            <tr>
+              <td>B5 轻量记忆</td>
+              <td>“要不要让我记住：考试前容易紧张？”</td>
+              <td>选择“可以记住 / 这次不记 / 管理记忆”。</td>
+              <td>给用户控制感，避免被偷偷记录的感觉。</td>
+              <td>中高保真</td>
+            </tr>
+            <tr>
+              <td>B6 安全边界</td>
+              <td>温和边界说明，不用冷冰冰免责声明。</td>
+              <td>点击“知道了”或“了解什么情况会找支持”。</td>
+              <td>明确AI不是诊断/咨询，危险时优先安全支持。</td>
+              <td>中高保真</td>
+            </tr>
+            <tr>
+              <td>B7 下一步建议</td>
+              <td>根据对话给行动卡：继续聊、做呼吸、记录、找可信成年人。</td>
+              <td>选择一个下一步。</td>
+              <td>进入对应轻任务或结束反馈。</td>
+              <td>高保真</td>
+            </tr>
+            <tr>
+              <td>B8 对话结束反馈</td>
+              <td>“这次聊天已记成今天的一小步”，可回首页。</td>
+              <td>回首页/查看成长记录。</td>
+              <td>完成一次AI陪伴闭环。</td>
+              <td>中高保真</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Flow B 页面清单</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>页面</th>
+              <th>AI对话怎么接</th>
+              <th>是否必须做</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>全局AI入口</td><td>在首页、完成反馈、成长记录页均可唤起；不只依赖底部Tab。</td><td>必须</td></tr>
+            <tr><td>三IP选择</td><td>按用户意图选人：陪伴、稳定、分析。</td><td>必须</td></tr>
+            <tr><td>对话页</td><td>提供预设话题和输入框；Demo用脚本模拟。</td><td>必须</td></tr>
+            <tr><td>记忆确认</td><td>只记轻量信息，必须可关闭和管理。</td><td>必须</td></tr>
+            <tr><td>安全边界提示</td><td>用支持性语言说明AI能力、隐私和风险处理。</td><td>必须</td></tr>
+            <tr><td>下一步建议</td><td>每次对话后给一个具体下一步，不让聊天悬空。</td><td>必须</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="flow-block" id="flow-c">
+        <div class="flow-head">
+          <span class="tag amber">Flow C</span>
+          <span class="tag violet">条件做 / 可降级</span>
+          <h2>完成反馈路径</h2>
+          <p class="path">训练/测评/放松 → 完成结果 → 结果解释 → 奖励获得 → 成长记录 → AI回应 → 首页回流</p>
+        </div>
+
+        <h3>低保真流程图</h3>
+        <div class="flow-map">
+          <div class="node"><span class="node-id amber">C1</span><strong>任务完成</strong><p>完成一次脑之岛/放松任务。</p></div>
+          <div class="node"><span class="node-id amber">C2</span><strong>结果解释</strong><p>说明练到了什么，不排名。</p></div>
+          <div class="node"><span class="node-id amber">C3</span><strong>奖励获得</strong><p>说明为什么获得星星。</p></div>
+          <div class="node"><span class="node-id amber">C4</span><strong>成长记录</strong><p>生成“今天的一小步”。</p></div>
+          <div class="node"><span class="node-id amber">C5</span><strong>AI回应</strong><p>伙伴看见你的完成。</p></div>
+          <div class="node"><span class="node-id amber">C6</span><strong>下一次提示</strong><p>温和邀请明天再来。</p></div>
+          <div class="node"><span class="node-id amber">C7</span><strong>首页回流</strong><p>首页显示完成状态。</p></div>
+          <div class="node"><span class="node-id amber">C8</span><strong>奖励去向</strong><p>假跳转至装扮/星星用途。</p></div>
+        </div>
+
+        <h3>页面节点说明</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>节点</th>
+              <th>用户看到什么</th>
+              <th>用户点什么</th>
+              <th>系统反馈什么</th>
+              <th>保真度</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>C1 任务完成</td>
+              <td>“你完成了一次 2 分钟专注/呼吸练习”。</td>
+              <td>点击“查看结果”。</td>
+              <td>进入结果解释。</td>
+              <td>中保真</td>
+            </tr>
+            <tr>
+              <td>C2 结果解释</td>
+              <td>低压力解释：练习了专注/放松/表达，不出现排名和诊断。</td>
+              <td>点击“记到成长记录”。</td>
+              <td>生成成长记录条目。</td>
+              <td>高保真</td>
+            </tr>
+            <tr>
+              <td>C3 奖励获得</td>
+              <td>“因为完成一次放松练习，获得 3 颗放松星”。</td>
+              <td>点击“知道了”或“看看能做什么”。</td>
+              <td>说明奖励去向；可假跳转。</td>
+              <td>中高保真</td>
+            </tr>
+            <tr>
+              <td>C4 成长记录</td>
+              <td>时间线条目：今天状态、完成行动、AI回应。</td>
+              <td>点击“让小星回应一下”。</td>
+              <td>进入 AI 回应。</td>
+              <td>高保真</td>
+            </tr>
+            <tr>
+              <td>C5 AI回应</td>
+              <td>小星/吉塔说“我看见你刚才完成了”。</td>
+              <td>点击“回首页”或“继续聊”。</td>
+              <td>回流首页或进入 Flow B。</td>
+              <td>高保真</td>
+            </tr>
+            <tr>
+              <td>C6 下一次提示</td>
+              <td>“明天如果还想来，做 1 分钟也可以”。</td>
+              <td>点击“明天提醒我”或“先不用”。</td>
+              <td>假提醒状态，不接系统推送。</td>
+              <td>低中保真</td>
+            </tr>
+            <tr>
+              <td>C7 首页回流</td>
+              <td>首页显示“今天完成了一次放松练习”。</td>
+              <td>点击成长记录或继续聊。</td>
+              <td>展示跨模块回流成立。</td>
+              <td>高保真</td>
+            </tr>
+            <tr>
+              <td>C8 奖励去向</td>
+              <td>星星用途提示：装扮、收藏、星球小物。</td>
+              <td>点击只展示预览。</td>
+              <td>假跳转，不做完整商店。</td>
+              <td>低保真/假跳转</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Flow C 页面清单</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>页面</th>
+              <th>完成反馈怎么呈现</th>
+              <th>是否必须做</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>完成页</td><td>先确认完成行为，不给成绩压力。</td><td>必须</td></tr>
+            <tr><td>结果解释</td><td>解释“练到了什么能力/状态”，不排名、不诊断。</td><td>必须</td></tr>
+            <tr><td>奖励获得</td><td>说明奖励原因和去向。</td><td>建议</td></tr>
+            <tr><td>成长记录</td><td>记录今天的一小步，连接情绪、行动、反馈。</td><td>必须</td></tr>
+            <tr><td>AI回应</td><td>由 IP 承接完成动作，形成被看见感。</td><td>必须</td></tr>
+            <tr><td>奖励去向/商店预览</td><td>只做假跳转预览，不做完整交易链路。</td><td>可选</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="copy">
+        <h2>关键页面文案合集</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h3>情绪打卡文案</h3>
+            <div class="copy"><strong>首页主文案</strong>今天先从哪里开始？可以先选一个最像现在的状态。</div>
+            <div class="copy"><strong>状态词</strong>还好 / 有点烦 / 累 / 紧张 / 开心 / 说不清</div>
+            <div class="copy"><strong>补充输入提示</strong>想补一句也可以，不想说清楚也没关系。</div>
+          </div>
+          <div class="card">
+            <h3>AI回应文案</h3>
+            <div class="copy"><strong>小星</strong>听起来你今天有点烦。可以不用马上说清楚，我先陪你把这一下放慢。</div>
+            <div class="copy"><strong>吉塔</strong>你现在好像有点绷。我们先做一个很短的呼吸，让身体先松一点。</div>
+            <div class="copy"><strong>罗素</strong>如果事情有点乱，我们可以先拆成两小块，只处理现在能处理的一步。</div>
+          </div>
+          <div class="card">
+            <h3>三IP角色选择文案</h3>
+            <div class="copy"><strong>小星</strong>我想被陪陪，慢慢说也可以。</div>
+            <div class="copy"><strong>吉塔</strong>我现在有点难受，想先稳住。</div>
+            <div class="copy"><strong>罗素</strong>我想把问题理清楚，找到下一步。</div>
+          </div>
+          <div class="card">
+            <h3>安全边界文案</h3>
+            <div class="copy"><strong>温和说明</strong>我会尊重你的分享，也会尽力陪你整理想法。但我不能替代老师、家长或专业帮助。</div>
+            <div class="copy"><strong>风险边界</strong>如果你可能伤害自己或别人，我会优先帮你找到更安全的支持。</div>
+            <div class="copy"><strong>记忆控制</strong>这件事要让我记住吗？你之后也可以随时删除。</div>
+          </div>
+          <div class="card">
+            <h3>完成反馈文案</h3>
+            <div class="copy"><strong>完成确认</strong>你完成了一次 2 分钟的小练习。</div>
+            <div class="copy"><strong>成长解释</strong>这次练习帮你把注意力放回当下，不需要做得完美，完成就已经算数。</div>
+            <div class="copy"><strong>奖励说明</strong>因为完成了一次放松练习，你获得了 3 颗放松星。</div>
+            <div class="copy"><strong>AI回应</strong>我看见你刚才做完了。今天已经有一小步被记录下来了。</div>
+          </div>
+          <div class="card">
+            <h3>首页回流文案</h3>
+            <div class="copy"><strong>已打卡状态</strong>今天已记录：有点烦，但你已经做了一次小小的照顾。</div>
+            <div class="copy"><strong>继续入口</strong>要不要继续和小星聊两句？</div>
+            <div class="copy"><strong>轻提醒</strong>不用每天都很有状态，愿意回来看看就很好。</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="prototype">
+        <h2>Demo原型结构</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>原型分区</th>
+              <th>包含页面</th>
+              <th>保真度</th>
+              <th>交互要求</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>00 启动与首页</td>
+              <td>A1 Pad首页中枢、A8 首页回流、B1 全局AI入口状态、C7 完成回流状态。</td>
+              <td>高保真</td>
+              <td>首页必须能进入 Flow A/B；Pad 空间需要展示状态、AI、推荐、成长和次级入口，状态变化要明显。</td>
+            </tr>
+            <tr>
+              <td>01 情绪打卡</td>
+              <td>A2 状态选择、A3 打卡确认、A4 AI接住。</td>
+              <td>高保真</td>
+              <td>状态词可点；不同状态至少有 2 套反馈。</td>
+            </tr>
+            <tr>
+              <td>02 今日小行动</td>
+              <td>A5 推荐、A6 行动进行、A7 完成反馈。</td>
+              <td>中高保真</td>
+              <td>行动过程可简化，但完成反馈必须完整。</td>
+            </tr>
+            <tr>
+              <td>03 AI伙伴</td>
+              <td>B2 三IP选择、B3 对话开场、B4 三IP回应、B5 记忆、B6 边界、B7 下一步、B8 结束。</td>
+              <td>高保真</td>
+              <td>三IP至少各一组脚本；记忆和边界必须可点。</td>
+            </tr>
+            <tr>
+              <td>04 完成反馈</td>
+              <td>C1-C6、C8。</td>
+              <td>中高保真，可降级</td>
+              <td>若时间紧，只做 C2/C4/C5/C7。</td>
+            </tr>
+            <tr>
+              <td>99 假跳转</td>
+              <td>完整商店、完整脑之岛、完整成长报告、完整设置页。</td>
+              <td>低保真/假跳转</td>
+              <td>点击后出现“本次demo暂不展开”的过渡页，避免断点。</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>高保真 / 中低保真 / 假跳转划分</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>类型</th>
+              <th>页面</th>
+              <th>为什么</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>高保真</td>
+              <td>Pad 首页中枢、情绪状态选择、AI接住、今日推荐分流、三IP选择、AI对话、边界提示、首页回流。</td>
+              <td>这是 9 月测试最关键的理解和信任节点。</td>
+            </tr>
+            <tr>
+              <td>中高保真</td>
+              <td>今日小行动、完成页、结果解释、成长记录、AI回应。</td>
+              <td>需要验证反馈闭环，但视觉复杂度可以低于主入口。</td>
+            </tr>
+            <tr>
+              <td>低保真</td>
+              <td>行动过程、提醒设置、奖励去向预览。</td>
+              <td>只要支撑路径，不是本轮判断重点。</td>
+            </tr>
+            <tr>
+              <td>假跳转</td>
+              <td>完整商店、装扮系统、完整脑之岛地图、完整报告页、完整设置页。</td>
+              <td>本轮不验证完整系统，避免范围失控。</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="handoff">
+        <h2>交付给 Figma / HTML 的开工清单</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h3>先画 Flow A</h3>
+            <ol>
+              <li>A1 Pad首页中枢</li>
+              <li>A2 状态选择</li>
+              <li>A4 AI接住</li>
+              <li>A5 今日推荐分流</li>
+              <li>A7 完成反馈</li>
+              <li>A8 首页回流</li>
+            </ol>
+          </div>
+          <div class="card">
+            <h3>再画 Flow B</h3>
+            <ol>
+              <li>B1 全局入口</li>
+              <li>B2 三IP选择</li>
+              <li>B3/B4 对话页</li>
+              <li>B5 记忆确认</li>
+              <li>B6 安全边界</li>
+              <li>B7 下一步建议</li>
+            </ol>
+          </div>
+          <div class="card">
+            <h3>最后补 Flow C</h3>
+            <ol>
+              <li>C2 结果解释</li>
+              <li>C3 奖励获得</li>
+              <li>C4 成长记录</li>
+              <li>C5 AI回应</li>
+              <li>C7 首页回流</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>Day 6-8 完成标准</strong>
+          到这里不需要精美视觉，但必须能让团队看懂：每条 Flow 从哪里开始、在哪里结束、每个页面的用户动作和系统反馈是什么。下一阶段 Day 9-13 再进入高保真视觉和可点击 demo。
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

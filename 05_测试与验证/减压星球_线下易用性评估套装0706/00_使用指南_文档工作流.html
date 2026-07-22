@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>使用指南：文档工作流 - 减压星球易用性评估</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #C8853F;
+            --primary-light: #D9A06A;
+            --primary-dark: #A06030;
+            --secondary: #2A2723;
+            --accent: #C8853F;
+            --success: #2A7A3A;
+            --warning: #C8853F;
+            --danger: #B03030;
+            --gray-50: #FAF7F3;
+            --gray-100: #F5F0E8;
+            --gray-200: #E2D9C8;
+            --gray-300: #CFC6B4;
+            --gray-400: #B0A898;
+            --gray-500: #8A8A80;
+            --gray-600: #5A5A58;
+            --gray-700: #3A3A38;
+            --gray-800: #2A2723;
+            --gray-900: #1F2421;
+            --white: #ffffff;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            --radius-sm: 6px;
+            --radius: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+            line-height: 1.6;
+            color: var(--gray-900);
+            background: #EDE7DA;
+            min-height: 100vh;
+            padding: 32px 16px;
+        }
+
+        .container {
+            max-width: 1120px;
+            margin: 0 auto;
+            background: #FBF7EF;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #2A2723;
+            padding: 48px 40px;
+            text-align: center;
+            color: var(--white);
+            border-bottom: 3px solid #C8853F;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+
+        .header .subtitle {
+            font-size: 16px;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        .content {
+            padding: 48px 40px;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin: 48px 0 24px 0;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin: 32px 0 16px 0;
+        }
+
+        p {
+            margin: 12px 0;
+            color: var(--gray-700);
+            line-height: 1.7;
+        }
+
+        strong {
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        code {
+            background: var(--gray-100);
+            color: var(--primary-dark);
+            padding: 2px 8px;
+            border-radius: var(--radius-sm);
+            font-size: 0.9em;
+            font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+        }
+
+        ul, ol {
+            margin: 16px 0;
+            padding-left: 24px;
+            color: var(--gray-700);
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.7;
+        }
+
+        .phase-container {
+            margin: 32px 0;
+        }
+
+        .phase-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .phase {
+            background: var(--white);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 24px 16px;
+            text-align: center;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .phase:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .phase-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: #C8853F;
+            color: var(--white);
+            border-radius: 50%;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .phase-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+        }
+
+        .phase-time {
+            font-size: 13px;
+            color: var(--gray-500);
+        }
+
+        .role-matrix-container {
+            margin: 32px 0;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .role-matrix {
+            display: table;
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            min-width: 700px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .role-row {
+            display: table-row;
+        }
+
+        .role-cell {
+            display: table-cell;
+            background: var(--white);
+            padding: 16px 20px;
+            font-size: 14px;
+            line-height: 1.6;
+            border-bottom: 1px solid var(--gray-200);
+            vertical-align: middle;
+        }
+
+        .role-row:last-child .role-cell {
+            border-bottom: none;
+        }
+
+        .role-header {
+            background: linear-gradient(135deg, #2A2723 0%, #3A3530 100%);
+            color: var(--white);
+            font-weight: 700;
+            text-align: center;
+            padding: 18px 20px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-right: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .role-header:first-child {
+            text-align: left;
+            background: #2A2723;
+        }
+
+        .role-header:last-child {
+            border-right: none;
+        }
+
+        .role-label {
+            background: #FDF8F0;
+            font-weight: 600;
+            color: var(--gray-900);
+            border-right: 2px solid var(--gray-200);
+            width: 180px;
+        }
+
+        .role-primary {
+            background: linear-gradient(135deg, #FDF8F0 0%, #FEF3E0 100%);
+            color: var(--primary);
+            font-weight: 600;
+            text-align: center;
+            position: relative;
+            border-right: 1px solid var(--gray-200);
+        }
+
+        .role-primary::before {
+            content: '●';
+            display: inline-block;
+            margin-right: 6px;
+            font-size: 10px;
+        }
+
+        .role-secondary {
+            background: var(--white);
+            color: var(--gray-600);
+            text-align: center;
+            border-right: 1px solid var(--gray-200);
+        }
+
+        .role-cell:last-child {
+            border-right: none;
+        }
+
+        .data-flow-container {
+            margin: 32px 0;
+            padding: 32px;
+            background: linear-gradient(135deg, #FDF8F0 0%, #FEF3E0 100%);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+        }
+
+        .data-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .data-step {
+            flex: 1;
+            min-width: 180px;
+            background: var(--white);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 24px 20px;
+            text-align: center;
+            position: relative;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+        }
+
+        .data-step:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+
+        .data-step-number {
+            position: absolute;
+            top: -12px;
+            left: 16px;
+            width: 28px;
+            height: 28px;
+            background: var(--primary);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(200, 133, 63, 0.3);
+        }
+
+        .data-step-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .data-step-desc {
+            font-size: 13px;
+            color: var(--gray-600);
+            line-height: 1.6;
+        }
+
+        .data-arrow {
+            flex-shrink: 0;
+            color: var(--primary);
+            font-size: 28px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .doc-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin: 16px 0;
+            transition: all 0.2s ease;
+        }
+
+        .doc-card:hover {
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow-md);
+        }
+
+        .doc-filename {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .doc-row {
+            margin: 8px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .doc-label {
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-right: 8px;
+        }
+
+        .doc-content {
+            color: var(--gray-600);
+        }
+
+        .tip-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid var(--warning);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin: 24px 0;
+        }
+
+        .tip-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tip-content {
+            color: var(--gray-800);
+            line-height: 1.7;
+        }
+
+        .checklist {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin: 24px 0;
+        }
+
+        .checklist-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin: 12px 0;
+            color: var(--gray-700);
+            line-height: 1.6;
+        }
+
+        .checklist-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .section-content {
+            padding-left: 24px;
+            border-left: 3px solid var(--gray-200);
+            margin: 20px 0;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .badge-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .badge-danger {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 32px;
+            border-top: 1px solid var(--gray-200);
+            color: var(--gray-500);
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 16px 8px;
+            }
+            .header {
+                padding: 32px 24px;
+            }
+            .header h1 {
+                font-size: 28px;
+            }
+            .content {
+                padding: 32px 24px;
+            }
+            .phase-row {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            .data-flow {
+                grid-template-columns: 1fr;
+            }
+            .data-step, .data-arrow {
+                grid-column: span 1 !important;
+            }
+            .data-arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 使用指南：文档工作流</h1>
+            <p class="subtitle">清晰的顺序 · 明确的角色 · 流畅的数据流转</p>
+        </div>
+
+        <div class="content">
+            <h2>🔄 整体工作流程（5个阶段）</h2>
+            <div class="phase-container">
+                <div class="phase-row">
+                    <div class="phase">
+                        <div class="phase-badge">1</div>
+                        <div class="phase-title">准备期</div>
+                        <div class="phase-time">测试前1周</div>
+                    </div>
+                    <div class="phase">
+                        <div class="phase-badge">2</div>
+                        <div class="phase-title">招募期</div>
+                        <div class="phase-time">测试前3天</div>
+                    </div>
+                    <div class="phase">
+                        <div class="phase-badge">3</div>
+                        <div class="phase-title">执行期</div>
+                        <div class="phase-time">现场测试日</div>
+                    </div>
+                    <div class="phase">
+                        <div class="phase-badge">4</div>
+                        <div class="phase-title">分析期</div>
+                        <div class="phase-time">测试后3天</div>
+                    </div>
+                    <div class="phase">
+                        <div class="phase-badge">5</div>
+                        <div class="phase-title">沉淀期</div>
+                        <div class="phase-time">测试后1周</div>
+                    </div>
+                </div>
+            </div>
+
+            <h2>👥 角色-文档矩阵（谁用什么）</h2>
+            <div class="role-matrix-container">
+                <div class="role-matrix">
+                    <div class="role-row">
+                        <div class="role-cell role-header"></div>
+                        <div class="role-cell role-header">用研/测试员</div>
+                        <div class="role-cell role-header">产品经理</div>
+                        <div class="role-cell role-header">设计师</div>
+                        <div class="role-cell role-header">开发者</div>
+                    </div>
+
+                    <div class="role-row">
+                        <div class="role-cell role-label">执行手册</div>
+                        <div class="role-cell role-primary">主要使用</div>
+                        <div class="role-cell role-secondary">旁听参考</div>
+                        <div class="role-cell role-secondary">—</div>
+                        <div class="role-cell role-secondary">—</div>
+                    </div>
+
+                    <div class="role-row">
+                        <div class="role-cell role-label">数据记录表</div>
+                        <div class="role-cell role-primary">主要使用</div>
+                        <div class="role-cell role-secondary">—</div>
+                        <div class="role-cell role-secondary">—</div>
+                        <div class="role-cell role-secondary">—</div>
+                    </div>
+
+                    <div class="role-row">
+                        <div class="role-cell role-label">痛点说明</div>
+                        <div class="role-cell role-secondary">前期输入</div>
+                        <div class="role-cell role-primary">主要使用</div>
+                        <div class="role-cell role-primary">主要使用</div>
+                        <div class="role-cell role-primary">主要使用</div>
+                    </div>
+                </div>
+            </div>
+
+            <h2>📊 数据流转路径</h2>
+            <div class="data-flow-container">
+                <div class="data-flow">
+                    <div class="data-step">
+                        <div class="data-step-number">1</div>
+                        <div class="data-step-title">原始数据</div>
+                        <div class="data-step-desc">现场记录表<br>10-15份完整观察笔记</div>
+                    </div>
+                    <div class="data-arrow">→</div>
+                    <div class="data-step">
+                        <div class="data-step-number">2</div>
+                        <div class="data-step-title">汇总分析</div>
+                        <div class="data-step-desc">SUS平均分、NPS分数<br>高频痛点统计</div>
+                    </div>
+                    <div class="data-arrow">→</div>
+                    <div class="data-step">
+                        <div class="data-step-number">3</div>
+                        <div class="data-step-title">优先级排序</div>
+                        <div class="data-step-desc">🔴紧急 / 🟠重要 / 🟢长期<br>对应到痛点说明文档</div>
+                    </div>
+                    <div class="data-arrow">→</div>
+                    <div class="data-step">
+                        <div class="data-step-number">4</div>
+                        <div class="data-step-title">迭代改进</div>
+                        <div class="data-step-desc">设计方案调整<br>开发任务排期</div>
+                    </div>
+                </div>
+            </div>
+
+            <h2>📁 各文档详细使用说明</h2>
+            
+            <div class="doc-card">
+                <div class="doc-filename">📄 <a href="02_测试中使用/01_执行手册.html" target="_blank" style="color: inherit; text-decoration: underline;">01_执行手册.html</a></div>
+                <div class="doc-row"><span class="doc-label">📖 用途：</span><span class="doc-content">现场测试时的操作指南，包含3个用户故事的完整流程</span></div>
+                <div class="doc-row"><span class="doc-label">👤 主要用户：</span><span class="doc-content">主持人A（现场执行）、记录员B（配合数据表使用）</span></div>
+                <div class="doc-row"><span class="doc-label">⏰ 使用时机：</span><span class="doc-content">阶段3（执行期），打印1份由主持人放在手边，边看边引导学生操作</span></div>
+            </div>
+
+            <div class="doc-card">
+                <div class="doc-filename">📄 <a href="02_测试中使用/04_数据记录表.html" target="_blank" style="color: inherit; text-decoration: underline;">04_数据记录表.html</a></div>
+                <div class="doc-row"><span class="doc-label">📖 用途：</span><span class="doc-content">现场测试时逐条记录用户行为、完成时长、情绪标记（😊 顺利 / 😐 一般 / 😟 困难）</span></div>
+                <div class="doc-row"><span class="doc-label">👤 主要用户：</span><span class="doc-content">用研/测试员（每测试1个学生填1份）</span></div>
+                <div class="doc-row"><span class="doc-label">⏰ 使用时机：</span><span class="doc-content">阶段3（执行期），打印10-15份，每个学生用1份，边观察边手写记录，每个Flow卡片末尾选择情绪标记</span></div>
+            </div>
+
+            <div class="doc-card">
+                <div class="doc-filename">📄 <a href="03_测试后分析/06_情绪曲线自动生成器.html" target="_blank" style="color: inherit; text-decoration: underline;">06_情绪曲线自动生成器.html</a></div>
+                <div class="doc-row"><span class="doc-label">📖 用途：</span><span class="doc-content">汇总所有学生的情绪标记，自动计算平均分并生成Chart.js曲线图，标注最低谷（最大痛点）</span></div>
+                <div class="doc-row"><span class="doc-label">👤 主要用户：</span><span class="doc-content">用研/测试员（测试后汇总分析）</span></div>
+                <div class="doc-row"><span class="doc-label">⏰ 使用时机：</span><span class="doc-content">阶段4（分析期），输入10-15份数据记录表的情绪标记，一键生成可视化曲线图</span></div>
+            </div>
+
+            <div class="doc-card">
+                <div class="doc-filename">📄 <a href="参考资料/C_痛点诊断P1-P11.html" target="_blank" style="color: inherit; text-decoration: underline;">参考资料/C_痛点诊断P1-P11.html</a></div>
+                <div class="doc-row"><span class="doc-label">📖 用途：</span><span class="doc-content">专家走查发现的P1-P11问题清单，测试后会更新优先级</span></div>
+                <div class="doc-row"><span class="doc-label">👤 主要用户：</span><span class="doc-content">产品经理（需求排期）、设计师（改版参考）、开发者（技术实现）</span></div>
+                <div class="doc-row"><span class="doc-label">⏰ 使用时机：</span><span class="doc-content">阶段1（准备期作为前置输入）+ 阶段4（分析期更新优先级）</span></div>
+            </div>
+
+            <h2>🎯 分阶段详细操作指南</h2>
+
+            <h3>阶段1：准备期（测试前1周）</h3>
+            <div class="section-content">
+                <p><strong>🎬 做什么：</strong>团队对齐测试目标，熟悉文档</p>
+                <p><strong>📂 用哪些文档：</strong></p>
+                <ul>
+                    <li><code>01_执行手册</code> - 用研员预演测试流程，检查话术是否自然</li>
+                    <li><code>参考资料/C_痛点诊断P1-P11</code> - 设计师标记哪些问题需要在测试中重点观察</li>
+                </ul>
+                <p><strong>✅ 输出物：</strong>测试计划确认、招募话术准备、设备/账号准备清单</p>
+            </div>
+
+            <h3>阶段2：招募期（测试前3天）</h3>
+            <div class="section-content">
+                <p><strong>🎬 做什么：</strong>联系学校老师/家长，招募10-15名学生（10-18岁）</p>
+                <p><strong>📂 用哪些文档：</strong></p>
+                <ul>
+                    <li><code>参考资料/A_招募筛选表</code> - 学生招募筛选条件，确保年龄/年级多样性</li>
+                    <li><code>参考资料/B_知情同意书</code> - 测试前由家长/监护人签署</li>
+                </ul>
+                <p><strong>✅ 输出物：</strong>确认的学生名单、家长知情同意书、测试时间表</p>
+            </div>
+
+            <h3>阶段3：执行期（现场测试日）<span class="badge badge-primary">核心阶段</span></h3>
+            <div class="section-content">
+                <p><strong>🎬 做什么：</strong>逐一引导学生完成3个用户故事，观察记录</p>
+
+                <div style="background:#FDF3E7;border-left:4px solid #C8853F;border-radius:8px;padding:16px 20px;margin:16px 0;">
+                    <p style="font-weight:600;color:#8A5020;margin-bottom:10px;">👥 两人分工（推荐）</p>
+                    <p><strong>A 主持人</strong>：打开 <a href="../02_测试中使用/01_执行手册.html" target="_blank" style="color: #C8853F; text-decoration: underline;"><code>01_执行手册.html</code></a>（打印或屏幕显示），坐在学生旁边，按故事引导语与学生互动，不记录，专注观察反应。</p>
+                    <p style="margin-top:8px;"><strong>B 记录员</strong>：手持打印的 <a href="../02_测试中使用/04_数据记录表.html" target="_blank" style="color: #C8853F; text-decoration: underline;"><code>04_数据记录表.html</code></a>（每个学生1份），坐在学生斜后方，记录情绪标记、完成时长、卡点原话，不干预测试过程。</p>
+                    <p style="margin-top:8px;color:#6b7280;font-size:13px;">单人执行时：主持人兼顾记录，每个步骤结束后暂停5秒做简单标注，事后回顾录音补全。</p>
+                </div>
+
+                <p><strong>📂 用哪些文档：</strong></p>
+                <ul>
+                    <li><code>01_执行手册</code> - <span class="badge badge-danger">打印1份</span>，主持人A手边放着，看着话术引导学生</li>
+                    <li><code>04_数据记录表</code> - <span class="badge badge-danger">打印15份</span>，记录员B每个学生测试时填1份</li>
+                </ul>
+                <p><strong>👀 怎么做：</strong></p>
+                <ol>
+                    <li><strong>测试前：</strong>和学生聊天放松，说明"这不是考试，是帮APP找问题"</li>
+                    <li><strong>进行中：</strong>按执行手册引导故事→观察情绪→手写记录到数据表→学生完成后立即打星评分</li>
+                    <li><strong>测试后：</strong>填写SUS 10题+NPS打分（在数据表最后）</li>
+                </ol>
+                <p><strong>✅ 输出物：</strong>10-15份填写完整的数据记录表（原始数据）</p>
+            </div>
+
+            <div class="tip-box">
+                <div class="tip-title">💡 现场技巧</div>
+                <div class="tip-content">
+                    <p>• 观察学生"卡住"的时刻：皱眉、沉默超过5秒、反复点同一个地方 → 立即在数据表标记😟</p>
+                    <p>• 记录学生的原话：比如"这个AI怎么找不到了"、"我想继续刚才的对话"→ 这些是真实痛点</p>
+                    <p>• 不要急着解释功能：先让学生自己尝试，看他能不能自己发现功能入口</p>
+                </div>
+            </div>
+
+            <h3>阶段4：分析期（测试后3天）</h3>
+            <div class="section-content">
+                <p><strong>🎬 做什么：</strong>汇总数据，计算指标，识别高频痛点</p>
+                <p><strong>📂 用哪些文档：</strong></p>
+                <ul>
+                    <li><code>04_数据记录表（10-15份）</code> - 用研员逐份阅读，提取关键问题</li>
+                    <li><code>03_测试后分析/06_情绪曲线自动生成器</code> - 输入所有学生的情绪标记，一键生成Chart.js曲线图，标注最低谷（最大痛点）和最高峰</li>
+                    <li><code>参考资料/C_痛点诊断P1-P11</code> - 产品经理根据测试结果，给P1-P11标注🔴🟠🟢优先级</li>
+                </ul>
+                <p><strong>🔢 需要计算的指标：</strong></p>
+                <ul>
+                    <li><strong>SUS平均分</strong>：把所有学生的SUS得分加总÷人数，≥68分算及格</li>
+                    <li><strong>NPS分数</strong>：9-10分（推荐者%）- 0-6分（贬损者%），≥0算及格</li>
+                    <li><strong>高频痛点</strong>：如果≥5个学生在同一步骤卡住/标记😟，这个问题就是🔴紧急</li>
+                </ul>
+                <p><strong>✅ 输出物：</strong></p>
+                <ul>
+                    <li>一份分析报告PPT（包含SUS/NPS分数、高频痛点TOP5、用户原话摘录）</li>
+                    <li>更新后的<code>痛点说明文档</code>（P1-P11标注了🔴🟠🟢优先级和排期时间）</li>
+                </ul>
+            </div>
+
+            <h3>阶段5：沉淀期（测试后1周）</h3>
+            <div class="section-content">
+                <p><strong>🎬 做什么：</strong>将结论转化为可执行任务，归档原始数据</p>
+                <p><strong>📂 用哪些文档：</strong></p>
+                <ul>
+                    <li><code>参考资料/C_痛点诊断P1-P11</code> - 设计师认领🔴紧急问题，开始设计优化方案</li>
+                    <li><code>分析报告PPT</code> - 产品经理向领导汇报，争取资源排期</li>
+                </ul>
+                <p><strong>💾 数据存储：</strong></p>
+                <ul>
+                    <li><strong>原始数据（手写版数据记录表）</strong>：扫描成PDF，存到项目文件夹 <code>/减压星球_测试原始数据_20XX年X月/</code></li>
+                    <li><strong>分析报告</strong>：上传飞书知识库，标题：<code>【易用性测试】减压星球_20XX年X月_SUS XX分_NPS XX分</code></li>
+                    <li><strong>痛点清单</strong>：同步到需求管理工具（JIRA/Teambition），每个🔴紧急问题创建一个任务</li>
+                </ul>
+                <p><strong>✅ 输出物：</strong>开发/设计任务清单，原始数据归档完成</p>
+            </div>
+
+            <h2>❓ 常见问题解答</h2>
+
+            <div class="doc-card">
+                <div class="doc-filename">Q1: 数据记录表需要电子化吗？</div>
+                <div class="doc-content">
+                    <p><strong>A:</strong> 现场测试时建议<strong>手写</strong>（观察学生的同时打字容易漏掉细节）。测试结束后，可以选择：</p>
+                    <p>① 直接扫描保存（适合人数少、后续不需要数据分析）<br>
+                    ② 录入Excel汇总（适合需要统计高频词、绘制图表）</p>
+                </div>
+            </div>
+
+            <div class="doc-card">
+                <div class="doc-filename">Q2: 如果学生人数不够10人怎么办？</div>
+                <div class="doc-content">
+                    <p><strong>A:</strong> 最少需要<strong>5人</strong>才能发现80%的可用性问题。人数少的话：</p>
+                    <p>① 优先招募"从未用过减压星球"的新用户（更容易发现入口/引导问题）<br>
+                    ② 增加测试轮次（比如第一轮5人→修复问题→第二轮再5人）</p>
+                </div>
+            </div>
+
+            <div class="doc-card">
+                <div class="doc-filename">Q3: 痛点说明文档什么时候更新优先级？</div>
+                <div class="doc-content">
+                    <p><strong>A:</strong> <strong>阶段4（分析期）</strong>更新。逻辑：</p>
+                    <p>① 如果≥5个学生在某个问题上卡住 → 升级为🔴紧急<br>
+                    ② 如果专家评审是P1但测试中无人遇到 → 降级为🟢长期<br>
+                    ③ 如果学生抱怨但不影响任务完成 → 标注为🟠重要</p>
+                </div>
+            </div>
+
+            <div class="doc-card">
+                <div class="doc-filename">Q4: 执行手册和数据记录表可以合并吗？</div>
+                <div class="doc-content">
+                    <p><strong>A:</strong> <strong>不建议</strong>。原因：</p>
+                    <p>① 执行手册包含引导话术，需要测试员边看边说，需要字大清晰<br>
+                    ② 数据记录表需要留白写字，格式紧凑<br>
+                    ③ 一个是"剧本"，一个是"笔记本"，功能不同</p>
+                </div>
+            </div>
+
+            <h2>📌 快速检查清单</h2>
+
+            <div class="checklist">
+                <div class="checklist-title">✅ 测试前检查</div>
+                <div class="checklist-item"><div class="checklist-checkbox"></div>打印了1份执行手册（测试员用）</div>
+                <div class="checklist-item"><div class="checklist-checkbox"></div>打印了15份数据记录表（每个学生1份）</div>
+                <div class="checklist-item"><div class="checklist-checkbox"></div>确认华为AGS5-W09平板已预装AI星球v1.0.2801，测试账号已登录（登录步骤见 <a href="01_测试前准备/03_登录前置流程.html" target="_blank" style="color: #C8853F; text-decoration: underline;">03_登录前置流程.html</a>）</div>
+                <div class="checklist-item"><div class="checklist-checkbox"></div>准备了录音笔/手机录音（记录学生的口头反馈）</div>
+                <div class="checklist-item"><div class="checklist-checkbox"></div>预演了一遍3个用户故事（确保话术自然）</div>
+            </div>
+
+            <div class="checklist">
+                <div class="checklist-title">✅ 测试后检查</div>
+                <div class="checklist-item"><div class="checklist-checkbox"></div>数据记录表都填写完整了（没有空白项）</div>
+                <div class="checklist-item"><div class="checklist-checkbox"></div>SUS 10题和NPS分数都收集了</div>
+                <div class="checklist-item"><div class="checklist-checkbox"></div>学生的口头反馈都记录了（录音或笔记）</div>
+                <div class="checklist-item"><div class="checklist-checkbox"></div>原始数据已扫描/拍照备份</div>
+                <div class="checklist-item"><div class="checklist-checkbox"></div>分析报告已输出（SUS/NPS分数、TOP5痛点）</div>
+            </div>
+
+            <div class="footer">
+                文档版本：v1.0 | 更新日期：2026年7月
+            </div>
+        </div>
+    </div>
+</body>
+</html>

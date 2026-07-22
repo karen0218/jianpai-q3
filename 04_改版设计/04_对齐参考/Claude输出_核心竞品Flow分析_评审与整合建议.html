@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Claude输出评审 · 核心竞品Flow分析整合建议</title>
+  <style>
+    :root {
+      --ink: #1d2433;
+      --muted: #647083;
+      --line: #dfe6ef;
+      --soft: #f6f8fb;
+      --blue: #2f70d0;
+      --green: #2f8f6b;
+      --amber: #b97817;
+      --red: #c84d4d;
+      --violet: #6f56c9;
+      --card: #ffffff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.68;
+      background: #eef2f6;
+    }
+    .page {
+      display: grid;
+      grid-template-columns: 270px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+    aside {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 28px 22px;
+      border-right: 1px solid var(--line);
+      background: #fff;
+      overflow: auto;
+    }
+    aside h1 { margin: 0 0 8px; font-size: 18px; line-height: 1.35; }
+    aside p { margin: 0 0 20px; color: var(--muted); font-size: 13px; }
+    nav a {
+      display: block;
+      padding: 9px 10px;
+      color: #435063;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    nav a:hover { background: var(--soft); color: var(--blue); }
+    main { padding: 42px 52px 72px; max-width: 1180px; }
+    .hero { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+    .eyebrow {
+      margin-bottom: 10px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+    .hero h2 { margin: 0 0 12px; font-size: 34px; line-height: 1.22; }
+    h2 { margin: 34px 0 14px; font-size: 25px; line-height: 1.36; }
+    h3 { margin: 22px 0 10px; font-size: 17px; }
+    .summary { max-width: 920px; color: var(--muted); font-size: 17px; }
+    .section, .card {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+    }
+    .section { margin: 26px 0; }
+    .card { padding: 16px; }
+    .card h3, .section h2:first-child { margin-top: 0; }
+    .callout {
+      margin: 18px 0;
+      padding: 16px 18px;
+      border-left: 4px solid var(--blue);
+      border-radius: 8px;
+      background: #eef5ff;
+    }
+    .callout strong { display: block; margin-bottom: 4px; }
+    .callout.green { border-left-color: var(--green); background: #edf8f2; }
+    .callout.amber { border-left-color: var(--amber); background: #fff7e8; }
+    .callout.red { border-left-color: var(--red); background: #fff1f1; }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      margin: 0 6px 8px 0;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #eaf1fb;
+      color: var(--blue);
+    }
+    .tag.green { background: #e9f5ef; color: var(--green); }
+    .tag.amber { background: #fff4de; color: var(--amber); }
+    .tag.red { background: #fdeeee; color: var(--red); }
+    .tag.violet { background: #f0edff; color: var(--violet); }
+    table {
+      width: 100%;
+      margin: 14px 0 24px;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 11px 12px;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      text-align: left;
+    }
+    th { color: #334155; background: #f7f9fc; font-weight: 700; }
+    tr:last-child td { border-bottom: 0; }
+    th:last-child, td:last-child { border-right: 0; }
+    ul, ol { padding-left: 20px; }
+    a { color: var(--blue); }
+    .small { color: var(--muted); font-size: 13px; }
+    @media (max-width: 980px) {
+      .page { display: block; }
+      aside { position: static; height: auto; }
+      main { padding: 28px 18px 56px; }
+      .grid-3 { grid-template-columns: 1fr; }
+      .hero h2 { font-size: 28px; }
+      table { font-size: 13px; }
+      th, td { padding: 10px; }
+    }
+    @media print {
+      body { background: #fff; }
+      .page { display: block; }
+      aside { display: none; }
+      main { max-width: none; padding: 0; }
+      .section, .card, table { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <aside>
+      <h1>Claude输出评审<br>整合建议</h1>
+      <p>针对《减压星球_核心竞品Flow分析》</p>
+      <nav>
+        <a href="#verdict">总体判断</a>
+        <a href="#value">值得吸收</a>
+        <a href="#caution">需要谨慎</a>
+        <a href="#compare">与我们材料对比</a>
+        <a href="#merge">整合方案</a>
+        <a href="#action">下一步动作</a>
+      </nav>
+    </aside>
+
+    <main>
+      <section class="hero" id="verdict">
+        <div class="eyebrow">AI星球 / 减压星球 · 竞品材料评审</div>
+        <h2>Claude 输出《核心竞品 Flow 深度分析》评审与整合建议</h2>
+        <p class="summary">这份评审用于判断 Claude Code 输出的竞品分析是否能进入我们 Day 1-5 体系，以及该吸收哪些洞察、哪些需要降权或复核。</p>
+      </section>
+
+      <section class="callout">
+        <strong>总体判断</strong>
+        这份 Claude 输出是有价值的，但它更像“竞品策略洞察稿”，不是我们现在需要的“每个 Flow 一页、可直接指导 20 天 demo 的设计输入”。建议吸收其中 4 个强洞察，但不要直接替代我们已做的 Day03-05 结果版。
+      </section>
+
+      <section class="section" id="value">
+        <h2>1. 值得吸收的部分</h2>
+        <div class="grid-3">
+          <div class="card">
+            <span class="tag green">可吸收</span>
+            <h3>记忆 = 关系证明</h3>
+            <p>它把 Replika 的记忆机制转译成“AI不是更聪明，而是更记得我”。这个洞察适合补强 Flow B，尤其是轻量记忆、对话开头历史钩子、成长档案。</p>
+          </div>
+          <div class="card">
+            <span class="tag green">可吸收</span>
+            <h3>奖励必须有来源</h3>
+            <p>它对 Finch 的理解很贴合 Flow C：奖励不是凭空给，而是和行为绑定。这个可以直接进入完成反馈和星星/换装轻闭环。</p>
+          </div>
+          <div class="card">
+            <span class="tag green">可吸收</span>
+            <h3>首页是答案不是菜单</h3>
+            <p>它对 Headspace 的判断和我们 Flow A 完全一致：首页应该告诉学生“现在最该做什么”，不是把所有入口平铺出来。</p>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Claude洞察</th>
+              <th>适合放到我们哪份材料</th>
+              <th>怎么用</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>对话记忆钩子：上次你提到……</td>
+              <td>Flow B：AI伙伴路径</td>
+              <td>放到“轻量记忆设计”和“AI开场脚本”。但必须加“可查看、可删除、不默认过度记忆”。</td>
+            </tr>
+            <tr>
+              <td>换装/道具与具体行为绑定</td>
+              <td>Flow C：完成反馈路径</td>
+              <td>做 1 次奖励因果链：完成放松练习 → 获得放松星 → 可用于伙伴小物预览。</td>
+            </tr>
+            <tr>
+              <td>首页主角卡片逻辑</td>
+              <td>Flow A：Pad首页启动中枢</td>
+              <td>做“未打卡/已打卡”两态首页。未打卡主角是状态记录，已打卡主角是 AI接住或今日小行动。</td>
+            </tr>
+            <tr>
+              <td>AI能力边界说明替代免责声明</td>
+              <td>Flow B：安全边界</td>
+              <td>保留方向，但文案不能写“不会泄密”。要用未成年人安全边界语言。</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section" id="caution">
+        <h2>2. 需要谨慎或降权的部分</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>点</th>
+              <th>为什么要谨慎</th>
+              <th>我的建议</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Replika 作为“必参考”</td>
+              <td>Replika 是 AI 情感伴侣，存在成人化、拟人依恋、关系边界模糊的产品气质。减压星球面向未成年人，不能照搬“情感伴侣”关系模型。</td>
+              <td>只学“可控记忆”和“连续关系感”，不学亲密陪伴、恋爱化、过度拟人依赖。</td>
+            </tr>
+            <tr>
+              <td>Woebot “唯一临床验证”表述</td>
+              <td>“唯一”这类绝对表述风险高，且原文提到的 18-28 岁研究不能直接等同 10-18 岁中学生。临床有效性也不等于产品可用性适合线下学生测试。</td>
+              <td>把 Woebot 从“临床权威背书”降为“结构化心理支持参考”。不要在团队汇报里写绝对化医学结论。</td>
+            </tr>
+            <tr>
+              <td>对话报告 + 情绪趋势图作为快赢</td>
+              <td>学生未必想看报告，且趋势图容易带来被监控感或成绩化。这个方向需要测试，不宜直接上升为 P0。</td>
+              <td>本轮 demo 只做“轻量总结”和“今天的一小步”，不要先做完整报告和趋势图。</td>
+            </tr>
+            <tr>
+              <td>打卡7天/对话3次/训练5次解锁道具</td>
+              <td>这个机制可行，但会把产品推向连续打卡激励。减压产品如果做重 streak，会增加新压力。</td>
+              <td>做“完成一次也被看见”的轻奖励，不强调断签、不做强连续压力。</td>
+            </tr>
+            <tr>
+              <td>缺少 How We Feel / Wysa / 988</td>
+              <td>Claude稿更偏 AI记忆、奖励、首页，但对情绪词表达、安全边界、危机支持流程覆盖不够。</td>
+              <td>仍保留我们原先的 How We Feel、Wysa、988/Crisis Text Line/Trevor 作为核心参考。</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout red">
+          <strong>最重要的风险提醒</strong>
+          面向未成年人，Replika 只能作为“记忆机制参考”，不能作为“关系模型参考”。Woebot 只能作为“结构化支持参考”，不能被包装成“临床疗效证明”。这两点如果不收住，后面设计会跑偏。
+        </div>
+      </section>
+
+      <section class="section" id="compare">
+        <h2>3. 与我们现有 Day03-05 材料的关系</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>维度</th>
+              <th>Claude 输出</th>
+              <th>我们现有材料</th>
+              <th>结论</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>结构</td>
+              <td>按竞品逐个分析：Replika、Finch、Woebot、Headspace。</td>
+              <td>按 Flow 分析：Flow A 首页启动、Flow B AI伙伴、Flow C 完成反馈。</td>
+              <td>我们现有结构更适合 20 天 demo 执行。</td>
+            </tr>
+            <tr>
+              <td>强项</td>
+              <td>洞察鲜明，尤其是“记忆”“奖励来源”“Pad首页主行动”。</td>
+              <td>更完整覆盖情绪表达、安全边界、训练反馈、竞品走查。</td>
+              <td>Claude 适合补强洞察，我们适合做执行框架。</td>
+            </tr>
+            <tr>
+              <td>弱项</td>
+              <td>部分论断较满，且对未成年人安全边界不足。</td>
+              <td>可能没有 Claude 稿那样强烈的一句话洞察。</td>
+              <td>整合时用 Claude 的“金句”，保留我们的安全和落地边界。</td>
+            </tr>
+            <tr>
+              <td>对 Demo 的帮助</td>
+              <td>能帮助定义亮点：记忆、奖励、首页主角。</td>
+              <td>能直接指导页面节点和测试指标。</td>
+              <td>不要二选一，应该合并。</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section" id="merge">
+        <h2>4. 推荐整合方案</h2>
+        <div class="callout green">
+          <strong>整合原则</strong>
+          我们以“Flow A/B/C”为主结构，把 Claude 的强洞察塞进对应 Flow。不要改成以 Replika、Finch、Woebot、Headspace 为主的竞品报告，否则会离 20 天 demo 太远。
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>整合到哪个 Flow</th>
+              <th>吸收 Claude 哪个观点</th>
+              <th>整合后怎么写</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Flow A：Pad首页启动中枢</td>
+              <td>Headspace：首页是答案，不是菜单。</td>
+              <td>首页主行动从“功能入口”改为“今天感觉怎么样”；完成打卡后，首页根据状态给唯一主推荐。</td>
+            </tr>
+            <tr>
+              <td>Flow B：AI伙伴</td>
+              <td>Replika：记忆是关系的证明。</td>
+              <td>AI对话开场加入轻量历史钩子，但只展示低敏信息，并提供“这次不记/管理记忆”。</td>
+            </tr>
+            <tr>
+              <td>Flow B：安全边界</td>
+              <td>Woebot：AI不必假装人类，明确分工能提升信任。</td>
+              <td>把“AI生成仅供参考”改成“我可以陪你整理想法，但不能替代老师、家长或专业帮助；明确危险时优先保护安全”。</td>
+            </tr>
+            <tr>
+              <td>Flow C：完成反馈</td>
+              <td>Finch：奖励要与行为绑定。</td>
+              <td>完成练习后显示“因为你完成了一次放松练习，获得 3 颗放松星”，并由 IP 说一句看见你的话。</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section" id="action">
+        <h2>5. 下一步动作</h2>
+        <ol>
+          <li>保留 Claude 原文件作为“竞品洞察参考稿”，不直接替代我们的 Day03-05 结果版。</li>
+          <li>把 Claude 的 4 个强洞察整合进我们的《Day03-05_竞品分析成果_Codex视角.html》。</li>
+          <li>在 Day01-05 封版表中，补一条最终判断：本轮 demo 的差异化关键词是“被记得、被接住、完成被看见”。</li>
+          <li>人工体验竞品时，重点验证 Claude 的高风险假设：学生会不会接受 AI 记忆？奖励会不会变成打卡压力？首页单主角是否真的更清楚？</li>
+        </ol>
+
+        <div class="callout amber">
+          <strong>我的建议</strong>
+          这份 Claude 输出可以用，但要“拆开用”。不要把 Replika、Woebot 直接作为产品方向；要把它们拆成小机制：记忆钩子、结构化支持、能力边界、行为奖励。这样才适合减压星球的学生场景。
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>减压星球 · 测试范围决策备忘</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+    background: #EDE7DA;
+    color: #1F2421;
+    line-height: 1.6;
+    padding: 40px 20px 60px;
+  }
+  .container { max-width: 860px; margin: 0 auto; }
+
+  .page-header { margin-bottom: 36px; }
+  .page-header h1 { font-size: 28px; font-weight: 800; color: #1F2421; letter-spacing: -0.5px; margin-bottom: 6px; }
+  .page-header p { font-size: 13px; color: #8A8A80; }
+  .header-rule { margin-top: 16px; height: 3px; background: linear-gradient(to right, #C8853F, #E2C9A8); border-radius: 2px; }
+
+  .intro-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    font-size: 14px;
+    color: #3A3A38;
+    border-left: 3px solid #C8853F;
+  }
+  .intro-card p { margin-bottom: 6px; }
+  .intro-card p:last-child { margin-bottom: 0; }
+
+  /* ── 维度卡片 ── */
+  .section { margin-bottom: 28px; }
+  .section-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #B0A898;
+    margin-bottom: 12px;
+    padding-left: 2px;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .card-head {
+    background: #2A2723;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    color: #C8853F;
+    background: rgba(200,133,63,0.2);
+    padding: 3px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .card-name { font-size: 15px; font-weight: 700; color: #fff; flex: 1; }
+
+  .verdict {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .verdict-add    { background: #2D7A3A; color: #fff; }
+  .verdict-merge  { background: #1D6090; color: #fff; }
+  .verdict-skip   { background: #6B6B64; color: #fff; }
+  .verdict-interview { background: #7C4DBF; color: #fff; }
+
+  .card-body { padding: 18px 22px; }
+  .card-body p { font-size: 13.5px; color: #3A3A38; margin-bottom: 10px; }
+  .card-body p:last-child { margin-bottom: 0; }
+
+  .reason-box {
+    background: #F8F4EF;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #3A2E1F;
+    margin-top: 4px;
+  }
+  .reason-box strong { color: #C8853F; font-weight: 600; }
+
+  /* ── 7大Flow映射表 ── */
+  .table-wrap { overflow-x: auto; margin-bottom: 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    background: #2A2723;
+    color: #C8853F;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.6px;
+    padding: 10px 14px;
+    text-align: left;
+  }
+  td { padding: 10px 14px; border-bottom: 1px solid #F0E9DE; color: #3A3A38; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #FAF7F3; }
+
+  .risk-high    { color: #C04040; font-weight: 600; }
+  .risk-mid     { color: #C8853F; font-weight: 600; }
+  .risk-control { color: #5A6A7A; font-weight: 600; }
+
+  /* ── 结论栏 ── */
+  .conclusion {
+    background: #2A2723;
+    border-radius: 12px;
+    padding: 22px 28px;
+    margin-top: 28px;
+  }
+  .conclusion h3 { color: #C8853F; font-size: 13px; letter-spacing: 0.8px; font-weight: 700; text-transform: uppercase; margin-bottom: 14px; }
+  .conclusion-item {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    font-size: 13.5px;
+    color: #E8DDD0;
+    align-items: flex-start;
+  }
+  .conclusion-item:last-child { margin-bottom: 0; }
+  .dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .dot-green  { background: #2D7A3A; color: #fff; }
+  .dot-blue   { background: #1D6090; color: #fff; }
+  .dot-purple { background: #7C4DBF; color: #fff; }
+  .dot-grey   { background: #6B6B64; color: #fff; }
+
+  .footer { text-align: center; font-size: 12px; color: #94a3b8; padding: 28px 0 0; margin-top: 16px; border-top: 1px solid #d4c9ba; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="page-header">
+    <h1>减压星球 · 测试范围决策备忘</h1>
+    <p>配套《易用性评估执行手册》· 供产品定夺是否调整测试范围</p>
+    <div class="header-rule"></div>
+  </div>
+
+  <div class="intro-card">
+    <p><strong>背景：</strong>7大核心Flow已确定，本文档梳理「设计评估时识别的4个潜在盲点」，对每项给出是否纳入本次测试的建议和理由。</p>
+    <p><strong>核心约束：</strong>单人约30-40分钟，时间已基本排满。加入任何新内容需在「替换现有步骤」或「极低时间成本」两种方式中选一，否则学生疲惫会拉低整体数据质量。</p>
+  </div>
+
+  <!-- ── Part 1: 7大Flow选取逻辑 ── -->
+  <div class="section">
+    <div class="section-title">Part 1 · 7大Flow为何这样选</div>
+    <div class="card">
+      <div class="card-body" style="padding-top:20px;">
+        <p style="font-weight:600; margin-bottom:14px;">按三个维度筛选，三者同时满足才纳入：</p>
+        <div class="reason-box" style="margin-bottom:12px;">
+          <strong>维度一 · 对应已知痛点（P1–P7）</strong><br>
+          每个Flow必须能验证或推翻至少一个产品诊断结论，不做纯探索性测试。
+        </div>
+        <div class="reason-box" style="margin-bottom:12px;">
+          <strong>维度二 · 频率 × 重要性矩阵</strong><br>
+          每日高频操作（Flow 1/2/3/5） + 核心价值感知（Flow 4/6） + 安全合规底线（Flow 7），三类场景均覆盖。
+        </div>
+        <div class="reason-box">
+          <strong>维度三 · 可观察性</strong><br>
+          每个Flow有明确的成功标准和行为观察节点，可被记录，不依赖用户主观陈述。
+        </div>
+
+        <div class="table-wrap" style="margin-top:18px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Flow</th>
+                <th>名称</th>
+                <th>对应痛点</th>
+                <th>风险等级</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Flow 1</td><td>AI对话入口认知：双入口混淆 + Banner动态内容感知 + 跨模块可达性</td><td>P2「切Tab后AI伙伴消失，无全局持续入口」+ 双入口认知是否统一 + Banner三IP动画/回显内容是否被感知</td><td class="risk-high">高</td></tr>
+              <tr><td>Flow 2</td><td>文字输入与对话深度</td><td>P3「对话无跨会话记忆，每次从零开始」→ 验证单次对话体验质量（输入框可发现性、键盘布局、多轮流畅度）</td><td class="risk-high">高</td></tr>
+              <tr><td>Flow 3</td><td>三IP认知与选择（首次 /chooseRole + 非首次直达对话）</td><td>IP体系能否被用户理解（小星=通用陪伴 / 吉塔=情绪疗愈 / 罗素=生涯规划）；首次用户选择耗时；非首次用户历史回显感知与切换路径</td><td class="risk-high">高</td></tr>
+              <tr><td>Flow 4</td><td>情绪打卡全流程（首页5态 + /clockIn 完形填空4步）</td><td>P1「首页双大卡片权重相当，无视觉主角」；打卡入口可发现性；完形填空4步流程理解（情绪/事件/情感词/妙笔提问）；背景色变化感知</td><td class="risk-high">高</td></tr>
+              <tr><td>Flow 5</td><td>极端情绪词触发危机响应</td><td>安全合规底线（危机响应是否及时触发；引导路径是否清晰；双来源认知负担）</td><td class="risk-control">控制场景</td></tr>
+              <tr><td>Flow 6</td><td>对话报告生成与历史查阅</td><td>报告生成条件理解；加载等待体验；报告内容理解与价值感知；历史报告入口可发现性；数据一致性验证</td><td class="risk-mid">中</td></tr>
+              <tr><td>Flow 7</td><td>脑之岛认知训练：4岛分区认知 + 训练任务启动 + 下载流程 + 勋章系统</td><td>P5「脑之岛成就不外溢」延伸验证；4岛分区认知；训练入口可发现性；下载流程理解度；勋章系统3入口感知（训练列表顶部+详情页+荣誉按钮）；年级权限提示清晰度</td><td class="risk-high">高</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Part 2: 4个盲点逐项决策 ── -->
+  <div class="section">
+    <div class="section-title">Part 2 · 4个潜在盲点 · 逐项决策</div>
+
+    <!-- 盲点1 -->
+    <div class="card">
+      <div class="card-head">
+        <span class="card-tag">盲点 1</span>
+        <span class="card-name">Onboarding 首次启动流程</span>
+        <span class="verdict verdict-skip">不纳入</span>
+      </div>
+      <div class="card-body">
+        <p>新用户第一次看到减压星球是什么体验？三IP是怎么被介绍的？这是 Flow 4 的前置条件，但未单独测试。</p>
+        <div class="reason-box">
+          <strong>不纳入的理由：</strong><br>
+          ① 测试设备使用已登录账号，无法低成本复现首次启动状态（清除账号数据操作成本高，重置后设备状态不可控）。<br>
+          ② Onboarding 是一次性体验，测完即消失，不可在同一参与者身上复测，会打乱整体流程顺序。<br>
+          ③ Flow 4 已覆盖「用户能否理解三IP差异」这一核心命题，Onboarding 只是触达路径不同，观察点高度重叠。
+        </div>
+      </div>
+    </div>
+
+    <!-- 盲点2 -->
+    <div class="card">
+      <div class="card-head">
+        <span class="card-tag">盲点 2</span>
+        <span class="card-name">跨会话记忆感知（吉塔记得我吗）</span>
+        <span class="verdict verdict-interview">转访谈题</span>
+      </div>
+      <div class="card-body">
+        <p>P3 最深的痛点是「每次从零开始」，但 Flow 3 只测了单次对话，没有验证用户是否感受到「AI 记得我」。</p>
+        <div class="reason-box">
+          <strong>为何不做独立 Flow：</strong><br>
+          测试设备是全新测试环境，没有历史对话积累，无法模拟真实的跨会话记忆场景。这不是操作行为，是用户感受，Flow 无法捕捉。<br><br>
+          <strong>建议处理方式：</strong><br>
+          在测后访谈现有 T1–T8 之后追加一题：<br>
+          <em>「T9 · 你觉得吉塔记得你上次说了什么吗？你希望它记得吗？」</em><br>
+          记录要点：对记忆功能的期待程度；是否主动提过历史内容。<br>
+          时间成本：约 1 分钟，不影响整体时长。
+        </div>
+      </div>
+    </div>
+
+    <!-- 盲点3 -->
+    <div class="card">
+      <div class="card-head">
+        <span class="card-tag">盲点 3</span>
+        <span class="card-name">切 Tab 后 IP 消失的感知</span>
+        <span class="verdict verdict-merge">并入 Flow 1</span>
+      </div>
+      <div class="card-body">
+        <p>P2 的真正问题是：切 Tab 后 AI 伙伴完全消失，没有全局持续入口。此外首页存在两个并行的 AI 对话入口（大卡片「与吉塔分享近况」和「我想聊聊」预制话题栏），用户是否知道两者都是 AI 对话，还是认为是不同功能，也需要验证。Flow 1 已更新为同时覆盖这两个观察点。</p>
+        <div class="reason-box">
+          <strong>建议处理方式：</strong><br>
+          在 Flow 1 参与者成功进入对话后，追加一个自然引导动作：<br>
+          <em>「好，现在帮我随手切到脑之岛 Tab，再切回来。」</em><br>
+          观察：用户是否主动去找 IP、是否有困惑或询问「对话界面去哪了」、是否能顺利找回。<br><br>
+          <strong>为何建议并入而非独立：</strong><br>
+          该行为与 Flow 1 场景连续，无需额外任务说明，插入自然。时间增加约 30 秒，不占用独立时间段，数据记录直接写入 Flow 1 观察表。<br><br>
+          <strong>这个观察点值得有数据：</strong><br>
+          IP 全局悬浮球是 Phase 1 的核心改造项，有这份数据能直接支撑改造必要性，给开发排优先级提供依据。
+        </div>
+      </div>
+    </div>
+
+    <!-- 盲点4 -->
+    <div class="card">
+      <div class="card-head">
+        <span class="card-tag">盲点 4</span>
+        <span class="card-name">解忧信箱完整路径</span>
+        <span class="verdict verdict-skip">不纳入</span>
+      </div>
+      <div class="card-body">
+        <p>P6「解忧信箱发送后无情感确认」（"发进虚空"感）——发送后没有情感确认，是已诊断出的设计问题。</p>
+        <div class="reason-box">
+          <strong>不纳入的理由：</strong><br>
+          ① 「发进虚空」是设计诊断结论，不是用户操作中会暴露的行为障碍。信箱路径本身极短（写 → 发），执行没有困难，Flow 测不出什么增量信息。<br>
+          ② 问题已在产品诊断文档中定性（P6「解忧信箱发送后无情感确认」），改造方案已有方向（发送后加 IP 情感确认动画）。再做 Flow 验证是重复劳动。<br>
+          ③ 本次测试重点是「用户能不能完成任务」，解忧信箱是情感功能，观察价值在情感反馈质量，更适合用专项情感测试或 A/B 测试验证改造后效果。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 结论 ── -->
+  <div class="conclusion">
+    <h3>产品定夺建议 · 最终调整方案</h3>
+    <div class="conclusion-item">
+      <div class="dot dot-blue">并</div>
+      <div><strong>Flow 1 末尾追加 30 秒：</strong>引导参与者切 Tab 再切回，观察 IP 消失感知。记录写入 Flow 1 观察表，不新增文档栏位。</div>
+    </div>
+    <div class="conclusion-item">
+      <div class="dot dot-purple">访</div>
+      <div><strong>测后访谈追加 T9：</strong>「你觉得吉塔记得你上次说了什么吗？你希望它记得吗？」约 1 分钟，写入数据记录表访谈区。</div>
+    </div>
+    <div class="conclusion-item">
+      <div class="dot dot-grey">弃</div>
+      <div><strong>Onboarding 流程：</strong>不纳入，设备约束无法复现，Flow 4 已覆盖核心命题。</div>
+    </div>
+    <div class="conclusion-item">
+      <div class="dot dot-grey">弃</div>
+      <div><strong>解忧信箱路径：</strong>不纳入，问题已定性，行为测试无增量价值，留待改造后验证。</div>
+    </div>
+  </div>
+
+</div>
+<div class="footer">
+  减压星球 · 测试范围决策备忘 · 配套易用性评估执行手册 · 2026.06.29
+</div>
+</body>
+</html>

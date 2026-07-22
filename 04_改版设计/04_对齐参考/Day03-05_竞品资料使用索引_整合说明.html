@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI星球 20天优化Demo · 竞品资料使用索引与整合说明</title>
+  <style>
+    :root {
+      --ink: #1d2433;
+      --muted: #647083;
+      --line: #dfe6ef;
+      --soft: #f6f8fb;
+      --blue: #2f70d0;
+      --green: #2f8f6b;
+      --amber: #b97817;
+      --red: #c84d4d;
+      --card: #ffffff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.68;
+      background: #eef2f6;
+    }
+    .page {
+      display: grid;
+      grid-template-columns: 270px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+    aside {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 28px 22px;
+      border-right: 1px solid var(--line);
+      background: #fff;
+      overflow: auto;
+    }
+    aside h1 { margin: 0 0 8px; font-size: 18px; line-height: 1.35; }
+    aside p { margin: 0 0 20px; color: var(--muted); font-size: 13px; }
+    nav a {
+      display: block;
+      padding: 9px 10px;
+      color: #435063;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    nav a:hover { background: var(--soft); color: var(--blue); }
+    main { padding: 42px 52px 72px; max-width: 1180px; }
+    .hero { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+    .eyebrow {
+      margin-bottom: 10px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+    .hero h2 { margin: 0 0 12px; font-size: 34px; line-height: 1.22; }
+    h2 { margin: 34px 0 14px; font-size: 25px; line-height: 1.36; }
+    h3 { margin: 22px 0 10px; font-size: 17px; }
+    .summary { max-width: 900px; color: var(--muted); font-size: 17px; }
+    .section {
+      margin: 26px 0;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+    .section h2:first-child { margin-top: 0; }
+    .callout {
+      margin: 18px 0;
+      padding: 16px 18px;
+      border-left: 4px solid var(--blue);
+      border-radius: 8px;
+      background: #eef5ff;
+    }
+    .callout strong { display: block; margin-bottom: 4px; }
+    .callout.green { border-left-color: var(--green); background: #edf8f2; }
+    .callout.amber { border-left-color: var(--amber); background: #fff7e8; }
+    table {
+      width: 100%;
+      margin: 14px 0 24px;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 11px 12px;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      text-align: left;
+    }
+    th { color: #334155; background: #f7f9fc; font-weight: 700; }
+    tr:last-child td { border-bottom: 0; }
+    th:last-child, td:last-child { border-right: 0; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      margin: 0 6px 8px 0;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #eaf1fb;
+      color: var(--blue);
+    }
+    .tag.green { background: #e9f5ef; color: var(--green); }
+    .tag.amber { background: #fff4de; color: var(--amber); }
+    .tag.red { background: #fdeeee; color: var(--red); }
+    a { color: var(--blue); }
+    ul, ol { padding-left: 20px; }
+    .small { color: var(--muted); font-size: 13px; }
+    code { background: #f1f5f9; border-radius: 4px; padding: 1px 5px; }
+    @media (max-width: 980px) {
+      .page { display: block; }
+      aside { position: static; height: auto; }
+      main { padding: 28px 18px 56px; }
+      .hero h2 { font-size: 28px; }
+      table { font-size: 13px; }
+      th, td { padding: 10px; }
+    }
+    @media print {
+      body { background: #fff; }
+      .page { display: block; }
+      aside { display: none; }
+      main { max-width: none; padding: 0; }
+      .section, table { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <aside>
+      <h1>竞品资料<br>使用索引</h1>
+      <p>把 Codex 与 Claude 输出统一到一套工作流里</p>
+      <nav>
+        <a href="#verdict">一句话结论</a>
+        <a href="#layers">两层材料分工</a>
+        <a href="#when">什么时候看哪个</a>
+        <a href="#flow">按 Flow 使用</a>
+        <a href="#files">文件索引</a>
+        <a href="#rule">后续维护规则</a>
+      </nav>
+    </aside>
+
+    <main>
+      <section class="hero" id="verdict">
+        <div class="eyebrow">AI星球 / 减压星球 · Day 03-05</div>
+        <h2>竞品资料使用索引与整合说明</h2>
+        <p class="summary">这份文件用来解决一个问题：Claude 和 Codex 的竞品选择、表述结构不完全一样，但核心观点一致，后面到底怎么用。</p>
+      </section>
+
+      <section class="callout">
+        <strong>一句话结论</strong>
+        Claude 的说法基本成立：Codex 这套是“设计决策层”，Claude 的深度拆解是“执行细节层”。但最终工作流必须以 Flow A/B/C 为主线，因为我们现在的目标是 20 天 demo，而不是做泛竞品研究。
+      </section>
+
+      <section class="section" id="layers">
+        <h2>1. 两层材料分工</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>层级</th>
+              <th>回答的问题</th>
+              <th>适合什么时候用</th>
+              <th>典型文件</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="tag">设计决策层</span></td>
+              <td>做这个 Flow 时，参考谁？学什么机制？不学什么？为什么这样设计？</td>
+              <td>定方向、开会对齐、判断取舍、写设计说明。</td>
+              <td>Codex 的 <code>Day03-05_竞品分析成果_Codex视角.html</code>、Claude 的 <code>00_竞品分析与设计策略.html</code>。</td>
+            </tr>
+            <tr>
+              <td><span class="tag green">执行细节层</span></td>
+              <td>竞品真实流程长什么样？第 1 步到第 6 步怎么引导？按钮文案、反馈、动画、状态怎么做？</td>
+              <td>画低保真、高保真、写交互文案、补页面状态。</td>
+              <td>Claude 的 <code>2.竞品深度分析/</code>、Codex 的 <code>Day03-05_竞品20分钟走查任务单_可填写版.html</code>。</td>
+            </tr>
+            <tr>
+              <td><span class="tag amber">封版记录层</span></td>
+              <td>我们最终采纳了什么？你人工体验后的结论是什么？哪些进入 Day 6-8？</td>
+              <td>Day 1-5 封版、进入低保真前确认。</td>
+              <td><code>Day01-05_封版检查表与竞品人工体验记录表.html</code>。</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section" id="when">
+        <h2>2. 什么时候看哪个文件</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>你的场景</th>
+              <th>先看</th>
+              <th>再看</th>
+              <th>最后沉淀到</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>讨论首页为什么不能继续做功能列表</td>
+              <td>Codex 竞品分析成果：Flow A</td>
+              <td>Claude 00 文件：Headspace Pad首页主行动</td>
+              <td>Day01-05 封版表：Flow A 最终判断</td>
+            </tr>
+            <tr>
+              <td>讨论 AI 是否要加记忆提示</td>
+              <td>Codex 竞品分析成果：Flow B</td>
+              <td>Claude 00 文件：Replika 记忆洞察；后续 Replika 深度分析</td>
+              <td>Day01-05 封版表：Flow B 风险和采纳范围</td>
+            </tr>
+            <tr>
+              <td>画 AI 对话里的记忆提示具体位置和文案</td>
+              <td>Claude 深度分析里的 Replika/Woebot 细节</td>
+              <td>Codex 20分钟走查任务单补实机观察</td>
+              <td>Day 6-8 低保真页面结构</td>
+            </tr>
+            <tr>
+              <td>讨论完成训练后怎么反馈</td>
+              <td>Codex 竞品分析成果：Flow C</td>
+              <td>Claude 00 文件：Finch 奖励绑定；Finch 深度分析</td>
+              <td>Day01-05 封版表：Flow C 是否做轻闭环</td>
+            </tr>
+            <tr>
+              <td>去下载竞品 App 人工体验</td>
+              <td>Codex 20分钟走查任务单</td>
+              <td>Claude 深度分析对照实际流程</td>
+              <td>Day01-05 封版表：竞品人工体验记录</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section" id="flow">
+        <h2>3. 按 Flow 整合竞品池</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Flow</th>
+              <th>主参考竞品</th>
+              <th>补充洞察竞品</th>
+              <th>最终采用的观点</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Flow A：Pad首页启动中枢</td>
+              <td>Headspace、How We Feel、Finch</td>
+              <td>Claude 的 Headspace Pad首页主行动</td>
+              <td>首页是答案，不是菜单；先问状态，再推荐唯一主行动。</td>
+            </tr>
+            <tr>
+              <td>Flow B：AI伙伴</td>
+              <td>Wysa、Headspace/Ebb、988/Crisis Text Line/Trevor</td>
+              <td>Claude 的 Replika 记忆、Woebot 能力边界</td>
+              <td>AI不是更像真人，而是更可信、更有边界、更记得我；记忆必须可控。</td>
+            </tr>
+            <tr>
+              <td>Flow C：完成反馈</td>
+              <td>Finch、Elevate、Lumosity、Duolingo</td>
+              <td>Claude 的 Finch 奖励绑定</td>
+              <td>完成后要被看见，奖励必须有来源，但不能制造打卡压力。</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section" id="files">
+        <h2>4. 文件索引</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>文件</th>
+              <th>定位</th>
+              <th>使用建议</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a href="/Users/admin/Documents/减压星球/AI星球20天优化Demo计划_20260720/Day03-05_竞品分析成果_Codex视角.html">Codex 竞品分析成果</a></td>
+              <td>Flow 落地型设计判断</td>
+              <td>作为 Day 3-5 的主判断稿。</td>
+            </tr>
+            <tr>
+              <td><a href="/Users/admin/Downloads/Q3竞品/1.范围与计划/00_竞品分析与设计策略.html">Claude 00_竞品分析与设计策略</a></td>
+              <td>强洞察型策略稿</td>
+              <td>提炼金句和机制，但不要替代 Flow 主结构。</td>
+            </tr>
+            <tr>
+              <td><a href="/Users/admin/Downloads/Q3竞品/2.竞品深度分析/核心竞品洞察汇总.html">Claude 核心竞品洞察汇总</a></td>
+              <td>深度分析入口</td>
+              <td>画原型前查具体流程细节。</td>
+            </tr>
+            <tr>
+              <td><a href="/Users/admin/Downloads/Q3竞品/2.竞品深度分析/Daylio_情绪打卡流程分析.html">Daylio 情绪打卡流程分析</a></td>
+              <td>情绪打卡执行细节</td>
+              <td>可补充 Flow A 的情绪打卡细节，但最终仍以 How We Feel/Headspace/Finch 组合判断为主。</td>
+            </tr>
+            <tr>
+              <td><a href="/Users/admin/Documents/减压星球/AI星球20天优化Demo计划_20260720/Day03-05_竞品20分钟走查任务单_可填写版.html">竞品20分钟走查任务单</a></td>
+              <td>人工体验工具</td>
+              <td>下载 App 后边体验边填。</td>
+            </tr>
+            <tr>
+              <td><a href="/Users/admin/Documents/减压星球/AI星球20天优化Demo计划_20260720/Day01-05_封版检查表与竞品人工体验记录表.html">Day01-05 封版检查表</a></td>
+              <td>最终封版记录</td>
+              <td>所有判断最终都汇总到这里。</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="small">说明：这里保留了 Claude 资料在 Downloads 的原路径，只作为引用索引，不改动原文件。</p>
+      </section>
+
+      <section class="section" id="rule">
+        <h2>5. 后续维护规则</h2>
+        <ol>
+          <li>所有竞品资料最终都必须回到 Flow A/B/C，不再新增平行主线。</li>
+          <li>竞品只分两种：主参考竞品和补充洞察竞品，不再争“谁更对”。</li>
+          <li>凡是涉及未成年人、AI记忆、危机支持的结论，必须优先看安全边界，而不是只看竞品效果。</li>
+          <li>Claude 深度分析可以提供细节素材，但进入 demo 前必须经过 Day01-05 封版表确认。</li>
+          <li>进入 Day 6-8 后，只引用已经封版的竞品机制，避免一边画低保真一边重新选竞品。</li>
+        </ol>
+        <div class="callout amber">
+          <strong>最终工作流</strong>
+          先用 Codex/C​​laude 的策略材料定判断，再用 Claude 深度分析和人工走查补细节，最后把采纳结果写回 Day01-05 封版表。封版后进入 Day 6-8。
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

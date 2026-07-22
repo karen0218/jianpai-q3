@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>AI星球 · 核心Q&A备忘</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'PingFang SC','Noto Sans SC',sans-serif; background:#f4f6fb; color:#1f2937; line-height:1.75; }
+
+/* ── HEADER ── */
+.page-header {
+  background:linear-gradient(135deg,#1e293b 0%,#334155 100%);
+  color:#fff; padding:48px 40px 36px; text-align:center;
+}
+.page-header h1 { font-size:26px; font-weight:900; margin-bottom:8px; }
+.page-header p { font-size:13px; opacity:0.55; }
+.header-stats { display:flex; gap:16px; justify-content:center; margin-top:18px; flex-wrap:wrap; }
+.stat-pill { background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.18); border-radius:20px; padding:5px 14px; font-size:12px; font-weight:700; color:rgba(255,255,255,0.8); }
+
+/* ── NAV ── */
+.cat-nav {
+  position:sticky; top:0; z-index:100;
+  background:rgba(255,255,255,0.97); backdrop-filter:blur(10px);
+  border-bottom:1px solid #e5e7eb;
+  display:flex; gap:0; overflow-x:auto; padding:0 24px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.04);
+}
+.cat-nav a {
+  display:flex; align-items:center; gap:6px;
+  padding:13px 16px; font-size:12px; font-weight:700;
+  color:#9ca3af; text-decoration:none; white-space:nowrap;
+  border-bottom:2.5px solid transparent; transition:all 0.18s;
+}
+.cat-nav a:hover { color:#374151; border-bottom-color:#d1d5db; }
+.cat-nav a.active { color:#368fff; border-bottom-color:#368fff; }
+.cat-nav-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+/* ── SEARCH ── */
+.search-wrap { max-width:760px; margin:28px auto 0; padding:0 24px; }
+.search-box {
+  width:100%; background:#fff; border:1.5px solid #e5e7eb; border-radius:12px;
+  padding:11px 16px 11px 40px; font-size:13px; font-family:inherit;
+  color:#374151; outline:none; transition:border 0.15s;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:14px center; box-shadow:0 1px 4px rgba(0,0,0,0.04);
+}
+.search-box:focus { border-color:#368fff; box-shadow:0 0 0 3px rgba(54,143,255,0.1); }
+.search-count { font-size:11px; color:#9ca3af; margin-top:6px; padding:0 4px; }
+
+/* ── CONTAINER ── */
+.container { max-width:760px; margin:0 auto; padding:24px 24px 80px; }
+
+/* ── CATEGORY SECTION ── */
+.cat-section { margin-bottom:40px; }
+.cat-header {
+  display:flex; align-items:center; gap:10px;
+  margin-bottom:16px; padding-bottom:10px; border-bottom:2px solid #e5e7eb;
+}
+.cat-icon { font-size:18px; }
+.cat-title { font-size:14px; font-weight:900; color:#1e293b; }
+.cat-count { background:#f3f4f6; color:#6b7280; border-radius:20px; padding:2px 8px; font-size:11px; font-weight:700; }
+
+/* ── QA CARD ── */
+.qa-card {
+  background:#fff; border-radius:14px; padding:22px 26px;
+  margin-bottom:12px; box-shadow:0 1px 6px rgba(0,0,0,0.05);
+  border-left:4px solid #e5e7eb; transition:box-shadow 0.2s;
+}
+.qa-card:hover { box-shadow:0 4px 16px rgba(0,0,0,0.09); }
+.qa-card.c-product   { border-left-color:#368fff; }
+.qa-card.c-design    { border-left-color:#7c3aed; }
+.qa-card.c-ip        { border-left-color:#10b981; }
+.qa-card.c-world     { border-left-color:#f59e0b; }
+.qa-card.c-strategy  { border-left-color:#0d9488; }
+.qa-card.c-safety    { border-left-color:#ef4444; }
+
+/* collapsible */
+.qa-summary {
+  display:flex; align-items:flex-start; gap:10px; cursor:pointer;
+  list-style:none; outline:none;
+}
+.qa-summary::-webkit-details-marker { display:none; }
+.qa-badge {
+  flex-shrink:0; font-size:10px; font-weight:800;
+  padding:3px 8px; border-radius:6px; margin-top:2px; white-space:nowrap;
+}
+.c-product  .qa-badge { background:#eff6ff; color:#1d4ed8; }
+.c-design   .qa-badge { background:#f5f3ff; color:#6d28d9; }
+.c-ip       .qa-badge { background:#f0fdf4; color:#15803d; }
+.c-world    .qa-badge { background:#fffbeb; color:#92400e; }
+.c-strategy .qa-badge { background:#f0fdfa; color:#0f766e; }
+.c-safety   .qa-badge { background:#fff0f0; color:#b91c1c; }
+
+.qa-q-text { font-size:13.5px; font-weight:700; color:#1e293b; flex:1; line-height:1.55; }
+.qa-chevron { flex-shrink:0; font-size:14px; color:#9ca3af; margin-top:2px; transition:transform 0.2s; }
+details[open] .qa-chevron { transform:rotate(90deg); }
+
+.qa-meta { display:flex; align-items:center; gap:8px; margin-top:6px; }
+.qa-date { font-size:10px; color:#d1d5db; font-weight:600; }
+.qa-tag  { font-size:10px; font-weight:700; padding:1px 6px; border-radius:4px; }
+
+.qa-body { margin-top:16px; padding-top:16px; border-top:1px solid #f3f4f6; font-size:13px; color:#374151; line-height:1.85; }
+.qa-body b { color:#1e293b; }
+.qa-body em { font-style:normal; font-weight:700; color:#368fff; }
+
+.qa-body ul { padding-left:18px; margin:8px 0; }
+.qa-body ul li { margin-bottom:5px; }
+
+.block {
+  background:#f8fafc; border-radius:10px; padding:12px 16px;
+  margin:10px 0; border-left:3px solid #e2e8f0;
+}
+.block b { display:block; font-size:11px; color:#94a3b8; text-transform:uppercase; letter-spacing:.5px; margin-bottom:5px; }
+code {
+  font-family:'SF Mono',Menlo,monospace; font-size:11px;
+  background:#f1f5f9; padding:2px 6px; border-radius:4px; color:#1e293b;
+}
+
+.doc-chips { display:flex; gap:7px; flex-wrap:wrap; margin-top:14px; }
+.doc-chip {
+  display:inline-flex; align-items:center; gap:5px;
+  background:#f0f7ff; border:1px solid #bfdbfe; border-radius:7px;
+  padding:4px 10px; font-size:11px; font-weight:700; color:#1d4ed8;
+  text-decoration:none; transition:background .15s;
+}
+.doc-chip:hover { background:#dbeafe; }
+
+/* ── NO RESULTS ── */
+.no-results { text-align:center; padding:60px 20px; color:#9ca3af; font-size:14px; display:none; }
+
+footer { text-align:center; font-size:11px; color:#9ca3af; padding:32px; border-top:1px solid #e5e7eb; margin-top:20px; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>核心 Q&A 备忘</h1>
+  <p>AI星球 · 减压星球产品分析 · 关键问答归纳</p>
+  <div class="header-stats">
+    <span class="stat-pill">16 条问答</span>
+    <span class="stat-pill">6 个分类</span>
+    <span class="stat-pill">最近更新 2026.06.16</span>
+  </div>
+</div>
+
+<nav class="cat-nav">
+  <a href="#cat-product" class="active"><div class="cat-nav-dot" style="background:#368fff;"></div>产品功能</a>
+  <a href="#cat-design"><div class="cat-nav-dot" style="background:#7c3aed;"></div>设计规范</a>
+  <a href="#cat-ip"><div class="cat-nav-dot" style="background:#10b981;"></div>IP 体系</a>
+  <a href="#cat-world"><div class="cat-nav-dot" style="background:#f59e0b;"></div>世界观</a>
+  <a href="#cat-strategy"><div class="cat-nav-dot" style="background:#0d9488;"></div>产品战略</a>
+  <a href="#cat-safety"><div class="cat-nav-dot" style="background:#ef4444;"></div>安全与伦理</a>
+</nav>
+
+<div class="search-wrap">
+  <input class="search-box" id="searchBox" type="text" placeholder="搜索关键词，例如：年级、打卡、护城河…" oninput="filterQA(this.value)"/>
+  <div class="search-count" id="searchCount"></div>
+</div>
+
+<div class="container" id="qaContainer">
+
+<!-- ══════════════════════════════
+     产品功能
+══════════════════════════════ -->
+<div class="cat-section" id="cat-product">
+  <div class="cat-header">
+    <span class="cat-icon">📦</span>
+    <span class="cat-title">产品功能</span>
+    <span class="cat-count">7 条</span>
+  </div>
+
+  <!-- Q1 -->
+  <details class="qa-card c-product">
+    <summary class="qa-summary">
+      <span class="qa-badge">Q1</span>
+      <span class="qa-q-text">年段适配是三套前后端，还是一套系统？</span>
+      <span class="qa-chevron">▶</span>
+    </summary>
+    <div class="qa-meta"><span class="qa-date">2026.06.11</span></div>
+    <div class="qa-body">
+      <b>A：一套系统，一套代码，按 phaseCode 渲染不同视图层。</b><br>
+      更接近同一个网站做了三个皮肤，而不是三个不同的产品。<br><br>
+      APK 里已经有 <code>phaseCode</code>（小学/初中/高中）和 <code>gradeCode</code>（具体年级），登录时已知，只是现在没有用它来过滤内容。
+      <div class="block">
+        <b>后端：一次「内容打标」</b>
+        所有内容、任务、测评模板打上适用年级标签；API 返回内容时带上 phaseCode 过滤参数。这不是三套 API，是一套 API 加了一个筛选维度。
+      </div>
+      <div class="block">
+        <b>前端：三套「视图配置」</b>
+        首页布局配置按 phaseCode 读取不同配置文件；组件本身复用，只是排列密度、文字描述、功能入口的可见性不同。
+      </div>
+      <b>技术实现四步：</b>登录时读 <code>phaseCode</code> → 读视图配置 JSON → 组件加 density prop → 后端内容打标过滤。改动范围：<em>写三份 JSON + 给内容打标签</em>，不需要重写业务逻辑。<br><br>
+      <b>最值得关注的点：年级衔接。</b>初升高时罗素能引用吉塔对话里的兴趣记录——这是护城河靠时间积累的核心逻辑。
+      <div class="doc-chips">
+        <a class="doc-chip" href="../B_设计规范与系统/B3_年级自适应视图设计.html">📐 B3 · 年级自适应视图设计</a>
+      </div>
+    </div>
+  </details>
+
+  <!-- Q14 -->
+  <details class="qa-card c-product">
+    <summary class="qa-summary">
+      <span class="qa-badge">Q14</span>
+      <span class="qa-q-text">D2 保守版原型里学龄分段是怎么体现的？小学/初中/高中首页有什么不同？</span>
+      <span class="qa-chevron">▶</span>
+    </summary>
+    <div class="qa-meta"><span class="qa-date">2026.06.16</span></div>
+    <div class="qa-body">
+      <b>A：D2 保守版加了可交互的年级切换条（🌱小学 / 🌀初中 / 🎯高中），切换后整个信息流实时变换。</b><br><br>
+      <b>🌱 小学（phaseCode=primary）</b><br>
+      情绪签到 → 5个表情脸（😊😐😓😔😤），不是6个邻居卡片；主导IP换成小星；任务用「今日探险」游戏化语言；推荐内容是记忆翻牌游戏/情绪涂色，没有测评/生涯类内容。<br><br>
+      <b>🌀 初中（phaseCode=middle）</b><br>
+      当前默认视图，全部6个邻居选择（鸭梨/阿眠/小刺/拖拖/小炎/皮皮）；吉塔主导；任务含情绪压力测评+呼吸法；无生涯/高考内容。<br><br>
+      <b>🎯 高中（phaseCode=high）</b><br>
+      顶部新增高考倒计时徽章（可关闭）；任务由罗素主导，含「学业压力专项测评」+「选科兴趣初测」；推荐区新增「选科分析：文理倾向」；IP悬浮球默认换成罗素。<br><br>
+      <b>技术实现：</b>一套组件，用 class（g-primary / g-middle / g-high）+ JS切换 gshow 控制显隐，与B3方案完全一致。
+      <div class="doc-chips">
+        <a class="doc-chip" href="../D_交互原型与设计/D2_学生端首页重设计原型.html">🖥️ D2 · 保守版年级切换 Demo</a>
+        <a class="doc-chip" href="../B_设计规范与系统/B3_年级自适应视图设计.html">📐 B3 · 年级自适应视图设计</a>
+      </div>
+    </div>
+  </details>
+
+  <!-- Q2 -->
+  <details class="qa-card c-product">
+    <summary class="qa-summary">
+      <span class="qa-badge">Q2</span>
+      <span class="qa-q-text">D2 学生端首页做了哪些布局调整？</span>
+      <span class="qa-chevron">▶</span>
+    </summary>
+    <div class="qa-meta"><span class="qa-date">2026.06.11</span></div>
+    <div class="qa-body">
+      本轮（2026.06.11）对 D2 原型的修改：
+      <ul>
+        <li><b>心理剧场 Banner 提到首屏第一位</b>（情绪签到卡下方）——剧场是高价值内容，不应埋在下方</li>
+        <li><b>3个历史剧场胶囊</b>（5月·迷失森林 / 4月·时间盲区 / 3月·压力怪兽）横向滚动</li>
+        <li><b>选完情绪 800ms 后</b>，签到卡自动收起变成小芯片，释放首页空间</li>
+        <li><b>「更改」按钮</b>可重新展开签到选项（<code>reopenCheckin()</code> 函数）</li>
+        <li>85分健康分已移除（不展示绝对分，避免焦虑）</li>
+      </ul>
+      D2 v3 新增功能版（无地图）/ 保守版（右侧星球面板）/ 挑战版（全屏星球）三个版本切换，默认展示功能版。
+      <div class="doc-chips">
+        <a class="doc-chip" href="../D_交互原型与设计/D2_学生端首页重设计原型.html">📱 D2 · 学生端首页原型</a>
+      </div>
+    </div>
+  </details>
+
+  <!-- Q11 -->
+  <details class="qa-card c-product">
+    <summary class="qa-summary">
+      <span class="qa-badge">Q11</span>
+      <span class="qa-q-text">导航为什么从6个 Tab 缩减到3个？任务、探索、朋友圈去哪了？</span>
+      <span class="qa-chevron">▶</span>
+    </summary>
+    <div class="qa-meta"><span class="qa-date">2026.06.16</span></div>
+    <div class="qa-body">
+      <b>A：三个 Tab 被整合进首页，不是删除而是降层级。</b><br><br>
+      <b>任务</b>→ 变成「吉塔今日安排」AI推送卡片，签到后吉塔根据情绪状态自动推送当日2-3个任务。<br><br>
+      <b>探索</b>→ 变成「吉塔为你推荐」内容卡片，情绪驱动内容排序（选了鸭梨→推压力相关内容）。<br><br>
+      <b>朋友圈</b>→ 变成「同学动态」条目，首页底部展示，仅显示匿名成就类动态，不显示私密情绪内容。<br><br>
+      保留的3个Tab：<b>首页 / 脑之岛 / 咨询</b>。咨询仅部分学校有（采购了线下心理老师对接功能），脑之岛保留因为认知训练有独立功能体系。
+      <div class="doc-chips">
+        <a class="doc-chip" href="../D_交互原型与设计/D2_学生端首页重设计原型.html">🖥️ D2 · 学生端首页重设计</a>
+      </div>
+    </div>
+  </details>
+
+  <!-- Q4 -->
+  <details class="qa-card c-product">
+    <summary class="qa-summary">
+      <span class="qa-badge">Q4</span>
+      <span class="qa-q-text">减压星球应该具备什么核心功能？应该看哪份文档？</span>
+      <span class="qa-chevron">▶</span>
+    </summary>
+    <div class="qa-meta"><span class="qa-date">2026.06.11</span></div>
+    <div class="qa-body">
+      最直接的一份是 <b>E1 · 减压星球世界观圣经</b>，它定义了底层框架——三IP定位、六大区域、心理剧场体系。<br><br>
+      如果问的是<em>产品层面该做哪些功能</em>，按优先级推荐这个阅读顺序：
+      <div class="block"><b>1. A5 · 产品升级分析报告</b>基于现有产品的痛点诊断，直接列出应该补的功能缺口——最实操。</div>
+      <div class="block"><b>2. E2 · 减压星球×产品体验设计提案</b>世界观落地成具体功能的设计方案（心理剧场、IP互动等）。</div>
+      <div class="block"><b>3. C2 · 产品战略全景报告</b>从商业角度讲哪些功能构成护城河。</div>
+      只看一份，看 <em>A5</em>。
+      <div class="doc-chips">
+        <a class="doc-chip" href="../A_产品诊断与分析/A5_产品升级分析报告.html">📈 A5 · 产品升级分析报告</a>
+        <a class="doc-chip" href="../E_世界观与IP体系/E1_减压星球世界观圣经.html">🪐 E1 · 世界观圣经</a>
+        <a class="doc-chip" href="../E_世界观与IP体系/E2_减压星球×产品体验设计提案.html">🌟 E2 · 产品体验设计提案</a>
+        <a class="doc-chip" href="../C_产品策略与商业/C2_产品战略全景报告.html">🌐 C2 · 产品战略全景报告</a>
+      </div>
+    </div>
+  </details>
+
+  <!-- Q8 -->
+  <details class="qa-card c-product">
+    <summary class="qa-summary">
+      <span class="qa-badge">Q8</span>
+      <span class="qa-q-text">E2 产品体验设计提案里的五大功能提案是什么，优先级怎么排？</span>
+      <span class="qa-chevron">▶</span>
+    </summary>
+    <div class="qa-meta"><span class="qa-date">2026.06.11</span></div>
+    <div class="qa-body">
+      <div class="block"><b>P0 · 心理剧场月度更新体系</b>每月一部情绪短剧（15-20分钟）；鸭梨担任主持人；剧情内嵌情绪识别节点；毕业后可回看完整「情绪档案」——<em>最高留存价值</em></div>
+      <div class="block"><b>P0 · IP全局悬浮伴游（小星伴游）</b>小星悬浮球常驻所有页面右下角；停留超过3分钟无操作时主动问候；可一键呼出任意IP对话——<em>已在A5详细设计，代码基础已有</em></div>
+      <div class="block"><b>P1 · 情绪成长档案</b>跨年级持久化情绪记录；初升高时罗素可引用吉塔对话里的历史兴趣记录；毕业礼物：生成个人情绪成长报告——<em>护城河核心，数据不能断</em></div>
+      <div class="block"><b>P1 · 减压工具库扩展</b>在现有呼吸练习基础上新增：渐进肌肉放松、ASMR场景、正念冥想；工具选择由吉塔根据当前情绪状态推荐</div>
+      <div class="block"><b>P2 · 星球探索地图</b>六区域可交互地图；完成任务解锁区域；区域内藏有「隐藏居民」触发特殊对话</div>
+      <div class="doc-chips">
+        <a class="doc-chip" href="../E_世界观与IP体系/E2_减压星球×产品体验设计提案.html">🌟 E2 · 产品体验设计提案</a>
+      </div>
+    </div>
+  </details>
+
+  <!-- Q17 -->
+  <details class="qa-card c-product">
+    <summary class="qa-summary">
+      <span class="qa-badge">Q17</span>
+      <span class="qa-q-text">脑之岛内部体验完整，勋章/解锁都有，A5 的 P5 痛点指的是哪里断了？</span>
+      <span class="qa-chevron">▶</span>
+    </summary>
+    <div class="qa-meta"><span class="qa-date">2026.06.16</span></div>
+    <div class="qa-body">
+      <b>A：脑之岛内部体验完整，痛点在于成就不外溢——两套系统互相割裂。</b><br><br>
+      <b>脑之岛内部已有的：</b>引导弹窗（新用户首次进入有 Onboarding）、勋章墙（完成训练获得勋章）、解锁机制（带锁/解锁状态）、任务卡——内部体验本身没有问题，不存在新用户迷路，也不缺少情感反馈。<br><br>
+      <b>真正缺的是跨模块串联：</b>
+      <div class="block">脑之岛训练完成后，吉塔/罗素不感知；首页不回应；成就停在脑之岛内部，不形成整体成长叙事的闭环。用户完成训练后回到首页——一切如常，感知不到「这次训练对我的心理健康有什么意义」。</div>
+      <b>挑战版是这个痛点的解法：</b>从星球地图进入脑之岛时罗素出现引导；完成训练→迷雾散开→邻居解锁，脑之岛成就第一次真正传递给整体成长叙事，形成「做了这件事 → 世界变了」的正向反馈闭环。
+      <div class="doc-chips">
+        <a class="doc-chip" href="../A_产品诊断与分析/A5_产品升级分析报告.html">📈 A5 · P5 痛点诊断</a>
+        <a class="doc-chip" href="../D_交互原型与设计/D2_学生端首页重设计原型.html">🚀 D2 · 挑战版交互维度标注</a>
+      </div>
+    </div>
+  </details>
+
+</div><!-- /cat-product -->
+
+<!-- ══════════════════════════════
+     设计规范
+══════════════════════════════ -->
+<div class="cat-section" id="cat-design">
+  <div class="cat-header">
+    <span class="cat-icon">📐</span>
+    <span class="cat-title">设计规范</span>
+    <span class="cat-count">2 条</span>
+  </div>
+
+  <!-- Q7 -->
+  <details class="qa-card c-design">
+    <summary class="qa-summary">
+      <span class="qa-badge">Q7</span>
+      <span class="qa-q-text">B2 升级设计规范里的 Token 体系是什么？B1 诊断了哪些现有问题？</span>
+      <span class="qa-chevron">▶</span>
+    </summary>
+    <div class="qa-meta"><span class="qa-date">2026.06.11</span></div>
+    <div class="qa-body">
+      <b>B1 诊断出的11个设计问题（严重程度排序）：</b>
+      <ul>
+        <li><b>问题1–4（高危）：</b>4个蓝色色值混用（#368FFF / #1677FF / #4080FF / #5B8FF9），没有统一主色Token，新功能只会继续混；12种以上字号，没有字阶系统</li>
+        <li><b>问题5–8（中危）：</b>交互状态定义严重不足（按钮只有默认态，无hover/pressed/disabled）；iPad横屏适配缺失；圆角值不统一（8px/10px/12px/14px混用）</li>
+        <li><b>问题9–11（低危）：</b>图标风格混用（实心/线型）；间距未对齐4px网格；深色模式未定义</li>
+      </ul>
+      <b>B2 升级后 Token 体系（核心三层）：</b>
+      <div class="block"><b>颜色Token</b>主色确定为 <code>#368FFF</code>，衍生 primary-50 → primary-900 色阶；情绪色系：吉塔绿 <code>#10B981</code>、罗素蓝 <code>#0EA5E9</code>、小星紫 <code>#A855F7</code></div>
+      <div class="block"><b>字阶Token</b>从12种收敛到6级：Display(28px) / H1(22px) / H2(18px) / Body(14px) / Small(12px) / Caption(11px)</div>
+      <div class="block"><b>间距Token</b>4px基础栅格，spacing-1(4) / 2(8) / 3(12) / 4(16) / 6(24) / 8(32)</div>
+      <div class="doc-chips">
+        <a class="doc-chip" href="../B_设计规范与系统/B1_现有设计系统诊断（APK提取）.html">🔍 B1 · 现有设计系统诊断</a>
+        <a class="doc-chip" href="../B_设计规范与系统/B2_升级设计系统规范v2.0.html">📐 B2 · 升级设计系统规范</a>
+      </div>
+    </div>
+  </details>
+
+  <!-- Q13 -->
+  <details class="qa-card c-design">
+    <summary class="qa-summary">
+      <span class="qa-badge">Q13</span>
+      <span class="qa-q-text">挑战版用了两个地图，会不会让 app 太「游戏化」失去心理工具感？</span>
+      <span class="qa-chevron">▶</span>
+    </summary>
+    <div class="qa-meta"><span class="qa-date">2026.06.16</span></div>
+    <div class="qa-body">
+      <b>A：挑战版的设计决策恰好解决了这个问题，而不是加重它。</b><br><br>
+      <b>问题的根源</b>：保守版才是两图并列的（首页星球面板 + 脑之岛Tab训练地图），两套地图逻辑同屏并存，用户需要理解两种「地图」的不同含义，认知负担更高。<br><br>
+      <b>挑战版的解法</b>：层级化取代并列。减压星球地图是第一层（情感世界），脑之岛是第二层（点进Zone才进入训练地图）。两层视觉语言完全不同：
+      <div class="block">减压星球首页：手绘柔和治愈风，低对比，暖色调（紫/绿），情感优先</div>
+      <div class="block">脑之岛内部：功能化UI，高对比，冷色调（蓝/靛），进度条/徽章/关卡编号，目标感优先</div>
+      进入脑之岛的「穿越感」转场动效本身就是信号——画风切换告诉用户换了场景，不会让整体 app 戏化过度。
+      <div class="doc-chips">
+        <a class="doc-chip" href="../D_交互原型与设计/D2_学生端首页重设计原型.html">🚀 D2 · 挑战版地图标注</a>
+      </div>
+    </div>
+  </details>
+
+</div><!-- /cat-design -->
+
+<!-- ══════════════════════════════
+     IP 体系
+══════════════════════════════ -->
+<div class="cat-section" id="cat-ip">
+  <div class="cat-header">
+    <span class="cat-icon">🧬</span>
+    <span class="cat-title">IP 体系</span>
+    <span class="cat-count">3 条</span>
+  </div>
+
+  <!-- Q3 -->
+  <details class="qa-card c-ip">
+    <summary class="qa-summary">
+      <span class="qa-badge">Q3</span>
+      <span class="qa-q-text">APK 截图里小星是白色的，但 B2 规范里小星主色是紫色，矛盾怎么解释？</span>
+      <span class="qa-chevron">▶</span>
+    </summary>
+    <div class="qa-meta"><span class="qa-date">2026.06.11</span></div>
+    <div class="qa-body">
+      <b>A：不矛盾。小星角色本体是白色，B2 里的紫色是「小星在 UI 系统里的品牌色」。</b><br><br>
+      小星外形：白色棉花糖身形，头顶黄色星星发饰，颈间粉色围巾——这是固定的角色造型，不会变。<br><br>
+      B2 分配给小星的 <code>#A855F7</code> 紫色，是她在界面里的功能色：悬浮球背景色、对话气泡边框、相关按钮的强调色。就像米老鼠的造型是黑白，但迪士尼用红色代表他的品牌——角色色和UI品牌色是两个维度。
+      <div class="block"><b>实际分工</b>小星=通用AI伴侣（#A855F7紫）；吉塔=情绪疗愈（#10B981绿）；罗素=逻辑生涯（#0EA5E9蓝）。三色系在界面中区分三IP的功能区域。</div>
+      <div class="doc-chips">
+        <a class="doc-chip" href="../B_设计规范与系统/B2_升级设计系统规范v2.0.html">📐 B2 · 升级设计系统规范</a>
+      </div>
+    </div>
+  </details>
+
+  <!-- Q5 -->
+  <details class="qa-card c-ip">
+    <summary class="qa-summary">
+      <span class="qa-badge">Q5</span>
+      <span class="qa-q-text">三个 IP 分别管什么？切换 IP 是用户主动操作还是系统自动切换？</span>
+      <span class="qa-chevron">▶</span>
+    </summary>
+    <div class="qa-meta"><span class="qa-date">2026.06.11</span></div>
+    <div class="qa-body">
+      <b>三IP职责分工：</b>
+      <div class="block"><b>小星🤍（通用AI）</b>默认陪伴，什么话题都能聊；情绪中性，适合探索和日常互动；入口最低，是新用户第一个接触的IP</div>
+      <div class="block"><b>吉塔🐼（情绪疗愈）</b>专门处理负向情绪；选了「鸭梨/小炎/阿眠」类邻居时吉塔主导；聊愈室触发场景以吉塔为主；话语风格：先接住情绪，再问问题</div>
+      <div class="block"><b>罗素🐳（逻辑/生涯）</b>高中版默认主导IP；生涯规划、选科、学业压力场景；话语风格：把模糊的问题拆成可回答的具体问题</div>
+      <b>切换方式：</b>两种并存。用户可在对话界面右上角设置里主动切换（A7 Flow4）；系统也会根据情绪签到结果和年级，在首页悬浮球默认显示推荐IP——高中生默认显示罗素，初中生默认吉塔。
+      <div class="doc-chips">
+        <a class="doc-chip" href="../D_交互原型与设计/D6_AI对话交互规范（三IP人格）.html">💬 D6 · 三IP对话交互规范</a>
+        <a class="doc-chip" href="../A_产品诊断与分析/A7_AI对话功能现状分析_真实路径图.html">🗺️ A7 · AI对话真实路径图</a>
+      </div>
+    </div>
+  </details>
+
+  <!-- Q6 -->
+  <details class="qa-card c-ip">
+    <summary class="qa-summary">
+      <span class="qa-badge">Q6</span>
+      <span class="qa-q-text">如果学生在 AI 对话里说了危险的话，系统怎么处理？危机干预分几级？</span>
+      <span class="qa-chevron">▶</span>
+    </summary>
+    <div class="qa-meta"><span class="qa-date">2026.06.11</span></div>
+    <div class="qa-body">
+      <b>三级危机干预协议：</b>
+      <div class="block"><b>L1 · 情绪关注</b>检测到负向情绪词汇（「好累」「不想去学校」）→ IP回复切换为更温柔的接纳语气，推送减压工具；不通知任何人，纯在对话内处理</div>
+      <div class="block"><b>L2 · 预警提醒</b>检测到中风险关键词（「没意思」「消失」「不想活」但无明确意图）→ IP先稳定情绪，同时在心理老师端触发黄色提醒；老师可选择主动联系或继续观察</div>
+      <div class="block"><b>L3 · 紧急干预</b>检测到高风险表达（明确的自我伤害意图）→ IP立即给出危机热线（12320/北京心理危机研究与干预中心），同时通知心理老师和家长；APK代码已有 <code>crisisLevel</code> 字段</div>
+      <b>关键设计原则：</b>L1不泄露隐私；L2告知老师但不告知家长（除非情况升级）；L3家长知情是最后手段，避免学生因担心被告知而不敢说真话。
+      <div class="doc-chips">
+        <a class="doc-chip" href="../A_产品诊断与分析/A4_第二轮补充分析（合规·AI伦理）.html">⚖️ A4 · 合规与AI伦理</a>
+      </div>
+    </div>
+  </details>
+
+</div><!-- /cat-ip -->
+
+<!-- ══════════════════════════════
+     世界观
+══════════════════════════════ -->
+<div class="cat-section" id="cat-world">
+  <div class="cat-header">
+    <span class="cat-icon">🪐</span>
+    <span class="cat-title">世界观</span>
+    <span class="cat-count">3 条</span>
+  </div>
+
+  <!-- Q15 -->
+  <details class="qa-card c-world">
+    <summary class="qa-summary">
+      <span class="qa-badge">Q15</span>
+      <span class="qa-q-text">E1 世界观圣经和 E2 产品体验设计提案什么关系？先看哪个？</span>
+      <span class="qa-chevron">▶</span>
+    </summary>
+    <div class="qa-meta"><span class="qa-date">2026.06.16</span></div>
+    <div class="qa-body">
+      <b>A：E1 是「是什么」，E2 是「怎么做」。先看 E1，再看 E2。</b><br><br>
+      E1 定义底层：减压星球的宇宙起源、三IP的人格与定位、六大区域的设定、鸭梨等邻居角色的来历——这是世界观圣经，给设计和运营提供统一的叙事基础。<br><br>
+      E2 是 E1 的落地手册：拿着 E1 的世界观，设计了5个具体的产品功能提案——情绪打卡重设计（邻居视角）、成就叙事化、私密情绪日记、脑之岛叙事层、危机信号软化。每个提案都说明了开发复杂度和优先级。<br><br>
+      如果只能看一份：<b>E2 更直接</b>——它把 E1 的概念直接翻译成了可以开发的功能需求。
+      <div class="doc-chips">
+        <a class="doc-chip" href="../E_世界观与IP体系/E1_减压星球世界观圣经.html">🪐 E1 · 世界观圣经</a>
+        <a class="doc-chip" href="../E_世界观与IP体系/E2_减压星球×产品体验设计提案.html">🌟 E2 · 产品体验设计提案</a>
+      </div>
+    </div>
+  </details>
+
+  <!-- Q16 -->
+  <details class="qa-card c-world">
+    <summary class="qa-summary">
+      <span class="qa-badge">Q16</span>
+      <span class="qa-q-text">挑战版里减压星球和脑之岛两个地图怎么融合？产品/视觉/交互三个维度分别怎么处理？</span>
+      <span class="qa-chevron">▶</span>
+    </summary>
+    <div class="qa-meta"><span class="qa-date">2026.06.16</span></div>
+    <div class="qa-body">
+      <b>A：两个地图的答案不是选一个删一个——减压星球做导航层，脑之岛做内容层。</b><br><br>
+      <div class="block">
+        <b>产品维度：层级化，不并列</b><br>
+        减压星球 = 第一层（情感导航，找IP，探索区域）。脑之岛 = 第二层（点进Zone才进入训练关卡）。脑之岛不消失，但不再是独立Tab——它是星球上的一座岛，有自己的内部地图。E2提案四的叙事层方案同步落地：完成训练→迷雾散开→解锁迷雾森林居民，两套系统形成闭环。
+      </div>
+      <div class="block">
+        <b>视觉维度：风格拉开 + 穿越感转场</b><br>
+        减压星球首页：手绘柔和治愈风，暖紫/绿色调，动画轻柔，情感优先。脑之岛内部：功能化UI，冷蓝/靛色调，进度条/徽章/关卡编号，目标感优先。进入脑之岛时「穿越感」转场（从星球地图飞入某个区域），画风切换本身是场景切换信号。B1诊断的4个蓝色混用问题反而可以利用——两层用不同色温，颜色做场景信号。
+      </div>
+      <div class="block">
+        <b>交互维度：强化脑之岛情感串联</b><br>
+        A5诊断P5：脑之岛训练完成后缺乏情感层反馈，用户感知不到训练与心理健康主线的关系（脑之岛导航本身清晰，不存在新用户迷路问题）。从星球地图点击进入脑之岛时，罗素主动出现引导；完成训练→迷雾散开，与外层邻居解锁形成「做了这件事→世界变了」正向反馈。
+      </div>
+      <div class="doc-chips">
+        <a class="doc-chip" href="../D_交互原型与设计/D2_学生端首页重设计原型.html">🚀 D2 · 挑战版两图融合标注</a>
+        <a class="doc-chip" href="../E_世界观与IP体系/E2_减压星球×产品体验设计提案.html">🗺️ E2 · 提案四 脑之岛叙事层</a>
+      </div>
+    </div>
+  </details>
+
+  <!-- Q9 (world/strategy overlap — placed here for context) -->
+  <details class="qa-card c-world">
+    <summary class="qa-summary">
+      <span class="qa-badge">Q9</span>
+      <span class="qa-q-text">这个产品怎么打分？心理健康类 app 有哪些特有的风险点？</span>
+      <span class="qa-chevron">▶</span>
+    </summary>
+    <div class="qa-meta"><span class="qa-date">2026.06.11</span></div>
+    <div class="qa-body">
+      <b>产品综合评分（基于 APK 现状）：6.2 / 10</b>
+      <div class="block"><b>优势项</b>语音对话技术扎实（科大讯飞核心能力）；三IP差异化设计有原创性；B2B采购路径可行；phaseCode/gradeCode基础设施已有</div>
+      <div class="block"><b>短板项</b>世界观停留在心理剧场一个入口，未渗透其他功能；首页信息密度高但无主线引导；设计系统碎片化（B1的11个问题）；护城河依赖数据积累但数据当前未启用过滤</div>
+      <b>心理健康类特有风险：</b>
+      <ul>
+        <li><b>过度依赖风险：</b>青少年可能把AI陪伴替代真实人际关系——需要在对话设计中主动引导现实社交</li>
+        <li><b>情绪误导风险：</b>AI回复措辞不当可能强化错误认知或触发情绪——话术库需专业心理咨询师审核</li>
+        <li><b>隐私泄露风险：</b>情绪数据是高度敏感的个人信息，家长/老师端的可见权限边界必须清晰</li>
+        <li><b>危机漏报风险：</b>关键词检测有漏洞（绕过/变体表达），不能完全依赖AI判断，需要人工复核机制</li>
+      </ul>
+      <div class="doc-chips">
+        <a class="doc-chip" href="../A_产品诊断与分析/A4_第二轮补充分析（合规·AI伦理）.html">⚖️ A4 · 合规与AI伦理</a>
+        <a class="doc-chip" href="../A_产品诊断与分析/A5_产品升级分析报告.html">📈 A5 · 产品升级分析报告</a>
+      </div>
+    </div>
+  </details>
+
+</div><!-- /cat-world -->
+
+<!-- ══════════════════════════════
+     产品战略
+══════════════════════════════ -->
+<div class="cat-section" id="cat-strategy">
+  <div class="cat-header">
+    <span class="cat-icon">🌐</span>
+    <span class="cat-title">产品战略</span>
+    <span class="cat-count">2 条</span>
+  </div>
+
+  <!-- Q10 -->
+  <details class="qa-card c-strategy">
+    <summary class="qa-summary">
+      <span class="qa-badge">Q10</span>
+      <span class="qa-q-text">减压星球的战略定位是什么？护城河在哪里？</span>
+      <span class="qa-chevron">▶</span>
+    </summary>
+    <div class="qa-meta"><span class="qa-date">2026.06.11</span></div>
+    <div class="qa-body">
+      <b>战略定位：青少年情绪健康的「情感基础设施」，不是工具，是关系。</b><br><br>
+      市面上竞品（好奇岛、心晴、Soul学生版）都在做工具层——测评、内容、匿名社区。减压星球的差异化方向是把工具嵌入一套有叙事的世界观，让学生和IP建立情感连接，而不只是使用功能。
+      <div class="block"><b>护城河一：时间积累的情绪档案</b>每一条情绪打卡、每一次对话都在积累专属于这个学生的档案。初升高时罗素能引用吉塔陪伴初中时的对话记录——这种跨年级的连续性，是任何新产品无法在短时间内复制的。</div>
+      <div class="block"><b>护城河二：B2B学校关系</b>学校采购绑定了场景——上课前签到、心理老师用后台——用户不是个人消费者而是学校，迁移成本极高。</div>
+      <div class="block"><b>护城河三：科大讯飞语音技术壁垒</b>语音对话是青少年用户的首选交互方式，讯飞在语音识别和TTS上的技术储备是竞品短期内很难追上的。</div>
+      <div class="doc-chips">
+        <a class="doc-chip" href="../C_产品策略与商业/C2_产品战略全景报告.html">🌐 C2 · 产品战略全景报告</a>
+        <a class="doc-chip" href="../A_产品诊断与分析/A6_竞品深度分析.html">🔬 A6 · 竞品深度分析</a>
+      </div>
+    </div>
+  </details>
+
+  <!-- Q1 (tech architecture — fits strategy) -->
+  <details class="qa-card c-strategy">
+    <summary class="qa-summary">
+      <span class="qa-badge">Q1</span>
+      <span class="qa-q-text">年段适配是三套前后端，还是一套系统？</span>
+      <span class="qa-chevron">▶</span>
+    </summary>
+    <div class="qa-meta"><span class="qa-date">2026.06.11</span></div>
+    <div class="qa-body">
+      <b>A：一套系统，一套代码，按 phaseCode 渲染不同视图层。</b><br>
+      更接近同一个网站做了三个皮肤，而不是三个不同产品。<br><br>
+      APK 里已有 <code>phaseCode</code>（小学/初中/高中）和 <code>gradeCode</code>（具体年级），登录时已知，只是现在没有用它来过滤内容。
+      <div class="block"><b>后端：一次「内容打标」</b>所有内容、任务、测评模板打上适用年级标签；API返回内容时带上 phaseCode 过滤参数。这不是三套API，是一套API加了一个筛选维度。</div>
+      <div class="block"><b>前端：三套「视图配置」</b>首页布局配置按 phaseCode 读取不同配置文件；组件本身复用，只是排列密度、文字描述、功能入口的可见性不同。</div>
+      <b>技术实现四步：</b>登录时读 <code>phaseCode</code> → 读视图配置JSON → 组件加density prop → 后端内容打标过滤。改动范围：<em>写三份JSON + 给内容打标签</em>，不需要重写业务逻辑。<br><br>
+      <b>最值得关注的点：年级衔接。</b>初升高时罗素能引用吉塔对话里的兴趣记录——这是护城河靠时间积累的核心逻辑。
+      <div class="doc-chips">
+        <a class="doc-chip" href="../B_设计规范与系统/B3_年级自适应视图设计.html">📐 B3 · 年级自适应视图设计</a>
+      </div>
+    </div>
+  </details>
+
+</div><!-- /cat-strategy -->
+
+<!-- ══════════════════════════════
+     安全与伦理
+══════════════════════════════ -->
+<div class="cat-section" id="cat-safety">
+  <div class="cat-header">
+    <span class="cat-icon">🛡️</span>
+    <span class="cat-title">安全与伦理</span>
+    <span class="cat-count">1 条</span>
+  </div>
+
+  <!-- Q16-safety note: Q6 already covers crisis; add compliance -->
+  <details class="qa-card c-safety">
+    <summary class="qa-summary">
+      <span class="qa-badge">补</span>
+      <span class="qa-q-text">私密情绪日记和危机干预系统有没有冲突？学生日记会被老师看到吗？</span>
+      <span class="qa-chevron">▶</span>
+    </summary>
+    <div class="qa-meta"><span class="qa-date">2026.06.11</span></div>
+    <div class="qa-body">
+      <b>A：日记默认不进入危机检测，边界非常清晰。</b><br><br>
+      E2提案三明确规定：私密日记纯文字，无公开选项，<b>无老师/家长可见权限</b>——这是用户信任的底线。<br><br>
+      <b>唯一例外（学生主动授权）：</b>学生可以主动勾选「让吉塔看看这篇」，此时吉塔会在下次对话中提及，但不会通知老师/家长。<br><br>
+      <b>危机干预只在AI对话中触发</b>（非日记）：在对话里出现危机关键词才触发三级协议。日记和对话是两个独立的数据空间。<br><br>
+      依据：《个人信息保护法》第十三条·知情同意原则。用户协议需明确告知「对话内容可能触发支持流程，日记内容不会」。
+      <div class="doc-chips">
+        <a class="doc-chip" href="../A_产品诊断与分析/A4_第二轮补充分析（合规·AI伦理）.html">⚖️ A4 · 合规与AI伦理</a>
+        <a class="doc-chip" href="../E_世界观与IP体系/E2_减压星球×产品体验设计提案.html">🌟 E2 · 提案三 私密情绪日记</a>
+      </div>
+    </div>
+  </details>
+
+</div><!-- /cat-safety -->
+
+</div><!-- /container -->
+<div class="no-results" id="noResults">没有找到匹配的问答，换个关键词试试。</div>
+
+<footer>AI星球 · 核心Q&A备忘 · Z1 · 2026.06.16更新 · 共16条问答 · 6个分类</footer>
+
+<script>
+function filterQA(val) {
+  const q = val.trim().toLowerCase();
+  const cards = document.querySelectorAll('.qa-card');
+  let visible = 0;
+  cards.forEach(card => {
+    const text = card.innerText.toLowerCase();
+    const show = !q || text.includes(q);
+    card.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+  const sections = document.querySelectorAll('.cat-section');
+  sections.forEach(sec => {
+    const anyVisible = [...sec.querySelectorAll('.qa-card')].some(c => c.style.display !== 'none');
+    sec.style.display = anyVisible ? '' : 'none';
+  });
+  const count = document.getElementById('searchCount');
+  count.textContent = q ? `找到 ${visible} 条匹配结果` : '';
+  document.getElementById('noResults').style.display = visible === 0 && q ? 'block' : 'none';
+}
+
+// Sticky nav active state on scroll
+const sections = document.querySelectorAll('.cat-section');
+const navLinks = document.querySelectorAll('.cat-nav a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(sec => {
+    if (window.scrollY >= sec.offsetTop - 80) current = sec.id;
+  });
+  navLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+});
+</script>
+
+<div style="text-align:center;padding:24px 0 16px;font-size:11px;color:#94a3b8;">@ 代蓉婷_rtdai</div>
+</body>
+</html>

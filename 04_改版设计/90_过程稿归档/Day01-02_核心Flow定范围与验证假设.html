@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI星球 20天优化Demo · Day 01-02 核心Flow定范围</title>
+  <style>
+    :root {
+      --ink: #1d2433;
+      --muted: #637083;
+      --line: #dfe6ef;
+      --soft: #f5f8fb;
+      --blue: #2f70d0;
+      --green: #2f8f6b;
+      --amber: #b97817;
+      --red: #c84d4d;
+      --violet: #6f56c9;
+      --card: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.72;
+      background: #f2f5f8;
+    }
+
+    .page {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    aside {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 28px 22px;
+      border-right: 1px solid var(--line);
+      background: #ffffff;
+      overflow: auto;
+    }
+
+    aside h1 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    aside p {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    nav a {
+      display: block;
+      padding: 9px 10px;
+      color: #435063;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    nav a:hover { background: var(--soft); color: var(--blue); }
+
+    main {
+      padding: 42px 52px 72px;
+      max-width: 1180px;
+    }
+
+    .hero {
+      margin-bottom: 26px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      margin-bottom: 10px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+
+    h2 {
+      margin: 36px 0 14px;
+      font-size: 25px;
+      line-height: 1.36;
+    }
+
+    h3 {
+      margin: 28px 0 10px;
+      font-size: 18px;
+    }
+
+    .hero h2 {
+      margin: 0 0 12px;
+      font-size: 34px;
+      line-height: 1.22;
+    }
+
+    .summary {
+      max-width: 900px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .decision {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 22px 0;
+    }
+
+    .card {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+    }
+
+    .card h3 { margin-top: 0; }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      margin: 0 6px 8px 0;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #eaf1fb;
+      color: var(--blue);
+    }
+
+    .tag.green { background: #e9f5ef; color: var(--green); }
+    .tag.amber { background: #fff4de; color: var(--amber); }
+    .tag.red { background: #fdeeee; color: var(--red); }
+    .tag.violet { background: #f0edff; color: var(--violet); }
+
+    .callout {
+      margin: 18px 0;
+      padding: 16px 18px;
+      border-left: 4px solid var(--blue);
+      border-radius: 8px;
+      background: #eef5ff;
+    }
+
+    .callout strong { display: block; margin-bottom: 4px; }
+
+    table {
+      width: 100%;
+      margin: 14px 0 24px;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 12px 13px;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      text-align: left;
+    }
+
+    th {
+      color: #334155;
+      background: #f7f9fc;
+      font-weight: 700;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+    th:last-child, td:last-child { border-right: 0; }
+
+    ul, ol { padding-left: 22px; }
+
+    .flow {
+      margin: 20px 0 28px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .flow-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .flow-title h3 { margin: 0; }
+
+    .priority {
+      flex: 0 0 auto;
+      padding: 3px 9px;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--blue);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .priority.green { background: var(--green); }
+    .priority.amber { background: var(--amber); }
+
+    .path {
+      margin: 10px 0 16px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: var(--soft);
+      font-weight: 700;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .divider {
+      height: 1px;
+      margin: 28px 0;
+      background: var(--line);
+    }
+
+    @media (max-width: 900px) {
+      .page { display: block; }
+      aside { position: static; height: auto; }
+      main { padding: 28px 18px 56px; }
+      .decision, .grid-2 { grid-template-columns: 1fr; }
+      .hero h2 { font-size: 28px; }
+      table { font-size: 13px; }
+      th, td { padding: 10px; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .page { display: block; }
+      aside { display: none; }
+      main { max-width: none; padding: 0; }
+      .card, .flow, table { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <aside>
+      <h1>20天优化Demo<br>Day 01-02</h1>
+      <p>核心Flow定范围与验证假设</p>
+      <nav>
+        <a href="#decision">最终范围结论</a>
+        <a href="#why">为什么选这3条</a>
+        <a href="#flows">3条主线定义</a>
+        <a href="#pain-map">P0-P11映射</a>
+        <a href="#mvp">MVP页面范围</a>
+        <a href="#success">成功标准</a>
+        <a href="#not-do">暂不做清单</a>
+        <a href="#day12">Day 1-2行动清单</a>
+      </nav>
+    </aside>
+
+    <main>
+      <section class="hero">
+        <div class="eyebrow">AI星球 / 减压星球 · 20天优化Demo</div>
+        <h2>Day 01-02 · 核心Flow定范围与验证假设</h2>
+        <p class="summary">本文件用于把 7-8 月优化 demo 的范围定住：20 天内只做能和当前 APK 形成对照、能被学生线下测试验证的 2-3 条主线，不做完整新版本。</p>
+      </section>
+
+      <section id="decision">
+        <h2>最终范围结论</h2>
+        <div class="callout">
+          <strong>建议默认做 2.5 条主线。</strong>
+          Flow A 和 Flow B 必做且高保真；Flow C 做成可测试闭环，如果时间被压缩，可以降级为中保真或只做关键结果页。
+        </div>
+
+        <div class="decision">
+          <div class="card">
+            <span class="tag">必做</span>
+            <h3>Flow A：首页启动路径</h3>
+            <p>首页 → 今日状态 → 情绪打卡 → AI接住 → 今日小行动。</p>
+            <p class="small">验证学生打开后能不能快速知道第一步做什么。</p>
+          </div>
+          <div class="card">
+            <span class="tag green">必做</span>
+            <h3>Flow B：AI伙伴路径</h3>
+            <p>AI入口 → 三IP选择/切换 → 对话回应 → 记忆/边界 → 下一步建议。</p>
+            <p class="small">验证产品最核心的差异化资产能不能建立信任。</p>
+          </div>
+          <div class="card">
+            <span class="tag amber">条件做</span>
+            <h3>Flow C：完成反馈路径</h3>
+            <p>脑之岛/测评/放松训练 → 结果解释 → 成长记录 → AI回应。</p>
+            <p class="small">验证做完后是否有价值感和继续使用理由。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="why">
+        <h2>为什么选这3条</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>候选方向</th>
+              <th>测试价值</th>
+              <th>20天可做性</th>
+              <th>对APK痛点覆盖</th>
+              <th>结论</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>首页启动 + 情绪打卡 + AI接住</td>
+              <td>最高。直接决定学生是否愿意开始。</td>
+              <td>高。页面数可控，闭环清楚。</td>
+              <td>P1、P2、P3、P11，兼顾P0安全边界。</td>
+              <td>必做，作为新版体验骨架。</td>
+            </tr>
+            <tr>
+              <td>AI伙伴三IP + 对话体验</td>
+              <td>最高。决定产品是否有差异化和信任感。</td>
+              <td>中高。可用脚本模拟AI，不必接真实模型。</td>
+              <td>P2、P3、P9、P10，兼顾P0。</td>
+              <td>必做，作为核心价值验证。</td>
+            </tr>
+            <tr>
+              <td>训练/测评完成反馈</td>
+              <td>中高。决定产品是否有持续使用理由。</td>
+              <td>中。需要结果页、记录页、回流页。</td>
+              <td>P5、P6、P7、P8、P11。</td>
+              <td>条件做，作为留存闭环验证。</td>
+            </tr>
+            <tr>
+              <td>大地图/世界观首页</td>
+              <td>中。能提升氛围，但测试容易变成视觉偏好。</td>
+              <td>低。资产和导航成本高。</td>
+              <td>部分覆盖P1、P7、P8。</td>
+              <td>暂不做主线，只可作为局部视觉语言。</td>
+            </tr>
+            <tr>
+              <td>家长端/家校协同</td>
+              <td>对学生测试价值低。</td>
+              <td>低。涉及多角色和权限边界。</td>
+              <td>不直接覆盖学生核心Flow。</td>
+              <td>不进入本轮demo。</td>
+            </tr>
+            <tr>
+              <td>生涯规划完整流程</td>
+              <td>对高年级有价值，但不是减压入口。</td>
+              <td>低。内容和测评复杂。</td>
+              <td>主要覆盖P4。</td>
+              <td>只保留年级适配原则，不做完整Flow。</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="flows">
+        <h2>3条主线定义</h2>
+
+        <div class="flow">
+          <div class="flow-title">
+            <span class="priority">P0主线</span>
+            <h3>Flow A：首页启动路径</h3>
+          </div>
+          <div class="path">打开首页 → 选择今日状态 → 情绪打卡 → AI接住 → 推荐今日小行动 → 完成后反馈</div>
+          <div class="grid-2">
+            <div>
+              <h3>为什么做</h3>
+              <p>当前 APK 的首屏有情绪打卡和 AI 伙伴两个强入口，但没有明确视觉主角。学生第一次打开时容易停顿，不知道应该先打卡、先聊天，还是去看别的模块。</p>
+            </div>
+            <div>
+              <h3>验证假设</h3>
+              <p>如果首页先询问/呈现“今天的状态”，再由 AI 伙伴接住并给一个小行动，学生的首屏停顿会减少，情绪打卡会更自然，推荐内容会更像“为我而来”。</p>
+            </div>
+          </div>
+          <table>
+            <tbody>
+              <tr><th>目标用户</th><td>小学高年级、初中、高中学生；尤其是“有点烦但说不清”的轻压力用户。</td></tr>
+              <tr><th>核心体验词</th><td>容易开始、低压力表达、被接住、知道下一步。</td></tr>
+              <tr><th>必须出现的页面/状态</th><td>新版首页、今日状态选择、情绪打卡结果、AI回应卡、今日小行动推荐、完成反馈。</td></tr>
+              <tr><th>不要做成</th><td>不要把首页做成一堆功能入口；不要让推荐像任务列表；不要强迫用户长篇表达。</td></tr>
+              <tr><th>9月测试问题</th><td>学生是否能在 3 秒内说出先做什么？是否愿意点今日小行动？是否觉得 AI 回应了刚才的状态？</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flow">
+          <div class="flow-title">
+            <span class="priority green">P0主线</span>
+            <h3>Flow B：AI伙伴路径</h3>
+          </div>
+          <div class="path">全局AI入口 → 三IP选择/切换 → 输入烦恼 → 伙伴回应 → 轻量记忆 → 安全边界 → 下一步建议</div>
+          <div class="grid-2">
+            <div>
+              <h3>为什么做</h3>
+              <p>AI伙伴是产品最强差异化，但当前体验里角色分工、持续陪伴、记忆感和合规提示都没有充分形成一个可信关系。这个 Flow 是决定产品是不是“成长伙伴”的关键。</p>
+            </div>
+            <div>
+              <h3>验证假设</h3>
+              <p>如果三 IP 的分工能被快速理解，并在对话里体现不同回应方式，同时用温和方式表达记忆和安全边界，学生会更愿意表达，也更能相信这个 AI 不是普通问答工具。</p>
+            </div>
+          </div>
+          <table>
+            <tbody>
+              <tr><th>目标用户</th><td>愿意尝试 AI 对话的学生，以及对心理咨询/倾诉有犹豫的学生。</td></tr>
+              <tr><th>核心体验词</th><td>可信、像伙伴、角色清楚、不过界、有下一步。</td></tr>
+              <tr><th>必须出现的页面/状态</th><td>全局AI入口、三IP选择页/切换控件、对话页、记忆提示、免责声明改写、安全边界提示、行动建议。</td></tr>
+              <tr><th>不要做成</th><td>不要只换头像和话术；不要把免责声明放成持续打断；不要承诺“所有内容都不会告诉任何人”。</td></tr>
+              <tr><th>9月测试问题</th><td>学生是否能说出小星/吉塔/罗素分别适合什么？是否愿意继续聊？是否觉得记忆安心还是冒犯？</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flow">
+          <div class="flow-title">
+            <span class="priority amber">P1主线</span>
+            <h3>Flow C：完成反馈路径</h3>
+          </div>
+          <div class="path">脑之岛/测评/放松训练 → 完成结果 → 低压力解释 → 奖励/成长记录 → AI回应 → 明天再来</div>
+          <div class="grid-2">
+            <div>
+              <h3>为什么做</h3>
+              <p>当前脑之岛、解忧信箱、星星商店和成长奖励更像各自独立的小模块。学生做完一件事后，如果没有被回应、没有记录、没有外溢到首页和 AI，就很难形成持续使用理由。</p>
+            </div>
+            <div>
+              <h3>验证假设</h3>
+              <p>如果完成训练/测评后，系统能用低压力语言解释“你刚刚完成了什么”，并把结果同步到成长记录和 AI 回应，学生会更理解它和情绪成长的关系，也更愿意下次继续。</p>
+            </div>
+          </div>
+          <table>
+            <tbody>
+              <tr><th>目标用户</th><td>完成过训练、测评、放松任务或写信的学生。</td></tr>
+              <tr><th>核心体验词</th><td>做完有回应、看得懂、有进步感、愿意回来。</td></tr>
+              <tr><th>必须出现的页面/状态</th><td>训练/测评完成页、结果解释、奖励获得、成长记录条目、首页回流状态、AI一句回应。</td></tr>
+              <tr><th>不要做成</th><td>不要做成成绩排名；不要过度医疗化解释；不要只发星星但不告诉为什么获得。</td></tr>
+              <tr><th>9月测试问题</th><td>学生是否知道自己刚才获得了什么？是否愿意看成长记录？是否觉得这和减压/成长有关？</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="pain-map">
+        <h2>P0-P11映射</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>痛点</th>
+              <th>当前问题简述</th>
+              <th>对应Demo主线</th>
+              <th>Demo里如何验证</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>P0</td><td>未成年人隐私、安全和危机边界必须先成立。</td><td>Flow B，Flow A辅助</td><td>看学生是否理解“AI会陪你，但明确风险时会优先保护你”；研究员模拟危机场景，不让学生扮演。</td></tr>
+            <tr><td>P1</td><td>首屏双大卡片权重相当，无视觉主角。</td><td>Flow A</td><td>看学生 3 秒内是否能说出第一行动。</td></tr>
+            <tr><td>P2</td><td>AI无全局持续入口，首页双入口认知存疑。</td><td>Flow A、Flow B</td><td>看切换模块后是否还能自然找到AI；是否理解不同AI入口的关系。</td></tr>
+            <tr><td>P3</td><td>对话无情感记忆，关系从零开始。</td><td>Flow B</td><td>看轻量记忆是否提升信任，是否带来隐私不适。</td></tr>
+            <tr><td>P4</td><td>无年级内容过滤，小学生看到选科志愿。</td><td>横向原则</td><td>Flow A/B/C 全部做年级文案差异，不单独做生涯规划Flow。</td></tr>
+            <tr><td>P5</td><td>脑之岛成就不外溢，与首页和IP系统割裂。</td><td>Flow C</td><td>看训练完成后首页、AI、成长记录是否形成回流。</td></tr>
+            <tr><td>P6</td><td>解忧信箱缺乏关闭反馈。</td><td>Flow C</td><td>可把“写完一封信”作为完成反馈变体，验证回执和被接住感。</td></tr>
+            <tr><td>P7</td><td>换装系统与情绪成长割裂。</td><td>Flow C</td><td>奖励只做轻量露出，验证学生是否理解奖励来自成长行为。</td></tr>
+            <tr><td>P8</td><td>星星商店激励闭环不清。</td><td>Flow C</td><td>看学生是否知道星星如何获得、为什么获得、可以去哪里用。</td></tr>
+            <tr><td>P9</td><td>对话免责声明削弱信任感。</td><td>Flow B</td><td>对比“冷冰冰免责声明”与“温和边界说明”的接受度。</td></tr>
+            <tr><td>P10</td><td>咨询Tab功能弱，容易变成空壳入口。</td><td>Flow B</td><td>把咨询入口收敛为AI/安全支持路径，不做复杂咨询预约。</td></tr>
+            <tr><td>P11</td><td>任务缺乏情境化推送。</td><td>Flow A、Flow C</td><td>看今日小行动是否和情绪状态、完成记录相关。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="mvp">
+        <h2>MVP页面范围</h2>
+        <div class="callout">
+          <strong>20天内建议控制在 18-24 个关键画面。</strong>
+          不要追求每个功能都能点通，而是保证每条主线从入口、关键选择、反馈到结束完整可测。
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>模块</th>
+              <th>必做画面</th>
+              <th>可降级画面</th>
+              <th>不做画面</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Flow A 首页启动</td>
+              <td>首页、今日状态选择、情绪打卡、AI接住、今日小行动、完成反馈。</td>
+              <td>成长记录只露出一条摘要。</td>
+              <td>完整任务中心、完整活动页。</td>
+            </tr>
+            <tr>
+              <td>Flow B AI伙伴</td>
+              <td>全局AI入口、三IP选择/切换、对话 2-3 轮、记忆提示、安全边界、下一步建议。</td>
+              <td>AI回复可用预设脚本，不接真实AI。</td>
+              <td>长历史、多轮复杂推理、真人咨询系统。</td>
+            </tr>
+            <tr>
+              <td>Flow C 完成反馈</td>
+              <td>训练/测评完成页、结果解释、奖励获得、成长记录、AI回应、首页回流。</td>
+              <td>训练过程可简化成 1 个可点击任务。</td>
+              <td>完整脑之岛地图、完整勋章墙、完整商店。</td>
+            </tr>
+            <tr>
+              <td>年级适配</td>
+              <td>同一主线至少准备“小学高年级/初高中”两套文案气质。</td>
+              <td>先不做真实账号识别，测试时由研究员切换版本。</td>
+              <td>完整内容标签后台。</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="success">
+        <h2>成功标准</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>主线</th>
+              <th>最低成立标准</th>
+              <th>强改善标准</th>
+              <th>一票否决风险</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Flow A 首页启动</td>
+              <td>多数学生能独立完成打卡并理解推荐理由。</td>
+              <td>首屏停顿明显少于 APK；被理解感、继续点击意愿均高于 APK。</td>
+              <td>学生觉得首页还是“很多东西不知道点什么”。</td>
+            </tr>
+            <tr>
+              <td>Flow B AI伙伴</td>
+              <td>多数学生能说出三IP差异，并愿意聊 2-3 轮。</td>
+              <td>学生主动表达“它像在回应我/记得我”；合规提示不破坏信任。</td>
+              <td>学生觉得记忆冒犯、边界吓人，或三IP只是换皮。</td>
+            </tr>
+            <tr>
+              <td>Flow C 完成反馈</td>
+              <td>多数学生知道自己做完了什么、获得了什么。</td>
+              <td>学生能理解训练/测评和情绪成长的关系，并愿意下次继续。</td>
+              <td>学生只记得拿奖励，不理解成长含义。</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>统一度量指标</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>指标</th>
+              <th>记录方式</th>
+              <th>判断含义</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>第一行动清晰度</td><td>明确 / 模糊 / 不明确</td><td>判断首页是否真的降低决策成本。</td></tr>
+            <tr><td>任务完成情况</td><td>成功 / 需提示 / 失败</td><td>判断路径是否能独立走完。</td></tr>
+            <tr><td>首次停顿点</td><td>记录位置和原话</td><td>判断旧卡点是否消失、新卡点是否出现。</td></tr>
+            <tr><td>被理解感</td><td>1-5 分</td><td>AI和情绪路径的核心指标。</td></tr>
+            <tr><td>继续使用意愿</td><td>1-5 分</td><td>判断主线有没有留存潜力。</td></tr>
+            <tr><td>安全/隐私舒适度</td><td>安心 / 一般 / 不舒服</td><td>判断AI记忆和危机边界是否可接受。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="not-do">
+        <h2>暂不做清单</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>本轮不做</th>
+              <th>原因</th>
+              <th>保留方式</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>完整星球大地图首页</td><td>制作成本高，容易把测试引向视觉偏好。</td><td>只保留局部世界观语言和IP反馈。</td></tr>
+            <tr><td>完整商店/换装经济系统</td><td>20天内很难验证完整激励闭环。</td><td>Flow C 只做一次奖励获得和去向提示。</td></tr>
+            <tr><td>家长端、教师端</td><td>本轮是学生线下体验测试，角色会变复杂。</td><td>只在安全边界文案中保留必要说明。</td></tr>
+            <tr><td>完整生涯规划</td><td>与减压核心入口距离较远，且高低年级差异大。</td><td>只把年级适配作为横向原则。</td></tr>
+            <tr><td>真实AI模型接入</td><td>测试重点是体验路径，不是模型能力。</td><td>用脚本化对话模拟关键回应。</td></tr>
+            <tr><td>危机对话让学生扮演</td><td>未成年人测试不应诱导极端情绪表达。</td><td>由研究员模拟，学生只评价界面是否清楚、可信、不过度惊吓。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="day12">
+        <h2>Day 1-2行动清单</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h3>Day 1：范围对齐</h3>
+            <ol>
+              <li>团队确认本轮默认做 Flow A + Flow B，Flow C 作为条件主线。</li>
+              <li>确认目标测试学生分层：小学高年级、初中、高中是否都覆盖。</li>
+              <li>确认 demo 形式：Figma 可点击原型或 HTML demo。</li>
+              <li>确认 AI 对话采用脚本模拟，不等待真实模型。</li>
+              <li>确认危机响应只做研究员模拟，不让学生扮演危机场景。</li>
+            </ol>
+          </div>
+          <div class="card">
+            <h3>Day 2：设计输入冻结</h3>
+            <ol>
+              <li>为每条主线写 1 句话价值主张。</li>
+              <li>列出每条主线的必做页面，不超过 8 个画面。</li>
+              <li>写出每条主线的测试成功标准。</li>
+              <li>准备竞品拆解清单：Finch、How We Feel、Wysa、Headspace、Elevate/Lumosity、Duolingo。</li>
+              <li>形成低保真流程图输入，进入 Day 3-5 竞品拆解和 Day 6-8 低保真。</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <h3>本阶段结束时，你手里应该有</h3>
+        <table>
+          <tbody>
+            <tr><th>范围结论</th><td>必做 Flow A、Flow B；时间允许做 Flow C。</td></tr>
+            <tr><th>验证假设</th><td>每条主线都有明确“如果这样设计，学生会发生什么变化”。</td></tr>
+            <tr><th>页面边界</th><td>总画面数控制在 18-24 个，不做完整系统。</td></tr>
+            <tr><th>测试指标</th><td>首屏清晰度、任务完成、停顿点、被理解感、继续使用意愿、安全舒适度。</td></tr>
+            <tr><th>团队共识</th><td>这不是改版交付，而是验证 2-3 条主线是否值得进入正式开发。</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

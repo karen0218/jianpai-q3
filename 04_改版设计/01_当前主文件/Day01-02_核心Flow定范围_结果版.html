@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI星球 20天优化Demo · Day 01-02 核心Flow定范围结果版</title>
+  <style>
+    :root {
+      --ink: #1d2433;
+      --muted: #657285;
+      --line: #dfe6ef;
+      --soft: #f6f8fb;
+      --blue: #2f70d0;
+      --green: #2f8f6b;
+      --amber: #b97817;
+      --red: #c84d4d;
+      --violet: #6f56c9;
+      --card: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.66;
+      background: #eef2f6;
+    }
+
+    .page {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    aside {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 28px 22px;
+      border-right: 1px solid var(--line);
+      background: #fff;
+      overflow: auto;
+    }
+
+    aside h1 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    aside p {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    nav a {
+      display: block;
+      padding: 9px 10px;
+      color: #435063;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    nav a:hover { background: var(--soft); color: var(--blue); }
+
+    main {
+      padding: 42px 52px 72px;
+      max-width: 1240px;
+    }
+
+    .hero {
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      margin-bottom: 10px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+
+    h2 {
+      margin: 34px 0 14px;
+      font-size: 25px;
+      line-height: 1.36;
+    }
+
+    h3 {
+      margin: 22px 0 10px;
+      font-size: 17px;
+    }
+
+    .hero h2 {
+      margin: 0 0 12px;
+      font-size: 34px;
+      line-height: 1.22;
+    }
+
+    .summary {
+      max-width: 920px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .callout {
+      margin: 18px 0;
+      padding: 16px 18px;
+      border-left: 4px solid var(--blue);
+      border-radius: 8px;
+      background: #eef5ff;
+    }
+
+    .callout strong { display: block; margin-bottom: 4px; }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+
+    .card, .flow {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+    }
+
+    .card h3, .flow h3 { margin-top: 0; }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      margin: 0 6px 8px 0;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #eaf1fb;
+      color: var(--blue);
+    }
+
+    .tag.green { background: #e9f5ef; color: var(--green); }
+    .tag.amber { background: #fff4de; color: var(--amber); }
+    .tag.red { background: #fdeeee; color: var(--red); }
+    .tag.violet { background: #f0edff; color: var(--violet); }
+
+    .path {
+      margin: 10px 0 16px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: var(--soft);
+      font-weight: 700;
+    }
+
+    table {
+      width: 100%;
+      margin: 14px 0 22px;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 11px 12px;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      text-align: left;
+    }
+
+    th {
+      color: #334155;
+      background: #f7f9fc;
+      font-weight: 700;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+    th:last-child, td:last-child { border-right: 0; }
+
+    ul, ol { padding-left: 20px; }
+
+    .flow {
+      margin: 22px 0 28px;
+      padding: 22px;
+    }
+
+    .flow-head {
+      margin-bottom: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .flow-head h2 { margin: 0 0 8px; }
+
+    .small {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .decision {
+      margin: 16px 0;
+      padding: 16px 18px;
+      border-left: 4px solid var(--green);
+      border-radius: 8px;
+      background: #edf8f2;
+    }
+
+    .decision.amber {
+      border-left-color: var(--amber);
+      background: #fff7e8;
+    }
+
+    @media (max-width: 980px) {
+      .page { display: block; }
+      aside { position: static; height: auto; }
+      main { padding: 28px 18px 56px; }
+      .grid-3, .grid-2 { grid-template-columns: 1fr; }
+      .hero h2 { font-size: 28px; }
+      table { font-size: 13px; }
+      th, td { padding: 10px; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .page { display: block; }
+      aside { display: none; }
+      main { max-width: none; padding: 0; }
+      .card, .flow, table { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <aside>
+      <h1>Day 01-02<br>结果版</h1>
+      <p>核心Flow定范围产出</p>
+      <nav>
+        <a href="#final">最终定稿</a>
+        <a href="#scope">范围决策表</a>
+        <a href="#flow-a">Flow A</a>
+        <a href="#flow-b">Flow B</a>
+        <a href="#flow-c">Flow C</a>
+        <a href="#pain">P0-P11覆盖</a>
+        <a href="#mvp">页面范围</a>
+        <a href="#criteria">成功标准</a>
+        <a href="#freeze">冻结清单</a>
+      </nav>
+    </aside>
+
+    <main>
+      <section class="hero" id="final">
+        <div class="eyebrow">AI星球 / 减压星球 · 20天优化Demo</div>
+        <h2>Day 01-02 · 核心Flow定范围结果版</h2>
+        <p class="summary">本文件是第 1-2 天的结果产出，不是工作指引。它把 20 天 demo 的范围、优先级、验证假设、页面边界和成功标准直接定稿，供团队对齐和后续低保真开工使用。</p>
+      </section>
+
+      <section>
+        <h2>最终定稿</h2>
+        <div class="callout">
+          <strong>20 天 demo 采用“2 条必做 + 1 条条件做”的范围。</strong>
+          Flow A 和 Flow B 是本轮必须完成的高保真主线；Flow C 是保留价值验证的第三条主线，时间不足时只做关键闭环，不做完整模块。
+        </div>
+
+        <div class="grid-3">
+          <div class="card">
+            <span class="tag">必做 / 高保真</span>
+            <h3>Flow A：Pad 首页启动中枢</h3>
+            <p>Pad首页 → 今日状态中枢 → 情绪打卡 → AI接住 → 今日推荐/功能分流 → 小行动 → 首页回流。</p>
+            <p class="small">解决“打开后不知道先做什么”的首屏问题。</p>
+          </div>
+          <div class="card">
+            <span class="tag green">必做 / 高保真</span>
+            <h3>Flow B：AI伙伴路径</h3>
+            <p>全局AI入口 → 三IP选择/切换 → 对话回应 → 记忆/边界 → 下一步建议。</p>
+            <p class="small">验证产品差异化核心：学生是否愿意和 AI 伙伴说。</p>
+          </div>
+          <div class="card">
+            <span class="tag amber">条件做 / 中高保真</span>
+            <h3>Flow C：完成反馈路径</h3>
+            <p>脑之岛/测评/放松训练 → 结果解释 → 成长记录 → AI回应。</p>
+            <p class="small">验证做完后有没有价值感和继续使用理由。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="scope">
+        <h2>范围决策表</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>候选Flow</th>
+              <th>本轮结论</th>
+              <th>为什么做/不做</th>
+              <th>本轮做到什么程度</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Pad 首页启动中枢 + 情绪打卡 + AI接住 + 今日推荐分流</td>
+              <td><strong>必做</strong></td>
+              <td>这是学生打开产品后的第一体验，直接影响是否愿意继续。也最适合和当前 APK 首屏做对照。</td>
+              <td>高保真完整闭环，从首页到完成反馈全部可点通。</td>
+            </tr>
+            <tr>
+              <td>AI伙伴三IP + 对话 + 安全边界</td>
+              <td><strong>必做</strong></td>
+              <td>AI伙伴是产品差异化核心，也是信任和合规风险最高的地方，必须在学生测试前验证。</td>
+              <td>高保真关键路径，用脚本模拟 2-3 轮对话，不接真实模型。</td>
+            </tr>
+            <tr>
+              <td>脑之岛/测评/放松完成反馈</td>
+              <td><strong>条件做</strong></td>
+              <td>它决定产品有没有持续使用理由，但相对 Flow A/B 优先级低。</td>
+              <td>中高保真闭环。若时间不足，只做完成页、成长记录、AI回应、首页回流。</td>
+            </tr>
+            <tr>
+              <td>完整星球地图首页</td>
+              <td>不做主线</td>
+              <td>视觉和资产成本高，容易让测试变成“喜欢哪个皮肤”。</td>
+              <td>只把世界观/IP作为局部反馈语言，不做大地图导航。</td>
+            </tr>
+            <tr>
+              <td>完整商店/换装/星星经济</td>
+              <td>不做完整系统</td>
+              <td>20 天内很难验证完整经济闭环，且容易偏离减压主线。</td>
+              <td>只在 Flow C 中做一次奖励获得和奖励去向提示。</td>
+            </tr>
+            <tr>
+              <td>家长端/教师端/生涯规划完整流程</td>
+              <td>不进入本轮</td>
+              <td>本轮目标是学生线下体验测试，跨角色和长周期决策会稀释主线。</td>
+              <td>只保留年级适配和安全边界原则。</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="flow" id="flow-a">
+        <div class="flow-head">
+          <span class="tag">Flow A</span>
+          <span class="tag violet">必做</span>
+          <h2>Pad 首页启动中枢</h2>
+          <p class="path">Pad首页 → 今日状态中枢 → 情绪打卡 → AI接住 → 今日推荐/功能分流 → 小行动 → 完成反馈 → 首页回流</p>
+        </div>
+
+        <table>
+          <tbody>
+            <tr><th>目标用户</th><td>刚打开 App、不知道自己要做什么的学生；尤其是“有点烦、累、紧张、但说不清”的轻压力用户。</td></tr>
+            <tr><th>要解决的问题</th><td>当前 APK 首屏情绪打卡和 AI 伙伴并列，Pad 屏幕空间没有形成“今日状态中枢”，用户既不知道先做什么，也看不到其他功能与自己当下状态的关系。</td></tr>
+            <tr><th>验证假设</th><td>如果首页用 Pad 空间组织成“一个主行动 + 多个状态相关区域”，学生既能 3 秒内知道先从哪里开始，也能感到产品内容足够丰富、不是单一打卡工具。</td></tr>
+            <tr><th>用户价值</th><td>不用理解产品全貌，也能在 30 秒内开始；同时能看到 AI、今日推荐、成长记录和功能入口都围绕“我今天的状态”服务。</td></tr>
+            <tr><th>设计重点</th><td>主行动唯一，信息区丰富：左侧/中心为今日状态主卡，右侧为 AI 伙伴状态入口，下方为今日推荐、成长反馈和次级功能入口。</td></tr>
+            <tr><th>不做内容</th><td>不做完整任务中心，不做复杂活动推荐，不做长问卷式情绪测评；也不把 Pad 首页做成所有功能平铺的大菜单。</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Pad 首页中枢结构</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>首页区域</th>
+              <th>作用</th>
+              <th>呈现原则</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>今日状态主卡</td><td>承接第一行动：今天感觉怎么样。</td><td>面积最大、层级最高，支持直接点情绪词或开始记录。</td></tr>
+            <tr><td>AI 伙伴侧栏</td><td>让小星/吉塔/罗素常驻，不再只是 Tab 入口。</td><td>根据状态变化文案，但不抢主行动。</td></tr>
+            <tr><td>今日推荐区</td><td>把放松训练、脑之岛、记录等功能变成“和我有关的下一步”。</td><td>只给 1 个主推荐 + 1-2 个次级推荐，避免功能平铺。</td></tr>
+            <tr><td>成长反馈条</td><td>展示今日已记录、已完成、获得星星或被 AI 看见。</td><td>轻量显示，不做复杂成就墙。</td></tr>
+            <tr><td>次级功能入口</td><td>保留 Pad 应有的信息量和探索空间。</td><td>课程、测评、训练、信箱等入口可见，但视觉权重低于今日状态。</td></tr>
+          </tbody>
+        </table>
+
+        <div class="decision">
+          <strong>Flow A 定稿结论：</strong>
+          它是新版 Pad 端体验骨架，必须优先做高保真。9 月测试时，它不只证明新版是否更容易开始，也要证明首页是否能承载“状态、AI、推荐、成长、功能入口”的中枢价值。
+        </div>
+      </section>
+
+      <section class="flow" id="flow-b">
+        <div class="flow-head">
+          <span class="tag green">Flow B</span>
+          <span class="tag violet">必做</span>
+          <h2>AI伙伴路径</h2>
+          <p class="path">全局AI入口 → 三IP选择/切换 → 输入烦恼 → 伙伴回应 → 轻量记忆 → 安全边界 → 下一步建议</p>
+        </div>
+
+        <table>
+          <tbody>
+            <tr><th>目标用户</th><td>愿意尝试和 AI 说话的学生，以及想倾诉但对真人表达有压力的学生。</td></tr>
+            <tr><th>要解决的问题</th><td>当前 APK 中 AI 入口缺少持续存在感，三IP差异没有形成清晰工作流，对话记忆和免责声明也会影响信任。</td></tr>
+            <tr><th>验证假设</th><td>如果三IP以不同场景和不同回应方式出现，并提供可控的轻量记忆与温和安全边界，学生会更愿意表达，也更能理解 AI 伙伴的价值。</td></tr>
+            <tr><th>用户价值</th><td>学生知道“现在该找谁”，说完之后能得到陪伴、稳定情绪或拆解问题的下一步。</td></tr>
+            <tr><th>设计重点</th><td>三IP按场景选择；回复结构体现差异；记忆可控；安全边界透明但不吓人。</td></tr>
+            <tr><th>不做内容</th><td>不接真实大模型，不做复杂长对话，不做真人咨询预约闭环，不让学生扮演危机场景。</td></tr>
+          </tbody>
+        </table>
+
+        <div class="decision">
+          <strong>Flow B 定稿结论：</strong>
+          它是产品差异化核心，必须与 Flow A 同等优先。9 月测试时，它负责证明学生是否愿意把 AI 当成可信伙伴，而不是普通问答入口。
+        </div>
+      </section>
+
+      <section class="flow" id="flow-c">
+        <div class="flow-head">
+          <span class="tag amber">Flow C</span>
+          <span class="tag violet">条件做</span>
+          <h2>完成反馈路径</h2>
+          <p class="path">脑之岛/测评/放松训练 → 完成结果 → 低压力解释 → 奖励/成长记录 → AI回应 → 首页回流</p>
+        </div>
+
+        <table>
+          <tbody>
+            <tr><th>目标用户</th><td>完成训练、测评、放松练习或写信后，需要知道“这件事有什么用”的学生。</td></tr>
+            <tr><th>要解决的问题</th><td>当前 APK 的脑之岛、解忧信箱、星星商店、换装奖励较割裂，完成动作没有外溢到首页、AI和成长叙事。</td></tr>
+            <tr><th>验证假设</th><td>如果完成后能看到低压力结果解释、奖励原因、成长记录和 AI 回应，学生会更理解这件事和减压/成长有关，也更愿意下次继续。</td></tr>
+            <tr><th>用户价值</th><td>做完不是结束，而是被看见、被记录，并形成“我今天完成了一小步”的成长感。</td></tr>
+            <tr><th>设计重点</th><td>结果解释不排名；奖励说明来源；成长记录轻量；AI回应承接完成动作。</td></tr>
+            <tr><th>不做内容</th><td>不做完整脑之岛地图，不做完整勋章墙，不做完整星星商店，不做排行榜。</td></tr>
+          </tbody>
+        </table>
+
+        <div class="decision amber">
+          <strong>Flow C 定稿结论：</strong>
+          如果团队只能做两条，先放弃 Flow C 的完整高保真；但至少建议保留一个“完成反馈页 + 成长记录 + AI回应”的轻闭环，用来验证持续使用价值。
+        </div>
+      </section>
+
+      <section id="pain">
+        <h2>P0-P11覆盖结果</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>痛点</th>
+              <th>进入本轮吗</th>
+              <th>由哪个Flow承接</th>
+              <th>本轮验证方式</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>P0 未成年人安全/隐私/危机边界</td><td>进入</td><td>Flow B</td><td>验证安全边界文案是否可信、不吓人；危机场景由研究员模拟。</td></tr>
+            <tr><td>P1 首屏无视觉主角</td><td>进入</td><td>Flow A</td><td>看学生 3 秒内是否知道先做什么，并能否理解首页不是单一打卡页，而是今日状态中枢。</td></tr>
+            <tr><td>P2 AI无全局持续入口/双入口认知</td><td>进入</td><td>Flow A、B</td><td>看学生是否能在不同页面找到 AI，并理解入口关系。</td></tr>
+            <tr><td>P3 对话无情感记忆</td><td>进入</td><td>Flow B</td><td>验证轻量记忆是否提升信任，是否引发不适。</td></tr>
+            <tr><td>P4 年级内容过滤不足</td><td>横向进入</td><td>Flow A、B、C</td><td>同一主线至少区分小学高年级/初高中语气，不单独做生涯Flow。</td></tr>
+            <tr><td>P5 脑之岛成就不外溢</td><td>条件进入</td><td>Flow C</td><td>看训练完成后是否能回到首页、AI和成长记录。</td></tr>
+            <tr><td>P6 解忧信箱缺少关闭反馈</td><td>条件进入</td><td>Flow C变体</td><td>可作为“完成反馈”变体，不单独做完整写信Flow。</td></tr>
+            <tr><td>P7 换装与成长割裂</td><td>轻量进入</td><td>Flow C</td><td>只验证奖励是否来自成长行为，不做完整装扮系统。</td></tr>
+            <tr><td>P8 星星激励闭环不清</td><td>轻量进入</td><td>Flow C</td><td>只验证星星来源和去向是否清楚。</td></tr>
+            <tr><td>P9 免责声明削弱信任</td><td>进入</td><td>Flow B</td><td>验证温和边界说明是否比冷免责声明更可接受。</td></tr>
+            <tr><td>P10 咨询Tab功能弱</td><td>部分进入</td><td>Flow B</td><td>不做咨询Tab完整改造，只验证安全支持入口。</td></tr>
+            <tr><td>P11 任务缺乏情境推送</td><td>进入</td><td>Flow A、C</td><td>看今日小行动是否和状态/完成记录有关。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="mvp">
+        <h2>MVP页面范围</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Flow</th>
+              <th>必做页面/状态</th>
+              <th>页面数量建议</th>
+              <th>保真度</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Flow A：Pad 首页启动中枢</td>
+              <td>Pad 首页、今日状态主卡、AI伙伴侧栏、今日推荐区、次级功能入口、情绪打卡确认、AI接住卡、今日小行动、行动完成反馈、首页回流。</td>
+              <td>6-7 个</td>
+              <td>高保真</td>
+            </tr>
+            <tr>
+              <td>Flow B：AI伙伴</td>
+              <td>全局AI入口、三IP选择、对话页、小星脚本、吉塔脚本、罗素脚本、记忆提示、安全边界、下一步建议。</td>
+              <td>7-9 个</td>
+              <td>高保真</td>
+            </tr>
+            <tr>
+              <td>Flow C：完成反馈</td>
+              <td>训练/测评完成页、结果解释、奖励获得、成长记录、AI回应、首页回流。</td>
+              <td>5-6 个</td>
+              <td>中高保真，可降级</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <strong>总量控制：</strong>
+          完整做 3 条时控制在 18-22 个关键画面；只做 2 条时控制在 13-16 个关键画面。
+        </div>
+      </section>
+
+      <section id="criteria">
+        <h2>成功标准</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Flow</th>
+              <th>最低成立</th>
+              <th>强改善</th>
+              <th>失败信号</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Flow A：Pad 首页启动中枢</td>
+              <td>多数学生能独立完成打卡，并理解系统为什么推荐这个小行动。</td>
+              <td>比当前 APK 首屏停顿更少，被理解感和继续点击意愿明显更高。</td>
+              <td>学生仍然说“不知道先点哪个”，或觉得推荐像普通任务列表。</td>
+            </tr>
+            <tr>
+              <td>Flow B：AI伙伴</td>
+              <td>多数学生能说出三IP差异，并愿意聊 2-3 轮。</td>
+              <td>学生主动表达“它像在回应我/记得我”，且不被安全边界文案劝退。</td>
+              <td>学生觉得三IP只是换头像，或记忆/边界让人不舒服。</td>
+            </tr>
+            <tr>
+              <td>Flow C：完成反馈</td>
+              <td>多数学生知道自己完成了什么、获得了什么。</td>
+              <td>学生理解训练/测评和减压成长有关，并愿意下次继续。</td>
+              <td>学生只记得拿奖励，不理解成长含义，或觉得像成绩考核。</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="freeze">
+        <h2>Day 1-2冻结清单</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h3>已经冻结</h3>
+            <ul>
+              <li>本轮 demo 不做完整新版本，只做 2-3 条核心 Flow。</li>
+              <li>Flow A、Flow B 必做，且要高保真。</li>
+              <li>Flow C 条件做，优先保留完成反馈轻闭环。</li>
+              <li>AI 对话用脚本模拟，不依赖真实模型。</li>
+              <li>危机响应不让学生扮演，由研究员模拟。</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>进入 Day 3-5 的输入</h3>
+            <ul>
+              <li>Flow A 重点拆：Pad 首页中枢、情绪打卡、低压力开始、AI承接、状态相关推荐、首页回流。</li>
+              <li>Flow B 重点拆：AI陪伴、三IP差异、安全边界、下一步建议。</li>
+              <li>Flow C 重点拆：训练反馈、奖励闭环、成长记录、首页回流。</li>
+              <li>竞品只看对应机制，不做泛泛竞品分析。</li>
+              <li>所有竞品结论都要转成 demo 页面和测试观察点。</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

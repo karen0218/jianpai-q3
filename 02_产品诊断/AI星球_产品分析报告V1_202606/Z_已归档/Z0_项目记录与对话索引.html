@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>AI星球 · 项目记录与对话索引</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'PingFang SC','Noto Sans SC',sans-serif; background:#f7f8fc; color:#1f2937; line-height:1.7; }
+
+.page-header {
+  background:linear-gradient(135deg,#1e293b 0%,#334155 100%);
+  color:#fff; padding:48px 0 36px; text-align:center;
+}
+.page-header h1 { font-size:26px; margin-bottom:8px; }
+.page-header p { font-size:14px; opacity:0.7; }
+
+.container { max-width:960px; margin:0 auto; padding:32px 24px 80px; }
+
+.section { background:#fff; border-radius:16px; padding:32px; margin-bottom:24px; box-shadow:0 2px 12px rgba(0,0,0,0.06); }
+.section h2 { font-size:18px; font-weight:800; margin-bottom:20px; padding-bottom:12px; border-bottom:2px solid #f0f0f0; display:flex; align-items:center; gap:8px; }
+.section h3 { font-size:14px; font-weight:700; color:#1d4ed8; margin:20px 0 10px; text-transform:uppercase; letter-spacing:.5px; }
+
+table { width:100%; border-collapse:collapse; font-size:13px; margin:12px 0; }
+th { background:#f0f4ff; color:#1d4ed8; padding:10px 14px; text-align:left; font-size:12px; font-weight:700; }
+td { padding:10px 14px; border-bottom:1px solid #f3f4f6; color:#374151; vertical-align:top; }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:#fafbff; }
+
+.tag { display:inline-block; border-radius:4px; padding:2px 9px; font-size:11px; font-weight:700; margin-right:4px; }
+.tag-done { background:#f0fdf4; color:#15803d; }
+.tag-todo { background:#fef9c3; color:#854d0e; }
+.tag-risk { background:#fff0f0; color:#e03131; }
+
+.insight { background:#eff6ff; border-left:4px solid #368fff; border-radius:0 10px 10px 0; padding:14px 18px; margin:12px 0; font-size:13px; color:#1e3a5f; line-height:1.7; }
+.warn { background:#fffbeb; border-left:4px solid #f59e0b; border-radius:0 10px 10px 0; padding:14px 18px; margin:12px 0; font-size:13px; color:#78350f; }
+
+.file-list { display:flex; flex-direction:column; gap:8px; margin:12px 0; }
+.file-item { background:#f7f8fc; border-radius:10px; padding:12px 16px; border-left:4px solid #368fff; display:flex; align-items:flex-start; gap:12px; }
+.file-item .fi-name { font-size:13px; font-weight:700; color:#1d4ed8; margin-bottom:3px; }
+.file-item .fi-desc { font-size:12px; color:#6b7280; }
+.file-item .fi-status { font-size:11px; margin-top:4px; }
+
+.thought-block { background:#f7f8fc; border-radius:10px; padding:16px; margin:10px 0; border-left:4px solid #a78bfa; }
+.thought-block .tb-title { font-size:13px; font-weight:700; color:#6d28d9; margin-bottom:6px; }
+.thought-block .tb-body { font-size:13px; color:#374151; line-height:1.7; }
+
+code { font-family:'SF Mono',Monaco,monospace; background:#f3f4f6; padding:2px 6px; border-radius:4px; font-size:11px; color:#1f2937; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>AI星球 · 项目记录与对话索引</h1>
+  <p>记录分析思路、已完成内容、待续方向 · 供下次继续使用</p>
+</div>
+
+<div class="container">
+
+  <!-- 产品基本信息 -->
+  <div class="section">
+    <h2>🪐 产品基本档案</h2>
+    <table>
+      <tr><th>字段</th><th>内容</th></tr>
+      <tr><td>产品名称</td><td>AI星球（ai_planet）</td></tr>
+      <tr><td>包名</td><td><code>com.ifltyek.ai.planet</code></td></tr>
+      <tr><td>版本</td><td>v1.0.2801（APK分析版本）</td></tr>
+      <tr><td>开发商</td><td>科大讯飞（iFlytek）旗下产品</td></tr>
+      <tr><td>目标用户</td><td>小初高中生（约10-18岁）</td></tr>
+      <tr><td>平台</td><td>Android（iPad学习机预装），家长端为微信小程序</td></tr>
+      <tr><td>商业模式</td><td>B2B SaaS：学校采购，三种权限模式（ONLY_MENTAL=1 / ONLY_CAREER=2 / ONLY_AI_SCREENING=3）</td></tr>
+      <tr><td>技术栈</td><td>Android (Kotlin/Java) + Vue.js WebView + 科大讯飞AI + TFLite人脸模型 + 极验一键登录</td></tr>
+      <tr><td>分析来源</td><td>APK反编译代码 + 资源文件 + 公开竞品信息（来源见各文档）</td></tr>
+    </table>
+  </div>
+
+  <!-- 文件索引 -->
+  <div class="section">
+    <h2>📁 文件索引（21份文档）</h2>
+    <div class="file-list">
+      <div class="file-item">
+        <div>
+          <div class="fi-name"><a href="../A_产品诊断与分析/A1_产品结构树.html" style="color:#1d4ed8;text-decoration:none;">A1 · 产品结构树</a></div>
+          <div class="fi-desc">从APK提取的完整功能结构，130+页面路由树，8大功能模块</div>
+          <div class="fi-status"><span class="tag tag-done">完成</span>基于代码，数据可靠</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <div>
+          <div class="fi-name"><a href="../A_产品诊断与分析/A2_多维度深度分析.html" style="color:#1d4ed8;text-decoration:none;">A2 · 多维度深度分析</a></div>
+          <div class="fi-desc">产品经理 / UX / 青少年心理学 / 技术 四维视角分析；用户旅程；优化路线图</div>
+          <div class="fi-status"><span class="tag tag-done">已校验</span>全部基于APK代码，本轮已加注数据来源说明</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <div>
+          <div class="fi-name"><a href="../A_产品诊断与分析/A3_补充深度分析（用户分层·家校协同·商业模式）.html" style="color:#1d4ed8;text-decoration:none;">A3 · 补充深度分析</a></div>
+          <div class="fi-desc">用户分层（小学/初中/高中心理特征）；家长小程序&家校协同；竞品对比；商业模式；体验规范</div>
+          <div class="fi-status"><span class="tag tag-done">本轮已重写</span>删除虚构竞品，替换为真实竞品（Headspace/Finch/朝夕/林间聊愈室），每条附来源链接</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <div>
+          <div class="fi-name"><a href="../A_产品诊断与分析/A4_第二轮补充分析（合规·AI伦理）.html" style="color:#1d4ed8;text-decoration:none;">A4 · 合规与AI伦理</a></div>
+          <div class="fi-desc">数据安全与未成年人合规（PIPL等5项法规）；B端产品设计；AI伦理风险矩阵；增长飞轮；12个月迭代路线图</div>
+          <div class="fi-status"><span class="tag tag-done">本轮已校验</span>法规来源加注；推测性数据（价格、留存率等）均已标注"推测，无公开数据"</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <div>
+          <div class="fi-name"><a href="../A_产品诊断与分析/A5_产品升级分析报告.html" style="color:#1d4ed8;text-decoration:none;">A5 · 产品升级分析报告</a></div>
+          <div class="fi-desc">11项痛点诊断（截图证据）；用户旅程+情绪曲线（Peak-End分析）；5个竞品对标；全局AI伙伴「小星伴游」悬浮IP设计方案；11个用户反馈埋点设计；4阶段升级路线图</div>
+          <div class="fi-status"><span class="tag tag-done">2026.06.10新建</span>基于23张实机截图，所有竞品均为真实存在产品</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <div>
+          <div class="fi-name"><a href="../A_产品诊断与分析/A6_竞品深度分析.html" style="color:#1d4ed8;text-decoration:none;">A6 · 竞品深度分析</a></div>
+          <div class="fi-desc">六大竞品深度剖析:Headspace / Finch / 壹心理 / 简单心理 / 朝夕&林间 / 字节腾讯系;十维功能矩阵;真正威胁来自优秀C端产品而非大厂;B2B渠道护城河分析</div>
+          <div class="fi-status"><span class="tag tag-done">2026.06.11新建</span>所有竞品均为真实存在产品,附来源</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <div>
+          <div class="fi-name"><a href="../B_设计规范与系统/B1_现有设计系统诊断（APK提取）.html" style="color:#1d4ed8;text-decoration:none;">B1 · 现有设计系统诊断</a></div>
+          <div class="fi-desc">从APK CSS文件提取现有色值/字号/间距/圆角/阴影，诊断11个设计问题（品牌色混乱、间距不规范等）</div>
+          <div class="fi-status"><span class="tag tag-done">完成</span>基于代码提取，数据可靠</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <div>
+          <div class="fi-name"><a href="../B_设计规范与系统/B2_升级设计系统规范v2.0.html" style="color:#1d4ed8;text-decoration:none;">B2 · 升级设计系统规范 v2.0</a></div>
+          <div class="fi-desc">完整Design Token规范 v2.0：色彩/字体/间距/圆角/阴影/组件/情绪色/动效，含CSS Variables代码；设计方向定位；IP形象体系；2026趋势</div>
+          <div class="fi-status"><span class="tag tag-done">完成</span>设计规范，无数据核查问题</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <div>
+          <div class="fi-name"><a href="../B_设计规范与系统/B3_年级自适应视图设计.html" style="color:#1d4ed8;text-decoration:none;">B3 · 年级自适应视图设计</a></div>
+          <div class="fi-desc">三阶段视图设计（小学/初中/高中）；「一套代码按phaseCode渲染不同视图层」技术架构澄清；功能可见性对比矩阵；iPad首页布局三版对比mockup；年级衔接设计（小升初/初升高数据迁移与情感过渡）</div>
+          <div class="fi-status"><span class="tag tag-done">2026.06.11新建</span>基于APK已有phaseCode/gradeCode字段；技术方案为架构推演</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <div>
+          <div class="fi-name"><a href="../C_产品策略与商业/C1_商业模式落地规划.html" style="color:#1d4ed8;text-decoration:none;">C1 · 商业模式落地规划</a></div>
+          <div class="fi-desc">B端SaaS定价策略；学校采购路径；续费模型设计</div>
+          <div class="fi-status"><span class="tag tag-todo">待核查</span>下次继续时可检查是否有未标注的推测数据</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <div>
+          <div class="fi-name"><a href="../C_产品策略与商业/C2_产品战略全景报告.html" style="color:#1d4ed8;text-decoration:none;">C2 · 产品战略全景报告</a></div>
+          <div class="fi-desc">六维战略全景分析：①产品框架结构 ②用户体验地图（峰终对比）③设计亮点（竞争护城河6项）④商业布局（APK代码级SaaS定价证据/增长飞轮）⑤市场机会（四象限/政策窗口/数据飞轮）⑥战略结论（情感基础设施定位）</div>
+          <div class="fi-status"><span class="tag tag-done">2026.06.10新建</span>暗色主题视觉呈现，无虚构数据</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <div>
+          <div class="fi-name"><a href="../D_交互原型与设计/D1_用户反馈采集系统与弹窗原型.html" style="color:#1d4ed8;text-decoration:none;">D1 · 用户反馈采集系统与弹窗原型</a></div>
+          <div class="fi-desc">8个触发点的用户体验地图 + 反馈弹窗交互原型（可直接在浏览器中预览效果）</div>
+          <div class="fi-status"><span class="tag tag-done">完成</span>UI原型，无数据核查问题</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <div>
+          <div class="fi-name"><a href="../D_交互原型与设计/D2_学生端首页重设计原型.html" style="color:#1d4ed8;text-decoration:none;">D2 · 学生端首页重设计原型</a></div>
+          <div class="fi-desc">iPad学习机首页重设计，820×615px，含情绪签到（自动折叠）/心理剧场Banner/吉塔推荐/本周数据/IP全局悬浮伴游，可交互</div>
+          <div class="fi-status"><span class="tag tag-done">2026.06.11优化</span>新增心理剧场置顶、情绪签到自动折叠、历史档案胶囊</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <div>
+          <div class="fi-name"><a href="../D_交互原型与设计/D3_家长端首页重设计原型.html" style="color:#1d4ed8;text-decoration:none;">D3 · 家长端首页重设计原型</a></div>
+          <div class="fi-desc">微信小程序家长端首页，375×812px，含AI家育咨询师/孩子情绪时间轴/成长数据/三级隐私分层/危机预警，可交互</div>
+          <div class="fi-status"><span class="tag tag-done">完成</span>UI原型，浏览器可直接预览</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <div>
+          <div class="fi-name"><a href="../D_交互原型与设计/D4_心育模块用户流程图.html" style="color:#1d4ed8;text-decoration:none;">D4 · 心育模块用户流程图（整合版）</a></div>
+          <div class="fi-desc">心育模块4条核心用户流程：①AI心理筛查→报告→分级干预 / ②情绪打卡→放松工具（含signStatus状态机）/ ③三IP AI对话完整路径（IP切换逻辑）/ ④心理剧场观看与互动路径；附录：咨询预约（部分学校功能）；含真实API端点（aiScreen/saveAnswerSingle等14个）+UX评测标注</div>
+          <div class="fi-status"><span class="tag tag-done">完成</span>基于APK路由结构，代码证据：chunk-1ac55710 / chunk-4c40f85a / chunk-472ad919</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <div>
+          <div class="fi-name"><a href="../D_交互原型与设计/D5_生涯规划流程原型.html" style="color:#1d4ed8;text-decoration:none;">D5 · 生涯规划流程原型</a></div>
+          <div class="fi-desc">高中生完整生涯路径原型：选科决策（罗素选科矩阵）→ 生涯探索（职业地图/月度档案）→ 志愿填报（位次分析/冲稳保）；三IP协作泳道图；6大痛点与设计响应；生涯场景战略价值分析</div>
+          <div class="fi-status"><span class="tag tag-done">2026.06.11新建</span>基于APK代码证据（ONLY_CAREER=2 / phaseCode）+ 三IP人格定义 + 设计推演</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <div>
+          <div class="fi-name"><a href="../D_交互原型与设计/D6_AI对话交互规范（三IP人格）.html" style="color:#1d4ed8;text-decoration:none;">D6 · AI对话交互规范（三IP人格）</a></div>
+          <div class="fi-desc">三IP人物故事与人格设定（小星/吉塔/罗素）；对话风格差异、标志语言特征、禁用表达；三IP对比速查表；危机干预三级话术库（L1关注/L2预警/L3危机+心理老师后台联动）</div>
+          <div class="fi-status"><span class="tag tag-done">2026.06.11新建</span>人物设定为设计原型；危机干预话术需专业心理咨询师审核</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <div>
+          <div class="fi-name"><a href="../E_世界观与IP体系/E1_减压星球世界观圣经.html" style="color:#1d4ed8;text-decoration:none;">E1 · 减压星球世界观圣经</a></div>
+          <div class="fi-desc">完整世界观设定：六区域地图、四IP小传（小星/吉塔/罗素/鸭梨）、隐藏居民体系、心理剧场框架；「减压星球」世界观的完整叙事底层</div>
+          <div class="fi-status"><span class="tag tag-done">2026.06.11新建</span>IP设定为创意设计原型</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <div>
+          <div class="fi-name"><a href="../E_世界观与IP体系/E2_减压星球×产品体验设计提案.html" style="color:#1d4ed8;text-decoration:none;">E2 · 减压星球×产品体验设计提案</a></div>
+          <div class="fi-desc">世界观落地产品的具体设计提案：IP形象落地方式、心理剧场内容体系、月度更新机制、IP衍生商业化路径</div>
+          <div class="fi-status"><span class="tag tag-done">2026.06.11新建</span>设计提案，需与视觉团队对齐</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <div>
+          <div class="fi-name" style="color:#1d4ed8;font-weight:700;">汇报讲解脚本 · 2026.06.11</div>
+          <div class="fi-desc">完整分析成果汇报脚本，建议时长45–60分钟；覆盖7章节（产品诊断/用户洞察/竞品/设计系统/核心原型/世界观IP/战略方向）；含三类听众（PM/产线/UX）针对性讲解要点</div>
+          <div class="fi-status"><span class="tag tag-done">2026.06.11新建</span>汇报时配合各子文档同屏演示</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <div>
+          <div class="fi-name">Z0_项目记录与对话索引.html（本文件）</div>
+          <div class="fi-desc">项目全记录，供下次继续分析时快速恢复上下文</div>
+          <div class="fi-status"><span class="tag tag-done">2026.06.11更新</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 本次对话完成的工作 -->
+  <div class="section">
+    <h2>✅ 本轮对话完成的工作</h2>
+    <h3>第一轮：数据可靠性校验（所有数据必须真实、可查证）</h3>
+    <table>
+      <tr><th>文档</th><th>改动内容</th><th>状态</th></tr>
+      <tr>
+        <td>04_补充深度分析</td>
+        <td>
+          删除虚构竞品（Keep青少年版、学而思心理模块、咪咕阅读减压、北京心灵）<br>
+          删除无来源的漏斗数据（85%→50%→30%→15%）<br>
+          替换为真实可查竞品：Headspace / Finch / 朝夕 / 林间聊愈室，每条附来源链接<br>
+          价格推测处加注"无公开数据"
+        </td>
+        <td><span class="tag tag-done">完成</span></td>
+      </tr>
+      <tr>
+        <td>05_第二轮补充分析</td>
+        <td>
+          法规表格加注来源（全国人大网、网信办、教育部官网）<br>
+          删除"100-500万/区"、"2-5万/校"等无来源具体数字<br>
+          "全国约10万名心理老师"改为"数量为行业估算"<br>
+          留存率/ARPU等目标指标标注为"推测建议值，非实际测量数据"<br>
+          增长路径章节加注"基于APK代码结构推演，非实际运营数据"
+        </td>
+        <td><span class="tag tag-done">完成</span></td>
+      </tr>
+      <tr>
+        <td>02_多维度深度分析</td>
+        <td>页眉加注分析依据（APK v1.0.2801代码直接提取）</td>
+        <td><span class="tag tag-done">完成</span></td>
+      </tr>
+    </table>
+
+    <h3 style="margin-top:20px;">第二轮：产品事实修正（基于用户提供的7条产品真实信息）</h3>
+    <table>
+      <tr><th>文档</th><th>修正内容</th><th>状态</th></tr>
+      <tr>
+        <td>01_产品结构树</td>
+        <td>
+          <b>完整重写</b>：底部导航改为实机确认的6个Tab（首页/探索/脑之岛/任务/咨询/朋友圈）<br>
+          三IP系统正式列入：🌟小星（通用AI）/ 🐳罗素（生涯逻辑）/ 🐼吉塔（心愈疗愈）<br>
+          动物思维导图归属修正：AI对话的延伸功能，非独立模块<br>
+          脑之岛升级为独立Tab，勋章墙标注为脑之岛内部功能<br>
+          知心姐姐标注为联名课件内容，非AI角色<br>
+          咨询预约标注为弱功能（部分学校购买）<br>
+          心理剧场、减压工具作为重要模块显式列出
+        </td>
+        <td><span class="tag tag-done">2026.06.10重写</span></td>
+      </tr>
+      <tr>
+        <td>02_多维度深度分析</td>
+        <td>
+          模块表格重写：新增心理剧场模块、脑之岛模块，移除"亲密姐姐"AI角色描述<br>
+          三IP系统写入产品优点<br>
+          青少年心理学视角：亲密姐姐→三IP角色+知心姐姐正确描述<br>
+          勋章墙归属修正为脑之岛内部
+        </td>
+        <td><span class="tag tag-done">完成</span></td>
+      </tr>
+      <tr>
+        <td>04_补充深度分析</td>
+        <td>
+          初中生适配说明：亲密姐姐→吉塔（心愈AI）+ 知心姐姐联名内容说明<br>
+          小学生适配：勋章墙改为"脑之岛游戏化训练"表述
+        </td>
+        <td><span class="tag tag-done">完成</span></td>
+      </tr>
+      <tr>
+        <td>08_学生端首页重设计原型</td>
+        <td>
+          全部"亲密姐姐"替换为吉塔（心愈AI）🐼<br>
+          AI对话入口改为三IP选择（小星/罗素/吉塔/视频）<br>
+          勋章墙弹窗说明修正为"脑之岛内部功能"
+        </td>
+        <td><span class="tag tag-done">完成</span></td>
+      </tr>
+    </table>
+
+    <div class="warn" style="margin-top:12px;">
+      <b>⚠️ 本轮修正依据：</b>用户提供的7条产品真实信息 + 实机UI dump（window_dump_homepage.xml）+ APK Vue Router代码（app.b5a23602.js的switchNav()逻辑）。
+      底部导航Tab确认来源：设备UI dump文本节点 + 代码switchNav()路由映射。
+    </div>
+  </div>
+
+  <!-- 2026.06.11 工作记录 -->
+  <div class="section">
+    <h2>✅ 2026.06.11 本轮工作记录</h2>
+    <h3>一、D2 学生端首页原型布局优化</h3>
+    <table>
+      <tr><th>改动</th><th>内容</th><th>状态</th></tr>
+      <tr>
+        <td>心理剧场置顶</td>
+        <td>将 .theater-banner 从内容区下方移至 .content-cols 上方，使剧场入口成为首屏第二优先级内容</td>
+        <td><span class="tag tag-done">完成</span></td>
+      </tr>
+      <tr>
+        <td>历史档案胶囊</td>
+        <td>在剧场Banner内新增 .theater-archive 历史月份胶囊（5月·迷失森林 / 4月·时间盲区 / 3月·压力怪兽），横向滚动展示</td>
+        <td><span class="tag tag-done">完成</span></td>
+      </tr>
+      <tr>
+        <td>情绪签到自动折叠</td>
+        <td>selectEmotion() 选中情绪后800ms自动触发 .hero-card.checked-in 折叠态；折叠后显示「今天：XX ✓ 已签到」芯片，包含「更改」按钮可重新展开</td>
+        <td><span class="tag tag-done">完成</span></td>
+      </tr>
+      <tr>
+        <td>reopenCheckin 函数</td>
+        <td>新增 reopenCheckin() 函数，移除 .checked-in 类使 Hero 卡片重新展开</td>
+        <td><span class="tag tag-done">完成</span></td>
+      </tr>
+    </table>
+
+    <h3 style="margin-top:20px;">二、根目录文件夹清理</h3>
+    <table>
+      <tr><th>操作</th><th>说明</th><th>状态</th></tr>
+      <tr>
+        <td>删除23个顶层重复文件</td>
+        <td>通过 MD5 校验确认顶层 01_–18_ 编号文件与 ABCDE 子文件夹内容完全一致（或为旧版）后删除；唯一例外：08_ 顶层版为旧版，D2 子文件夹版为已编辑版，保留 D2</td>
+        <td><span class="tag tag-done">完成</span></td>
+      </tr>
+      <tr>
+        <td>目录现状</td>
+        <td>根目录现仅保留：A_/B_/C_/D_/E_/Z_ 六个子文件夹 + 阅读指引.html + Q&A.rtf</td>
+        <td><span class="tag tag-done">完成</span></td>
+      </tr>
+    </table>
+
+    <h3 style="margin-top:20px;">三、Z 归档文件修复</h3>
+    <table>
+      <tr><th>文件</th><th>改动</th><th>状态</th></tr>
+      <tr>
+        <td>Z0_项目记录与对话索引.html（本文件）</td>
+        <td>文件索引从旧 01_–15_ 纯文本格式全面升级为 ABCDE 子文件夹路径的可点击链接；新增 A6/E1/E2/汇报脚本 四份文档；合并重复的 D4 条目；文档计数从 16 更新为 21；添加本轮工作记录</td>
+        <td><span class="tag tag-done">完成</span></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- 核心分析思路记录 -->
+  <div class="section">
+    <h2>🧠 分析思路记录</h2>
+
+    <div class="thought-block">
+      <div class="tb-title">关于竞品对比的思路</div>
+      <div class="tb-body">
+        国内市场上没有与AI星球完全同类的产品（同时具备：校园部署+AI对话+心理测评+生涯规划+硬件绑定）。
+        因此竞品分析采用"功能维度竞品"策略：分别找在某个维度上比AI星球做得更深的产品，
+        指出AI星球在该维度的不足，而不是找一个"全面竞品"。
+        这样的比较更真实，也更有指导价值。
+      </div>
+    </div>
+
+    <div class="thought-block">
+      <div class="tb-title">关于数据可信度的判断标准</div>
+      <div class="tb-body">
+        <b>可信（直接引用）：</b>APK代码中直接提取的内容（Activity名、权限、路由、常量值）；
+        竞品的公开信息（App Store链接、官网）；中国法律法规正式文本。<br><br>
+        <b>需标注（推测/估算）：</b>留存率、ARPU、市场规模等运营数据；价格区间；用户规模估算。<br><br>
+        <b>应删除：</b>无法提供来源的具体统计数字；虚构的竞品功能描述。
+      </div>
+    </div>
+
+    <div class="thought-block">
+      <div class="tb-title">关于B端商业模式的判断</div>
+      <div class="tb-body">
+        APK中发现的 <code>appAuth</code> 权限常量（ONLY_MENTAL=1 / ONLY_CAREER=2 / ONLY_AI_SCREENING=3）
+        是判断这是"SaaS分包销售模型"的直接证据——这是代码级别的推断，不是猜测。
+        但具体的定价、合同数量、续费率等是推测，未在代码中体现。
+      </div>
+    </div>
+
+    <div class="thought-block">
+      <div class="tb-title">关于合规风险的判断</div>
+      <div class="tb-body">
+        最高风险点是人脸识别（<code>FaceLoginActivity</code>对未成年人采集生物特征数据）
+        和14岁以下用户无监护人授权流程——这两点在《个人信息保护法》和《儿童个人信息网络保护规定》
+        下是明确的违规风险，不是"可能有风险"，而是"现在就违规"。
+      </div>
+    </div>
+
+    <div class="thought-block">
+      <div class="tb-title">关于用户分层的思路</div>
+      <div class="tb-body">
+        AI星球目标用户横跨8年（10-18岁），但心理发展差异极大：
+        小学生（规则期）需要游戏化；初中生（身份认同危机期）需要倾诉和被理解；
+        高中生（压力峰值期）需要生涯规划和焦虑管理。
+        当前产品把三类用户混在一个界面，小学生会看到志愿填报，高中生首页堆满游戏化元素。
+        已有<code>gradeCode/phaseCode</code>字段可以做过滤，只是没有用起来。
+      </div>
+    </div>
+  </div>
+
+  <!-- 待续分析方向 -->
+  <div class="section">
+    <h2>🔜 下次继续的方向（优先级排序）</h2>
+
+    <table>
+      <tr><th>优先级</th><th>方向</th><th>具体内容</th></tr>
+      <tr>
+        <td><span class="tag tag-risk">高</span></td>
+        <td>06_商业模式落地规划 数据核查</td>
+        <td>检查06文档中是否有虚构数据或无来源的统计数字，按同样标准清理</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-todo">中</span></td>
+        <td>深化竞品分析</td>
+        <td>可对国内教育心理赛道做更系统的扫描（心理云、简单心理、好心情等成人平台；北师大心理学相关项目）</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-todo">中</span></td>
+        <td>高中生用户旅程深化</td>
+        <td>选科→生涯→志愿填报的完整路径设计，这是高客单价用户的核心路径，值得单独出一份原型</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-todo">中</span></td>
+        <td>AI对话交互规范</td>
+        <td>亲密姐姐/学习助手/生涯导师三种AI角色的对话风格规范、危机干预话术设计</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-todo">低</span></td>
+        <td>数据大屏（教育局版）</td>
+        <td>区教育局查看跨校心理健康数据的管理后台原型（大屏/PC端）</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-todo">低</span></td>
+        <td>心理老师端设计</td>
+        <td>学校心理老师的班级管理视图——班级情绪驾驶舱、危机预警列表、任务推送等</td>
+      </tr>
+    </table>
+
+    <div class="insight" style="margin-top:16px;">
+      <b>继续的口令：</b>下次新对话输入「继续进行AI星球的产品分析」，
+      把本文件发给 AI，即可快速恢复所有上下文，直接继续未完成的方向。
+    </div>
+  </div>
+
+  <!-- 关键代码证据备忘 -->
+  <div class="section">
+    <h2>🔑 关键代码证据备忘</h2>
+    <p style="font-size:13px;color:#6b7280;margin-bottom:12px;">以下是从APK提取的关键证据，未来写任何分析时可以引用：</p>
+    <table>
+      <tr><th>证据</th><th>位置/来源</th><th>说明</th></tr>
+      <tr><td><code>gradeCode / phaseName / phaseCode</code></td><td>APK JS代码</td><td>系统已采集年级信息，但首页未做内容过滤</td></tr>
+      <tr><td><code>appAuth: ONLY_MENTAL=1, ONLY_CAREER=2, ONLY_AI_SCREENING=3</code></td><td>APK常量</td><td>B端SaaS分包销售的直接证据</td></tr>
+      <tr><td><code>FaceLoginActivity</code></td><td>Android Activity</td><td>人脸识别登录，对未成年人采集生物特征数据，合规风险点</td></tr>
+      <tr><td><code>com.geetest.onelogin</code></td><td>APK依赖</td><td>极验一键登录</td></tr>
+      <tr><td>130+ 页面 Vue 路由</td><td>assets/web/ 目录</td><td>大量功能由 WebView 承载，性能风险</td></tr>
+      <tr><td>多个 <code>.tflite / .emd</code> 模型文件</td><td>APK资源</td><td>本地AI模型，用于表情/眼睛状态检测</td></tr>
+      <tr><td><code>firebase-components</code></td><td>APK依赖</td><td>使用Firebase统计，数据可能出境，合规风险点</td></tr>
+      <tr><td><code>READ_CONTACTS / ACCESS_FINE_LOCATION</code></td><td>AndroidManifest权限</td><td>疑似超出功能需要的权限，需审查</td></tr>
+      <tr><td>MathJax 2.7.1</td><td>JS资源文件</td><td>版本较旧（2017年），建议升级</td></tr>
+      <tr><td>alivc（阿里云视频）</td><td>APK证书/依赖</td><td>视频功能使用阿里云</td></tr>
+    </table>
+  </div>
+
+  <p style="text-align:center;font-size:12px;color:#9ca3af;margin-top:24px;">最后更新：2026年6月16日 · AI星球产品分析项目 · 共21份文档</p>
+
+</div>
+
+<div style="text-align:center;padding:24px 0 16px;font-size:11px;color:#94a3b8;">@ 代蓉婷_rtdai</div>
+</body>
+</html>

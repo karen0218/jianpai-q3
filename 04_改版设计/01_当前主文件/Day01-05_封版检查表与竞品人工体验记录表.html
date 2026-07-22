@@ -1,0 +1,861 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI星球 20天优化Demo · Day 01-05 封版检查表与竞品体验记录</title>
+  <style>
+    :root {
+      --ink: #1d2433;
+      --muted: #657285;
+      --line: #dfe6ef;
+      --soft: #f6f8fb;
+      --blue: #2f70d0;
+      --green: #2f8f6b;
+      --amber: #b97817;
+      --red: #c84d4d;
+      --violet: #6f56c9;
+      --card: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.68;
+      background: #eef2f6;
+    }
+
+    .page {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    aside {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 28px 22px;
+      border-right: 1px solid var(--line);
+      background: #fff;
+      overflow: auto;
+    }
+
+    aside h1 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    aside p {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    nav a {
+      display: block;
+      padding: 9px 10px;
+      color: #435063;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    nav a:hover { background: var(--soft); color: var(--blue); }
+
+    main {
+      padding: 42px 52px 72px;
+      max-width: 1180px;
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin: -42px -52px 28px;
+      padding: 14px 52px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, .96);
+      backdrop-filter: blur(10px);
+    }
+
+    .toolbar button,
+    .toolbar label {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: #334155;
+      background: #fff;
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .toolbar button.primary {
+      border-color: var(--blue);
+      color: #fff;
+      background: var(--blue);
+    }
+
+    .toolbar button.danger {
+      color: var(--red);
+    }
+
+    .toolbar input[type="file"] {
+      display: none;
+    }
+
+    .save-status {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .hero {
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      margin-bottom: 10px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+
+    .hero h2 {
+      margin: 0 0 12px;
+      font-size: 34px;
+      line-height: 1.22;
+    }
+
+    h2 {
+      margin: 34px 0 14px;
+      font-size: 25px;
+      line-height: 1.36;
+    }
+
+    h3 {
+      margin: 22px 0 10px;
+      font-size: 17px;
+    }
+
+    .summary {
+      max-width: 900px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .callout {
+      margin: 18px 0;
+      padding: 16px 18px;
+      border-left: 4px solid var(--blue);
+      border-radius: 8px;
+      background: #eef5ff;
+    }
+
+    .callout strong { display: block; margin-bottom: 4px; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+
+    .card {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+    }
+
+    .card h3 { margin-top: 0; }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      margin: 0 6px 8px 0;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #eaf1fb;
+      color: var(--blue);
+    }
+
+    .tag.green { background: #e9f5ef; color: var(--green); }
+    .tag.amber { background: #fff4de; color: var(--amber); }
+    .tag.red { background: #fdeeee; color: var(--red); }
+    .tag.violet { background: #f0edff; color: var(--violet); }
+
+    table {
+      width: 100%;
+      margin: 14px 0 24px;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 11px 12px;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      text-align: left;
+    }
+
+    th {
+      color: #334155;
+      background: #f7f9fc;
+      font-weight: 700;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+    th:last-child, td:last-child { border-right: 0; }
+
+    .blank {
+      min-height: 54px;
+      color: #a3adbb;
+    }
+
+    .blank.filled {
+      color: var(--ink);
+    }
+
+    .line {
+      display: inline-block;
+      min-width: 160px;
+      border-bottom: 1px solid #b8c2d0;
+      height: 18px;
+      vertical-align: -2px;
+    }
+
+    .check {
+      color: #93a0b2;
+      white-space: nowrap;
+    }
+
+    .blank[contenteditable="true"],
+    .check[contenteditable="true"],
+    .line[contenteditable="true"] {
+      outline: none;
+      cursor: text;
+    }
+
+    .blank[contenteditable="true"]:focus,
+    .check[contenteditable="true"]:focus,
+    .line[contenteditable="true"]:focus {
+      color: var(--ink);
+      background: #fffceb;
+      box-shadow: inset 0 0 0 1px #e3b341;
+    }
+
+    .blank[contenteditable="true"]:empty::before,
+    .line[contenteditable="true"]:empty::before {
+      content: attr(data-placeholder);
+      color: #a3adbb;
+    }
+
+    ul, ol { padding-left: 20px; }
+
+    .small {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .section {
+      margin: 26px 0;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    @media (max-width: 980px) {
+      .page { display: block; }
+      aside { position: static; height: auto; }
+      main { padding: 28px 18px 56px; }
+      .toolbar {
+        position: static;
+        margin: -28px -18px 24px;
+        padding: 12px 18px;
+      }
+      .save-status {
+        width: 100%;
+        margin-left: 0;
+      }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .hero h2 { font-size: 28px; }
+      table { font-size: 13px; }
+      th, td { padding: 10px; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .page { display: block; }
+      aside { display: none; }
+      .toolbar { display: none; }
+      main { max-width: none; padding: 0; }
+      .section, .card, table { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <aside>
+      <h1>Day 01-05<br>封版工具</h1>
+      <p>检查表 + 竞品人工体验记录</p>
+      <nav>
+        <a href="#how">怎么用</a>
+        <a href="#freeze">封版检查表</a>
+        <a href="#decision">最终决策页</a>
+        <a href="#integrated-insights">整合洞察</a>
+        <a href="#experience">竞品体验记录</a>
+        <a href="#flow-notes">按Flow补充</a>
+        <a href="#next">进入Day 6前</a>
+      </nav>
+    </aside>
+
+    <main>
+      <div class="toolbar" aria-label="填写工具栏">
+        <button class="primary" type="button" id="saveBtn">保存</button>
+        <button type="button" id="exportHtmlBtn">导出填写版HTML</button>
+        <button type="button" id="exportJsonBtn">导出JSON备份</button>
+        <label for="importJsonInput">导入JSON</label>
+        <input id="importJsonInput" type="file" accept="application/json,.json">
+        <button type="button" id="printBtn">打印/PDF</button>
+        <button class="danger" type="button" id="clearBtn">清空填写内容</button>
+        <span class="save-status" id="saveStatus">未保存</span>
+      </div>
+
+      <section class="hero" id="how">
+        <div class="eyebrow">AI星球 / 减压星球 · 20天优化Demo</div>
+        <h2>Day 01-05 · 封版检查表与竞品人工体验记录表</h2>
+        <p class="summary">这份表用于把 Day 1-5 正式封住：先确认 20 天 demo 的 Flow 范围，再用人工体验补充竞品判断。本版已同步 Claude Code 的竞品深度洞察，填完这份，才进入 Day 6-8 低保真流程图。</p>
+      </section>
+
+      <section class="callout">
+        <strong>使用方式</strong>
+        先看 Day01-02 结果版确认范围，再体验核心竞品，每个 20-30 分钟。记录不用长，抓住“降低压力、引导下一步、反馈方式、不适合借鉴”四件事即可。Claude Code 已产出的洞察先作为默认判断，人工体验主要用来确认、修正和补充手感。
+      </section>
+
+      <section class="section" id="freeze">
+        <h2>1. Day 1-5 封版检查表</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>检查项</th>
+              <th>当前建议</th>
+              <th>你的确认</th>
+              <th>备注/修改意见</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>本轮 demo 范围</td>
+              <td>2 条必做 + 1 条条件做。</td>
+              <td class="check">□ 认可 □ 修改</td>
+              <td class="blank"></td>
+            </tr>
+            <tr>
+              <td>Flow A：Pad 首页启动中枢</td>
+              <td>必做，高保真。Pad首页 → 今日状态主卡 → 情绪打卡 → AI接住 → 今日推荐/功能分流 → 小行动 → 首页回流。</td>
+              <td class="check">□ 认可 □ 修改</td>
+              <td class="blank"></td>
+            </tr>
+            <tr>
+              <td>Flow A 的 Pad 丰富度</td>
+              <td>首页需要同时呈现今日状态主卡、AI伙伴侧栏、今日推荐区、成长反馈条、次级功能入口；但视觉主行动只能有一个。</td>
+              <td class="check">□ 认可 □ 修改</td>
+              <td class="blank"></td>
+            </tr>
+            <tr>
+              <td>Flow B：AI伙伴</td>
+              <td>必做，高保真。全局入口 → 三IP → 对话 → 记忆/边界 → 下一步建议。</td>
+              <td class="check">□ 认可 □ 修改</td>
+              <td class="blank"></td>
+            </tr>
+            <tr>
+              <td>Flow C：完成反馈</td>
+              <td>条件做，中高保真。至少保留完成反馈页 + 成长记录 + AI回应。</td>
+              <td class="check">□ 认可 □ 改为必做 □ 暂缓</td>
+              <td class="blank"></td>
+            </tr>
+            <tr>
+              <td>暂不做内容</td>
+              <td>完整地图、完整商店/换装、家长端、教师端、完整生涯规划、真实AI接入。</td>
+              <td class="check">□ 认可 □ 修改</td>
+              <td class="blank"></td>
+            </tr>
+            <tr>
+              <td>年级适配</td>
+              <td>作为横向原则进入，不单独做完整分年级系统。</td>
+              <td class="check">□ 认可 □ 修改</td>
+              <td class="blank"></td>
+            </tr>
+            <tr>
+              <td>危机响应测试</td>
+              <td>研究员模拟，不让学生扮演危机场景。</td>
+              <td class="check">□ 认可 □ 修改</td>
+              <td class="blank"></td>
+            </tr>
+            <tr>
+              <td>AI demo 方式</td>
+              <td>脚本模拟关键对话，不等待真实模型能力。</td>
+              <td class="check">□ 认可 □ 修改</td>
+              <td class="blank"></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section" id="decision">
+        <h2>2. 最终决策页</h2>
+        <div class="grid-3">
+          <div class="card">
+            <span class="tag">Flow A</span>
+            <h3>最终结论</h3>
+            <p class="check">□ 必做高保真 □ 降级 □ 暂缓</p>
+            <p>修改意见：<span class="line"></span></p>
+          </div>
+          <div class="card">
+            <span class="tag green">Flow B</span>
+            <h3>最终结论</h3>
+            <p class="check">□ 必做高保真 □ 降级 □ 暂缓</p>
+            <p>修改意见：<span class="line"></span></p>
+          </div>
+          <div class="card">
+            <span class="tag amber">Flow C</span>
+            <h3>最终结论</h3>
+            <p class="check">□ 条件做 □ 改必做 □ 暂缓</p>
+            <p>修改意见：<span class="line"></span></p>
+          </div>
+        </div>
+
+        <table>
+          <tbody>
+            <tr>
+              <th>封版一句话</th>
+              <td class="blank">20 天 demo 将围绕 <span class="line"></span> 展开，其中 <span class="line"></span> 高保真，<span class="line"></span> 视时间做轻闭环。</td>
+            </tr>
+            <tr>
+              <th>最终确认人</th>
+              <td>姓名：<span class="line"></span> 日期：<span class="line"></span></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section" id="integrated-insights">
+        <h2>3. Claude Code 竞品洞察同步确认区</h2>
+        <p class="small">本区把 Claude Code 的竞品深度分析沉淀成 Day 1-5 的封版判断。这里不再新增平行主线，只决定这些机制是否进入 Flow A/B/C。</p>
+        <table>
+          <thead>
+            <tr>
+              <th>竞品洞察</th>
+              <th>对应 Flow</th>
+              <th>应该进入 Demo 的机制</th>
+              <th>安全/体验边界</th>
+              <th>封版确认</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Replika</strong><br>AI 记忆让用户感觉“它记得我”。</td>
+              <td>Flow B · AI伙伴</td>
+              <td class="blank filled">对话开头轻量引用历史状态；展示“记住了什么”；提供不记、修改、删除。</td>
+              <td class="blank filled">只学记忆机制，不学成人情感伴侣、暧昧关系、过度拟人依赖。</td>
+              <td class="check">□ 进入 Flow B □ 需要复核 □ 不进入</td>
+            </tr>
+            <tr>
+              <td><strong>Finch</strong><br>零惩罚设计 + 行为与奖励绑定。</td>
+              <td>Flow A / Flow C</td>
+              <td class="blank filled">每个奖励说明来源：因为完成打卡、对话或训练才获得；首页和 IP 要看见用户完成。</td>
+              <td class="blank filled">不学强 streak、断签压力、重宠物养成和过度低幼视觉。</td>
+              <td class="check">□ 进入 Flow C □ 进入 Flow A □ 需要复核</td>
+            </tr>
+            <tr>
+              <td><strong>Woebot</strong><br>情感确认先于建议，能力边界反而提升信任。</td>
+              <td>Flow B · AI伙伴</td>
+              <td class="blank filled">AI 先确认感受，再给结构化下一步；高风险表达触发安全支持与转介说明。</td>
+              <td class="blank filled">不夸大临床背书，不承诺绝对保密，不让学生在测试里扮演危机场景。</td>
+              <td class="check">□ 进入 Flow B □ 需要安全审查 □ 不进入</td>
+            </tr>
+            <tr>
+              <td><strong>Headspace</strong><br>首页回答“现在最该做什么”，不是功能菜单。</td>
+              <td>Flow A / Flow C</td>
+              <td class="blank filled">首页只突出一个主行动；练习结束后立即记录状态变化，再给下一步。</td>
+              <td class="blank filled">不学成人冥想产品的冷距离感，不把首页做成课程库或功能入口堆叠。</td>
+              <td class="check">□ 进入 Flow A □ 进入 Flow C □ 需要复核</td>
+            </tr>
+            <tr>
+              <td><strong>Daylio</strong><br>渐进披露，让记录先轻、数据价值后出现。</td>
+              <td>Flow A / Flow C</td>
+              <td class="blank filled">首次情绪打卡只做 1-2 步；累计几次后再出现趋势、小结、标签洞察。</td>
+              <td class="blank filled">不学强打卡压力，不在数据不足时给空洞趋势，不让统计变成评价。</td>
+              <td class="check">□ 进入 Flow A □ 进入 Flow C □ 需要复核</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <strong>封版判断</strong>
+          这 5 条洞察的用途不是扩大竞品池，而是补强 3 条 demo 主线：Headspace/Daylio 负责降低开始成本，Replika/Woebot 负责 AI 关系与安全边界，Finch 负责完成反馈和长期动机。
+        </div>
+      </section>
+
+      <section class="section" id="experience">
+        <h2>4. 竞品人工体验记录表</h2>
+        <p class="small">每个 App 只走首次体验 + 一个核心动作。不要深挖所有功能，避免被带散。已预填的内容来自 Claude Code 与 Codex 的整合判断，人工体验时可以直接修改。</p>
+        <table>
+          <thead>
+            <tr>
+              <th>竞品</th>
+              <th>重点体验路径</th>
+              <th>它怎么降低用户压力</th>
+              <th>它怎么引导下一步</th>
+              <th>它怎么给反馈</th>
+              <th>不适合借鉴</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Finch</strong></td>
+              <td>Onboarding → check-in → self-care task → reward。</td>
+              <td class="blank filled">用“做一点也算数”和无失败惩罚降低压力；任务可以很小，不制造补签焦虑。</td>
+              <td class="blank filled">把下一步变成一个非常小的自我照顾动作，并让用户知道完成后会发生什么。</td>
+              <td class="blank filled">完成后有伙伴回应、视觉变化和奖励来源说明，形成“我的行动被看见”的感觉。</td>
+              <td class="blank filled">不照搬重宠物养成、强 streak、过度低幼视觉和复杂商店。</td>
+            </tr>
+            <tr>
+              <td><strong>How We Feel</strong></td>
+              <td>Onboarding → emotion words → log feeling → insight/strategy。</td>
+              <td class="blank filled">用情绪词、分类和“说不清”选项降低表达门槛，避免一上来就让学生写长文本。</td>
+              <td class="blank filled">从状态选择自然进入原因、身体感受或一个短策略，路径不散。</td>
+              <td class="blank filled">记录完成后给轻量洞察或策略，而不是只显示“打卡成功”。</td>
+              <td class="blank filled">不做过重情绪矩阵，不让低年级用户被词汇复杂度卡住。</td>
+            </tr>
+            <tr>
+              <td><strong>Wysa</strong></td>
+              <td>Onboarding → AI chat → prompt/reply → boundary/safety。</td>
+              <td class="blank filled">用预设话题、结构化追问和非评判语气让用户更容易开口。</td>
+              <td class="blank filled">每轮对话后给继续聊、练习、记录或寻求支持，不让对话停在情绪表达。</td>
+              <td class="blank filled">通过摘要、练习建议和边界说明反馈“我听到了，也知道下一步”。</td>
+              <td class="blank filled">不做成人心理工具式问卷，不让对话变冷、变诊断。</td>
+            </tr>
+            <tr>
+              <td><strong>Headspace</strong></td>
+              <td>Onboarding → home recommendation → meditation/breathing → completion。</td>
+              <td class="blank filled">首页只给一个主行动，减少“我该点哪个”的选择压力。</td>
+              <td class="blank filled">根据当前状态推荐一个练习，完成后再给状态记录或下一步。</td>
+              <td class="blank filled">练习结束有完成感和状态回看，形成“做完后更清楚自己”的反馈。</td>
+              <td class="blank filled">不照搬成人冥想产品的冷静距离感，不把首页做成课程库。</td>
+            </tr>
+            <tr>
+              <td><strong>Replika</strong></td>
+              <td>首次对话 → 后续对话 → 记忆引用 → 关系连续感。</td>
+              <td class="blank filled">用户不必每次重新解释自己，AI 可以轻量引用过往状态。</td>
+              <td class="blank filled">用“上次你提到……”自然开启对话，再引导继续聊或做小行动。</td>
+              <td class="blank filled">通过记忆摘要、历史情绪钩子和可见记录反馈“它记得我”。</td>
+              <td class="blank filled">不学成人情感伴侣关系、暧昧表达、过度拟人依赖；记忆必须可控。</td>
+            </tr>
+            <tr>
+              <td><strong>Woebot</strong></td>
+              <td>情绪表达 → 情感确认 → 结构化支持 → 危机转介。</td>
+              <td class="blank filled">先承认感受，不急着建议；明确 AI 角色，减少“它是不是在假装真人”的不信任。</td>
+              <td class="blank filled">把表达收束到一个可执行下一步：呼吸、记录、认知重构或找支持。</td>
+              <td class="blank filled">对话结束给小结，高风险表达触发清晰的安全支持说明。</td>
+              <td class="blank filled">不夸大临床背书，不写绝对保密，不让学生在测试里扮演危机场景。</td>
+            </tr>
+            <tr>
+              <td><strong>Daylio</strong></td>
+              <td>Mood log → activity tag → note optional → trend later。</td>
+              <td class="blank filled">首次记录很短，允许不写原因；先完成，再逐步补充更多信息。</td>
+              <td class="blank filled">用活动标签和可选备注引导补充，但不强迫用户解释清楚。</td>
+              <td class="blank filled">累计记录后再给趋势、模式和回看价值，让数据反馈晚一点出现。</td>
+              <td class="blank filled">不做强打卡压力，不在数据不足时给空洞洞察。</td>
+            </tr>
+            <tr>
+              <td><strong>Duolingo</strong></td>
+              <td>Onboarding → first lesson → instant feedback → reward/streak。</td>
+              <td class="blank filled">任务极短、反馈即时，用户知道“现在只要完成这一小步”。</td>
+              <td class="blank filled">完成后马上给下一步，但下一步要可跳过，避免强迫连续。</td>
+              <td class="blank filled">用即时反馈和轻奖励制造完成感。</td>
+              <td class="blank filled">不学排行榜、损失厌恶、强连续打卡和失败惩罚。</td>
+            </tr>
+            <tr>
+              <td><strong>Elevate / Lumosity</strong></td>
+              <td>二选一：training → result → progress/next training。</td>
+              <td class="blank filled">训练结果不用排名压迫，而是解释“今天练到了什么能力”。</td>
+              <td class="blank filled">结果页给一个相关下一步：再练 1 分钟、查看成长记录或让 AI 解读。</td>
+              <td class="blank filled">用能力解释、趋势和进步语言替代单纯分数。</td>
+              <td class="blank filled">不做能力贴标签、排名、分数羞辱和考试感。</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section" id="flow-notes">
+        <h2>5. 按 Flow 汇总你的判断</h2>
+        <div class="grid-3">
+          <div class="card">
+            <span class="tag">Flow A</span>
+            <h3>Pad 首页启动中枢</h3>
+            <p><strong>最值得借鉴：</strong></p>
+            <p class="blank filled">Headspace 的“首页是答案不是菜单”、How We Feel 的低压力情绪表达、Daylio 的短路径打卡；同时用 Pad 空间承载 AI 伙伴、今日推荐、成长反馈和次级功能入口。</p>
+            <p><strong>需要避开：</strong></p>
+            <p class="blank filled">避开功能入口平铺、过重情绪矩阵、强打卡压力、单一打卡页，以及把 Pad 首页做得像手机小卡片列表。</p>
+            <p><strong>对 AI星球 的修改：</strong></p>
+            <p class="blank filled">首页未打卡时主卡突出“今天感觉怎么样”；右侧/侧栏露出 AI 伙伴，下方提供今日推荐、成长反馈和次级功能入口。打卡后由 AI 接住，再推荐一个今日小行动，并让首页状态更新。</p>
+          </div>
+          <div class="card">
+            <span class="tag green">Flow B</span>
+            <h3>AI伙伴</h3>
+            <p><strong>最值得借鉴：</strong></p>
+            <p class="blank filled">Replika 的轻量记忆钩子、Woebot 的能力边界、Wysa 的结构化下一步、危机支持产品的安全转介逻辑。</p>
+            <p><strong>需要避开：</strong></p>
+            <p class="blank filled">避开成人情感伴侣关系、绝对保密承诺、临床疗效夸大和让学生扮演危机场景。</p>
+            <p><strong>对 AI星球 的修改：</strong></p>
+            <p class="blank filled">三 IP 选择用场景而不是角色名来引导；对话要先确认感受，再给继续聊/练习/记录/找支持；记忆必须可见可控。</p>
+          </div>
+          <div class="card">
+            <span class="tag amber">Flow C</span>
+            <h3>完成反馈</h3>
+            <p><strong>最值得借鉴：</strong></p>
+            <p class="blank filled">Finch 的“行为产生奖励”、Elevate/Lumosity 的能力解释、Duolingo 的即时反馈。</p>
+            <p><strong>需要避开：</strong></p>
+            <p class="blank filled">避开排名、能力贴标签、强 streak、复杂商店和只给分数不解释意义。</p>
+            <p><strong>对 AI星球 的修改：</strong></p>
+            <p class="blank filled">完成页必须说明“你刚刚练到了什么”和“奖励从哪里来”；首页或 AI 要回看这次完成，让模块之间连起来。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="next">
+        <h2>6. 进入 Day 6 前必须确认</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>确认项</th>
+              <th>通过标准</th>
+              <th>状态</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Flow 范围已定</td>
+              <td>不会再在大地图、家长端、完整商店、生涯规划之间摇摆。</td>
+              <td class="check">□ 已通过 □ 未通过</td>
+            </tr>
+            <tr>
+              <td>竞品体验已补充</td>
+              <td>至少体验 Finch、How We Feel、Wysa、Headspace；Replika、Woebot、Daylio 可用人工体验或 Claude 深度分析复核。</td>
+              <td class="check">□ 已通过 □ 未通过</td>
+            </tr>
+            <tr>
+              <td>每条 Flow 的借鉴点已明确</td>
+              <td>能说清楚“学什么”和“不学什么”；Flow A 已按 Pad 首页中枢理解，不再等同于单一打卡流程。</td>
+              <td class="check">□ 已通过 □ 未通过</td>
+            </tr>
+            <tr>
+              <td>团队认可 20 天交付边界</td>
+              <td>认可这是验证 demo，不是完整新版本。</td>
+              <td class="check">□ 已通过 □ 未通过</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <strong>通过后再进入 Day 6-8</strong>
+          Day 6-8 才开始画低保真流程图和页面结构。没有封住 Day 1-5，后面画得越快，返工越大。
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = "ai_planet_day01_05_fillable_v2";
+      const STATUS_IDLE = "已自动保存";
+      const status = document.getElementById("saveStatus");
+      const editableSelector = ".blank, .check, .line";
+      let saveTimer = null;
+
+      function nowText() {
+        const d = new Date();
+        return d.toLocaleString("zh-CN", {
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit"
+        });
+      }
+
+      function getFields() {
+        return Array.from(document.querySelectorAll(editableSelector));
+      }
+
+      function setupEditableFields() {
+        getFields().forEach((el, index) => {
+          el.contentEditable = "true";
+          el.spellcheck = false;
+          el.dataset.fieldId = el.dataset.fieldId || "field_" + index;
+          if (el.classList.contains("blank")) {
+            el.dataset.placeholder = el.dataset.placeholder || "点击填写";
+          }
+          if (el.classList.contains("line")) {
+            el.dataset.placeholder = el.dataset.placeholder || "填写";
+          }
+          el.addEventListener("input", scheduleSave);
+          el.addEventListener("blur", saveAll);
+        });
+      }
+
+      function readData() {
+        const data = {};
+        getFields().forEach((el) => {
+          data[el.dataset.fieldId] = el.innerHTML;
+        });
+        return data;
+      }
+
+      function applyData(data) {
+        getFields().forEach((el) => {
+          if (Object.prototype.hasOwnProperty.call(data, el.dataset.fieldId)) {
+            el.innerHTML = data[el.dataset.fieldId];
+          }
+        });
+      }
+
+      function saveAll() {
+        const payload = {
+          updatedAt: new Date().toISOString(),
+          title: document.title,
+          fields: readData()
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+        status.textContent = STATUS_IDLE + " · " + nowText();
+      }
+
+      function scheduleSave() {
+        status.textContent = "正在编辑...";
+        window.clearTimeout(saveTimer);
+        saveTimer = window.setTimeout(saveAll, 500);
+      }
+
+      function loadSaved() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          status.textContent = "可直接填写，内容会自动保存";
+          return;
+        }
+        try {
+          const payload = JSON.parse(raw);
+          if (payload && payload.fields) {
+            applyData(payload.fields);
+            status.textContent = "已恢复上次保存 · " + nowText();
+          }
+        } catch (error) {
+          status.textContent = "本地保存读取失败";
+        }
+      }
+
+      function download(filename, content, type) {
+        const blob = new Blob([content], { type });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function exportJson() {
+        saveAll();
+        const raw = localStorage.getItem(STORAGE_KEY) || "{}";
+        download("Day01-05_封版检查表_填写备份.json", raw, "application/json;charset=utf-8");
+      }
+
+      function exportHtml() {
+        saveAll();
+        const clone = document.documentElement.cloneNode(true);
+        clone.querySelectorAll(".toolbar").forEach((el) => el.remove());
+        clone.querySelectorAll("[contenteditable]").forEach((el) => {
+          el.removeAttribute("contenteditable");
+          el.removeAttribute("spellcheck");
+        });
+        const html = "<!doctype html>\n" + clone.outerHTML;
+        download("Day01-05_封版检查表_填写版.html", html, "text/html;charset=utf-8");
+      }
+
+      function importJson(file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const payload = JSON.parse(String(reader.result || "{}"));
+            const fields = payload.fields || payload;
+            applyData(fields);
+            saveAll();
+            status.textContent = "已导入并保存 · " + nowText();
+          } catch (error) {
+            status.textContent = "导入失败，请确认是JSON备份";
+          }
+        };
+        reader.readAsText(file);
+      }
+
+      function clearAll() {
+        const ok = window.confirm("确认清空所有填写内容？这个操作会覆盖当前本机保存。");
+        if (!ok) return;
+        getFields().forEach((el) => {
+          if (el.classList.contains("check")) return;
+          el.innerHTML = "";
+        });
+        localStorage.removeItem(STORAGE_KEY);
+        status.textContent = "已清空填写内容";
+      }
+
+      setupEditableFields();
+      loadSaved();
+
+      document.getElementById("saveBtn").addEventListener("click", saveAll);
+      document.getElementById("exportJsonBtn").addEventListener("click", exportJson);
+      document.getElementById("exportHtmlBtn").addEventListener("click", exportHtml);
+      document.getElementById("printBtn").addEventListener("click", () => window.print());
+      document.getElementById("clearBtn").addEventListener("click", clearAll);
+      document.getElementById("importJsonInput").addEventListener("change", (event) => {
+        const file = event.target.files && event.target.files[0];
+        if (file) importJson(file);
+        event.target.value = "";
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>减压星球 · 用户体验度量与NPS接入技术方案</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+  background: #F0EBE3;
+  color: #1A1A1A;
+  line-height: 1.6;
+}
+.page { max-width: 960px; margin: 0 auto; padding: 48px 24px 80px; }
+
+.cover {
+  background: #2A2723;
+  border-radius: 16px; padding: 64px 56px; margin-bottom: 32px;
+  color: #fff; position: relative; overflow: hidden;
+}
+.cover::before {
+  content: ''; position: absolute; top: -80px; right: -80px;
+  width: 320px; height: 320px;
+  display: none;
+  pointer-events: none;
+}
+.cover-tag {
+  display: inline-block; background: rgba(200,133,63,0.25);
+  border: 1px solid rgba(200,133,63,0.5); color: #C8853F;
+  font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; padding: 5px 14px; border-radius: 20px; margin-bottom: 24px;
+}
+.cover h1 { font-size: 34px; font-weight: 800; line-height: 1.25; margin-bottom: 16px; }
+.cover h1 span { color: #E8B878; }
+.cover-sub { font-size: 15px; color: rgba(255,255,255,0.85); margin-bottom: 36px; line-height: 1.7; }
+.cover-meta { display: flex; gap: 28px; flex-wrap: wrap; }
+.cover-meta-item { font-size: 12px; color: rgba(255,255,255,0.5); }
+.cover-meta-item strong { color: rgba(255,255,255,0.85); display: block; font-size: 14px; margin-bottom: 2px; }
+
+.section { background: #fff; border-radius: 14px; padding: 32px 36px; margin-bottom: 28px; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+.section-head { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 2px solid #F0EBE3; }
+.section-num { width: 32px; height: 32px; border-radius: 50%; background: #C8853F; color: #fff; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.section-head h2 { font-size: 20px; font-weight: 700; color: #1A1A1A; }
+.section-desc { font-size: 14px; color: #5A5A58; line-height: 1.75; margin-bottom: 20px; }
+
+.metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+.metric-card { background: #FDF8F0; border: 1px solid #F0D8B8; border-radius: 10px; padding: 18px 20px; }
+.mc-label { font-size: 11px; font-weight: 700; color: #C8853F; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+.mc-value { font-size: 22px; font-weight: 800; color: #1A1A1A; margin-bottom: 4px; }
+.mc-desc { font-size: 12px; color: #6A6A60; line-height: 1.5; }
+
+.rule-box { background: #FFF8F0; border: 1px solid #F0D8B8; border-left: 4px solid #C8853F; border-radius: 8px; padding: 14px 18px; margin-top: 14px; font-size: 13px; color: #5A3E1B; line-height: 1.75; }
+.rule-box strong { color: #7A4010; }
+.rule-box code { background: rgba(200,133,63,0.12); padding: 1px 6px; border-radius: 3px; font-size: 12px; }
+
+.journey-wrap { overflow-x: auto; margin: 20px 0; }
+.journey-map { display: flex; align-items: flex-start; gap: 0; min-width: 620px; }
+.journey-step { flex: 1; text-align: center; position: relative; padding: 0 8px; }
+.journey-step:not(:last-child)::after { content: '→'; position: absolute; right: -8px; top: 16px; color: #C8853F; font-size: 18px; font-weight: 700; }
+.js-icon { width: 44px; height: 44px; border-radius: 50%; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.js-label { font-size: 12px; font-weight: 600; color: #1A1A1A; margin-bottom: 3px; line-height: 1.4; }
+.js-sub { font-size: 11px; color: #8A8A80; line-height: 1.4; }
+.js-nps { margin-top: 6px; display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; background: #E8E4FF; color: #C8853F; }
+
+.tp-card { border: 1px solid #E2D9C8; border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+.tp-head { background: #1A1A2E; padding: 14px 20px; display: flex; align-items: center; gap: 12px; }
+.tp-num { width: 28px; height: 28px; border-radius: 50%; background: #C8853F; color: #fff; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.tp-name { font-size: 15px; font-weight: 700; color: #fff; flex: 1; }
+.tp-badge { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 10px; background: rgba(99,102,241,0.25); color: #C8853F; letter-spacing: 0.3px; white-space: nowrap; }
+.tp-body { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; }
+.tp-col { padding: 18px 20px; border-right: 1px solid #F0EBE3; }
+.tp-col:last-child { border-right: none; }
+.tp-col-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #B0A898; margin-bottom: 12px; }
+.tp-col p, .tp-col li { font-size: 13px; color: #3A3A38; line-height: 1.75; }
+.tp-col ul { padding-left: 16px; }
+.tp-col .note { font-size: 11px; color: #9A9290; margin-top: 8px; line-height: 1.6; }
+
+.q-box { background: #FDF8F0; border: 1px solid #F0D8B8; border-radius: 8px; padding: 14px 16px; }
+.q-main { font-size: 14px; font-weight: 600; color: #1A1A1A; margin-bottom: 10px; }
+.q-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.q-chip { font-size: 12px; background: #fff; border: 1px solid #F0D8B8; padding: 4px 10px; border-radius: 6px; }
+.q-nps-row { display: flex; gap: 3px; flex-wrap: wrap; margin: 10px 0 4px; }
+.q-nps-n { font-size: 11px; background: #F3F4F6; border: 1px solid #E5E7EB; padding: 4px 7px; border-radius: 5px; color: #6B7280; }
+.q-nps-p { font-size: 11px; background: #FEF3C7; border: 1px solid #F59E0B; padding: 4px 7px; border-radius: 5px; color: #92400E; }
+.q-nps-g { font-size: 11px; background: #D1FAE5; border: 1px solid #10B981; padding: 4px 7px; border-radius: 5px; color: #065F46; }
+.q-sub { font-size: 11px; color: #8A6A3A; line-height: 1.65; font-style: italic; }
+
+.spec-table-wrap { overflow-x: auto; }
+.spec-table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 13px; }
+.spec-table th { background: #1A1A2E; color: #fff; padding: 11px 14px; text-align: left; font-size: 12px; font-weight: 600; }
+.spec-table td { padding: 11px 14px; border-bottom: 1px solid #F0EBE3; vertical-align: top; line-height: 1.65; color: #3A3A38; }
+.spec-table tr:nth-child(even) td { background: #FDFAF8; }
+.tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin-right: 4px; white-space: nowrap; }
+.tag-must { background: #FDEAEA; color: #B03030; }
+.tag-opt  { background: #E8F3EB; color: #2A7A3A; }
+.tag-tech { background: #E8E4F0; color: #5A5A90; }
+
+.page-footer { text-align: center; font-size: 12px; color: #9A9A90; margin-top: 36px; padding-top: 20px; border-top: 1px solid #D8D0C4; line-height: 1.9; }
+
+@media (max-width: 700px) {
+  .cover { padding: 36px 28px; }
+  .cover h1 { font-size: 26px; }
+  .tp-body { grid-template-columns: 1fr; }
+  .tp-col { border-right: none; border-bottom: 1px solid #F0EBE3; }
+  .metrics-grid { grid-template-columns: 1fr; }
+  .section { padding: 24px 20px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="cover">
+  <div class="cover-tag">技术方案 · 产品汇报</div>
+  <h1>减压星球<br><span>用户体验度量与NPS接入方案</span></h1>
+  <p class="cover-sub">基于 AI星球 v1.0.2801 APK路由分析 · 覆盖情绪打卡、AI对话、脑之岛三大核心模块<br>面向产品经理、开发团队与设计师 · 供评审与排期决策使用</p>
+  <div class="cover-meta">
+    <div class="cover-meta-item"><strong>目标产品</strong>AI星球（减压星球）</div>
+    <div class="cover-meta-item"><strong>适用用户</strong>10–18岁在校学生</div>
+    <div class="cover-meta-item"><strong>NPS触点数</strong>4个核心触点</div>
+    <div class="cover-meta-item"><strong>文档版本</strong>v1.0 · 2026年7月</div>
+  </div>
+</div>
+
+<!-- S4 -->
+<div class="section">
+  <div class="section-head"><div class="section-num">4</div><h2>业务端实现功能列表</h2></div>
+  <p class="section-desc">以下为开发侧需要实现的功能模块，分为必须实现和建议实现两个优先级。</p>
+  <div class="spec-table-wrap"><table class="spec-table">
+    <thead>
+      <tr><th style="width:22%">功能模块</th><th style="width:10%">优先级</th><th style="width:40%">实现说明</th><th style="width:28%">关联痛点</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>问卷触发引擎</strong></td>
+        <td><span class="tag tag-must">必须</span></td>
+        <td>监听 signStatus 切换、/conversation/report 加载完成、训练结束事件；统一管理4个触点的触发状态（首次标记、上次触发时间戳、拒绝冷却期）</td>
+        <td>T1/T2/T3/T4 全部触点基础</td>
+      </tr>
+      <tr>
+        <td><strong>频次控制与去重</strong></td>
+        <td><span class="tag tag-must">必须</span></td>
+        <td>用户维度存储：nps_t1_count（打卡累计）、各触点 last_ts、nps_rejected_until（冷却截止时间戳）；同一自然日内最多触发1次任意NPS</td>
+        <td>防骚扰，提升响应率</td>
+      </tr>
+      <tr>
+        <td><strong>问卷弹层组件</strong></td>
+        <td><span class="tag tag-must">必须</span></td>
+        <td>底部半屏弹层；主问题（3选项卡片）+ 条件追问（选项或开放文本）+ 跳过按钮；从底部滑入，不遮挡主内容；语言亲切口语化</td>
+        <td>P9 免责声明信任感 · 青少年用语</td>
+      </tr>
+      <tr>
+        <td><strong>T4 标准NPS量表</strong></td>
+        <td><span class="tag tag-must">必须</span></td>
+        <td>11档按钮（0–10），三色区分：0–6灰/红、7–8黄、9–10绿；标注「完全不会」「一定会推荐」；移动端按钮最小触控区 44×44pt</td>
+        <td>T4 整体满意度标准问卷</td>
+      </tr>
+      <tr>
+        <td><strong>数据上报接口</strong></td>
+        <td><span class="tag tag-must">必须</span></td>
+        <td>上报字段：触点ID（t1–t4）、主选项、追问选项/文本、userId（脱敏）、触发来源、时间戳、App版本号</td>
+        <td>数据分析与迭代依据</td>
+      </tr>
+      <tr>
+        <td><strong>灰度发布控制</strong></td>
+        <td><span class="tag tag-must">必须</span></td>
+        <td>按 userId 哈希分桶，建议初次10%灰度，稳定后全量；服务端开关可按触点独立控制</td>
+        <td>降低新功能风险</td>
+      </tr>
+      <tr>
+        <td><strong>年级/权限过滤</strong></td>
+        <td><span class="tag tag-must">必须</span></td>
+        <td>gradeCode 未满足训练开放条件 → T3不触发；咨询Tab未购买学校 → T4追问排除「咨询」选项</td>
+        <td>P4 无年级内容过滤</td>
+      </tr>
+      <tr>
+        <td><strong>AI全局悬浮入口</strong></td>
+        <td><span class="tag tag-opt">建议</span></td>
+        <td>切换至非首页Tab时，保持AI伙伴悬浮球可见；点击可直接唤起上次对话</td>
+        <td>P2 AI对话无全局持续入口</td>
+      </tr>
+      <tr>
+        <td><strong>对话记忆摘要展示</strong></td>
+        <td><span class="tag tag-opt">建议</span></td>
+        <td>进入AI对话页时，顶部显示「上次我们聊了：[话题关键词]」记忆钩子；数据来自上次对话报告关键词字段</td>
+        <td>P3 对话无情感记忆</td>
+      </tr>
+      <tr>
+        <td><strong>NPS数据看板</strong></td>
+        <td><span class="tag tag-tech">技术</span></td>
+        <td>运营后台：各触点NPS趋势折线图（按周/月）、推荐者/被动者/贬损者分布、追问词云、版本对比视图</td>
+        <td>数据沉淀与长期追踪</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- S5: 频次速查 -->
+<div class="section">
+  <div class="section-head"><div class="section-num">5</div><h2>触点频次规则速查</h2></div>
+  <div class="spec-table-wrap"><table class="spec-table">
+    <thead>
+      <tr><th>触点</th><th>首次触发</th><th>复访触发</th><th>拒绝冷却</th><th>同日互斥规则</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>T1 情绪打卡</strong></td>
+        <td>首次完成打卡</td>
+        <td>累计打卡次数达7的倍数</td>
+        <td>30天</td>
+        <td>同日已触发其他NPS → 跳过</td>
+      </tr>
+      <tr>
+        <td><strong>T2 AI对话</strong></td>
+        <td>首次生成对话报告</td>
+        <td>距上次T2满14天 + 有新报告</td>
+        <td>30天</td>
+        <td>同日已触发其他NPS → 跳过</td>
+      </tr>
+      <tr>
+        <td><strong>T3 脑之岛</strong></td>
+        <td>首次完成任一训练</td>
+        <td>距上次T3满30天</td>
+        <td>30天</td>
+        <td>同日已触发其他NPS → 跳过</td>
+      </tr>
+      <tr>
+        <td><strong>T4 整体NPS</strong></td>
+        <td>安装满14天 + 累计使用≥5天</td>
+        <td>距上次T4满90天</td>
+        <td>90天</td>
+        <td>同周期内已触发T1/T2/T3 → 延迟3天</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="rule-box" style="margin-top:16px;"><strong>核心原则：</strong>每位用户每日最多触发1次任意NPS · 全局拒绝后进入对应冷却期 · 所有触发须在功能完成节点，不打断操作中途 · 青少年用语口语化、亲切，不使用「评分」「量表」等词汇</div>
+</div>
+
+<div class="page-footer">
+  减压星球 · 用户体验度量与NPS接入技术方案 · v1.0 · 2026年7月<br>
+  基于 AI星球 v1.0.2801 APK路由分析与 P1–P11 痛点诊断 · 供产品与技术团队评审排期使用
+</div>
+
+<!-- S1 -->
+<div class="section">
+  <div class="section-head"><div class="section-num">1</div><h2>度量目标与范围</h2></div>
+  <p class="section-desc">减压星球核心价值是"7×24陪伴"与情绪健康成长。本方案在三大核心功能的关键完成节点埋入NPS问卷，度量用户真实情绪体验，为迭代提供数据依据。</p>
+  <div class="metrics-grid">
+    <div class="metric-card"><div class="mc-label">核心度量</div><div class="mc-value">NPS</div><div class="mc-desc">净推荐值：推荐者% − 贬损者%<br>基准 ≥ 0 及格，≥ 30 优秀</div></div>
+    <div class="metric-card"><div class="mc-label">辅助度量</div><div class="mc-value">SUS</div><div class="mc-desc">系统可用性量表（10题标准问卷）<br>行业平均 68，优秀 80+</div></div>
+    <div class="metric-card"><div class="mc-label">情绪追踪</div><div class="mc-value">情绪曲线</div><div class="mc-desc">每个操作触点的😊 顺利 / 😐 一般 / 😟 困难记录<br>识别体验低谷与高峰</div></div>
+  </div>
+  <div class="rule-box"><strong>特殊说明：</strong>目标用户为10–18岁未成年人，所有问卷语言须口语化、简短；单次问询不超过2题；NPS弹出仅在功能完成节点触发，不打断中途操作。</div>
+</div>
+
+<!-- S2 -->
+<div class="section">
+  <div class="section-head"><div class="section-num">2</div><h2>产品核心用户旅程</h2></div>
+  <p class="section-desc">基于APK路由分析，减压星球围绕三条主线展开，底部6个Tab对应不同功能域。NPS触点（标注 NPS T#）设置在各主线的关键完成节点。</p>
+  <div class="journey-wrap">
+    <div class="journey-map">
+      <div class="journey-step">
+        <div class="js-icon" style="background:#F0EBE3;">📱</div>
+        <div class="js-label">打开App · 首页</div>
+        <div class="js-sub">双卡片入口<br>6 Tab导航</div>
+      </div>
+      <div class="journey-step">
+        <div class="js-icon" style="background:#FEF0E0;">📔</div>
+        <div class="js-label">情绪打卡<br>/clockIn</div>
+        <div class="js-sub">4步完形填空<br>妙笔提问</div>
+        <div class="js-nps">NPS T1</div>
+      </div>
+      <div class="journey-step">
+        <div class="js-icon" style="background:#E8F0FF;">💬</div>
+        <div class="js-label">AI对话<br>/chooseRole</div>
+        <div class="js-sub">三IP · 多轮对话<br>→ 对话报告</div>
+        <div class="js-nps">NPS T2</div>
+      </div>
+      <div class="journey-step">
+        <div class="js-icon" style="background:#E8F8F0;">🧠</div>
+        <div class="js-label">脑之岛<br>认知训练</div>
+        <div class="js-sub">4岛 · 勋章系统<br>下载 → 完成</div>
+        <div class="js-nps">NPS T3</div>
+      </div>
+      <div class="journey-step">
+        <div class="js-icon" style="background:#F8F0FF;">⭐</div>
+        <div class="js-label">整体满意度<br>首页触发</div>
+        <div class="js-sub">安装满14天<br>每90天一次</div>
+        <div class="js-nps">NPS T4</div>
+      </div>
+    </div>
+  </div>
+  <div class="rule-box"><strong>路由依据：</strong>打卡完成 <code>/clockIn</code>（signStatus 1/2→3/4 切换完成后）· 对话报告 <code>/conversation/report</code>（生成成功页）· 脑之岛训练完成页（勋章弹窗关闭后）· 整体NPS 注入首页任务完成弹窗或持久横幅</div>
+</div>
+
+<!-- S3 -->
+<div class="section">
+  <div class="section-head"><div class="section-num">3</div><h2>NPS接入方案 · 4个核心触点</h2></div>
+  <p class="section-desc">每个触点包含三个维度：埋点位置（产品内具体页面与触发时机）、触发逻辑（频次控制与条件判断）、问题内容（主问题 + 条件追问）。</p>
+
+  <!-- T1 -->
+  <div class="tp-card">
+    <div class="tp-head">
+      <div class="tp-num">T1</div>
+      <div class="tp-name">情绪打卡完成 · /clockIn 完成页</div>
+      <div class="tp-badge">首次打卡 · 每7次触发</div>
+    </div>
+    <div class="tp-body">
+      <div class="tp-col">
+        <div class="tp-col-title">埋点位置</div>
+        <p>完形填空第4步（句子生成页）用户点击「完成打卡」→ 成功动画播完 → 结果卡片出现时注入问卷弹层。</p>
+        <p class="note">即 signStatus 由 1/2 变为 3/4 的状态切换完成后触发 · 非打卡进行中触发</p>
+      </div>
+      <div class="tp-col">
+        <div class="tp-col-title">触发逻辑</div>
+        <ul>
+          <li>首次完成打卡后立即触发</li>
+          <li>之后：累计打卡次数达 7 的倍数时触发</li>
+          <li>同一自然日内已触发过其他NPS → 跳过</li>
+          <li>用户关闭问卷 → 标记「已拒绝」，30天内不再触发 T1</li>
+        </ul>
+      </div>
+      <div class="tp-col">
+        <div class="tp-col-title">问题内容</div>
+        <div class="q-box">
+          <div class="q-main">📔 今天记录心情的过程，感觉怎么样？</div>
+          <div class="q-chips">
+            <span class="q-chip">😄 很顺畅</span>
+            <span class="q-chip">😐 还好</span>
+            <span class="q-chip">😕 有点卡</span>
+          </div>
+          <div class="q-sub">若选「有点卡」→ 追问：「哪里卡住了？」<br>（找不到合适的情绪词 / 事件选项太少 / 句子不像我说的 / 其他）</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- T2 -->
+  <div class="tp-card">
+    <div class="tp-head">
+      <div class="tp-num">T2</div>
+      <div class="tp-name">AI对话报告生成 · /conversation/report</div>
+      <div class="tp-badge">首次报告 · 每14天一次</div>
+    </div>
+    <div class="tp-body">
+      <div class="tp-col">
+        <div class="tp-col-title">埋点位置</div>
+        <p>对话报告页面加载完成、报告卡片完全展示后，延迟 2秒 触发弹层。</p>
+        <p class="note">仅在报告成功生成后触发（至少完成一问一答）· 三IP均计入（吉塔/小星/第三IP） · 对话 &lt; 2轮不触发</p>
+      </div>
+      <div class="tp-col">
+        <div class="tp-col-title">触发逻辑</div>
+        <ul>
+          <li>首次生成对话报告后立即触发</li>
+          <li>之后：距上次T2触发满 14天 且有新报告生成</li>
+          <li>仅发问题未获AI回复即退出 → 无报告，不触发</li>
+          <li>30天内已拒绝 → 不触发</li>
+        </ul>
+      </div>
+      <div class="tp-col">
+        <div class="tp-col-title">问题内容</div>
+        <div class="q-box">
+          <div class="q-main">💬 和AI伙伴聊完，你感觉怎么样？</div>
+          <div class="q-chips">
+            <span class="q-chip">😊 好多了</span>
+            <span class="q-chip">🙂 还行</span>
+            <span class="q-chip">😔 没什么感觉</span>
+          </div>
+          <div class="q-sub">若选「没什么感觉」→ 追问：「是因为什么？」<br>（AI回复太短 / 感觉没被理解 / 我不知道说什么 / 其他）</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- T3 -->
+  <div class="tp-card">
+    <div class="tp-head">
+      <div class="tp-num">T3</div>
+      <div class="tp-name">脑之岛认知训练完成 · 训练结束页</div>
+      <div class="tp-badge">首次训练 · 每30天一次</div>
+    </div>
+    <div class="tp-body">
+      <div class="tp-col">
+        <div class="tp-col-title">埋点位置</div>
+        <p>训练结束动画播完 → 勋章获得弹窗出现 → 用户点击关闭勋章弹窗后，注入NPS弹层。</p>
+        <p class="note">仅在正式训练完成后触发，「下载资源」进度页不触发 · gradeCode权限未开放导致无法完成的不触发</p>
+      </div>
+      <div class="tp-col">
+        <div class="tp-col-title">触发逻辑</div>
+        <ul>
+          <li>首次完成任意岛屿任意训练后触发</li>
+          <li>之后：距上次T3触发满 30天</li>
+          <li>4岛均计入（注意力/记忆力/思维力/执行力）</li>
+          <li>训练中途退出（未完成） → 不触发</li>
+          <li>30天内已拒绝 → 不触发</li>
+        </ul>
+      </div>
+      <div class="tp-col">
+        <div class="tp-col-title">问题内容</div>
+        <div class="q-box">
+          <div class="q-main">🧠 刚才的训练，你觉得怎么样？</div>
+          <div class="q-chips">
+            <span class="q-chip">🔥 很有趣</span>
+            <span class="q-chip">😐 还行</span>
+            <span class="q-chip">😑 有点无聊</span>
+          </div>
+          <div class="q-sub">若选「很有趣」→ 追问：「想继续哪个方向？」（注意力 / 记忆力 / 思维力 / 执行力）<br>若选「有点无聊」→ 追问：「是什么感觉？」（太难 / 太简单 / 加载太慢 / 不知道有什么用）</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- T4 -->
+  <div class="tp-card">
+    <div class="tp-head">
+      <div class="tp-num">T4</div>
+      <div class="tp-name">整体满意度 · 首页任务完成弹窗 / 持久横幅</div>
+      <div class="tp-badge">安装满14天 · 每90天一次</div>
+    </div>
+    <div class="tp-body">
+      <div class="tp-col">
+        <div class="tp-col-title">埋点位置</div>
+        <p>两种入口（优先级从高到低）：</p>
+        <ul>
+          <li><strong>优先：</strong>任务系统完成当日全部任务的弹窗关闭后触发</li>
+          <li><strong>备用：</strong>首页启动时底部插入持久横幅（可滑走，不阻断操作）</li>
+        </ul>
+        <p class="note">同日已触发备用横幅不重复触发</p>
+      </div>
+      <div class="tp-col">
+        <div class="tp-col-title">触发逻辑</div>
+        <ul>
+          <li>首次触发：安装满14天 AND 累计使用天数 ≥ 5天</li>
+          <li>之后：距上次T4触发满 90天</li>
+          <li>同周期内已触发T1/T2/T3 → 延迟 3天 再触发T4</li>
+          <li>仅当日首次打开App触发（不在使用中途弹出）</li>
+        </ul>
+      </div>
+      <div class="tp-col">
+        <div class="tp-col-title">问题内容</div>
+        <div class="q-box">
+          <div class="q-main">⭐ 你会把减压星球推荐给有同样烦恼的同学吗？</div>
+          <div class="q-nps-row">
+            <span class="q-nps-n">0</span><span class="q-nps-n">1</span><span class="q-nps-n">2</span>
+            <span class="q-nps-n">3</span><span class="q-nps-n">4</span><span class="q-nps-n">5</span>
+            <span class="q-nps-n">6</span><span class="q-nps-p">7</span><span class="q-nps-p">8</span>
+            <span class="q-nps-g">9</span><span class="q-nps-g">10</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:#9CA3AF;margin-bottom:8px;"><span>完全不会</span><span>一定会推荐</span></div>
+          <div class="q-sub">0–6 → 追问：「是什么让你暂时不想推荐？」（开放文本，可跳过）<br>9–10 → 追问：「最喜欢哪个功能？」（AI伙伴 / 情绪打卡 / 脑之岛训练 / 心理剧场）</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></div>
+</body>
+</html>

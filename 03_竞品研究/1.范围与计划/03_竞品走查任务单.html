@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI星球 20天优化Demo · 竞品20分钟走查任务单</title>
+  <style>
+    :root {
+      --ink: #1d2433;
+      --muted: #657285;
+      --line: #dfe6ef;
+      --soft: #f6f8fb;
+      --blue: #2f70d0;
+      --green: #2f8f6b;
+      --amber: #b97817;
+      --red: #c84d4d;
+      --violet: #6f56c9;
+      --card: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.68;
+      background: #eef2f6;
+    }
+
+    .page {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    aside {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 28px 22px;
+      border-right: 1px solid var(--line);
+      background: #fff;
+      overflow: auto;
+    }
+
+    aside h1 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    aside p {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    nav a {
+      display: block;
+      padding: 9px 10px;
+      color: #435063;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    nav a:hover { background: var(--soft); color: var(--blue); }
+
+    main {
+      padding: 42px 52px 72px;
+      max-width: 1180px;
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin: -42px -52px 28px;
+      padding: 14px 52px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, .96);
+      backdrop-filter: blur(10px);
+    }
+
+    .toolbar button,
+    .toolbar label {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: #334155;
+      background: #fff;
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .toolbar button.primary {
+      border-color: var(--blue);
+      color: #fff;
+      background: var(--blue);
+    }
+
+    .toolbar button.danger { color: var(--red); }
+    .toolbar input[type="file"] { display: none; }
+
+    .save-status {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .hero {
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      margin-bottom: 10px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+
+    .hero h2 {
+      margin: 0 0 12px;
+      font-size: 34px;
+      line-height: 1.22;
+    }
+
+    h2 {
+      margin: 34px 0 14px;
+      font-size: 25px;
+      line-height: 1.36;
+    }
+
+    h3 {
+      margin: 22px 0 10px;
+      font-size: 17px;
+    }
+
+    .summary {
+      max-width: 900px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .callout {
+      margin: 18px 0;
+      padding: 16px 18px;
+      border-left: 4px solid var(--blue);
+      border-radius: 8px;
+      background: #eef5ff;
+    }
+
+    .callout strong { display: block; margin-bottom: 4px; }
+
+    .section {
+      margin: 26px 0;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      margin: 0 6px 8px 0;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #eaf1fb;
+      color: var(--blue);
+    }
+
+    .tag.green { background: #e9f5ef; color: var(--green); }
+    .tag.amber { background: #fff4de; color: var(--amber); }
+    .tag.red { background: #fdeeee; color: var(--red); }
+    .tag.violet { background: #f0edff; color: var(--violet); }
+
+    table {
+      width: 100%;
+      margin: 14px 0 24px;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 11px 12px;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      text-align: left;
+    }
+
+    th {
+      color: #334155;
+      background: #f7f9fc;
+      font-weight: 700;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+    th:last-child, td:last-child { border-right: 0; }
+
+    .blank {
+      min-height: 48px;
+      color: #a3adbb;
+    }
+
+    .blank[contenteditable="true"] {
+      outline: none;
+      cursor: text;
+    }
+
+    .blank[contenteditable="true"]:focus {
+      color: var(--ink);
+      background: #fffceb;
+      box-shadow: inset 0 0 0 1px #e3b341;
+    }
+
+    .blank[contenteditable="true"]:empty::before {
+      content: attr(data-placeholder);
+      color: #a3adbb;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    ol, ul { padding-left: 20px; }
+
+    @media (max-width: 980px) {
+      .page { display: block; }
+      aside { position: static; height: auto; }
+      main { padding: 28px 18px 56px; }
+      .toolbar {
+        position: static;
+        margin: -28px -18px 24px;
+        padding: 12px 18px;
+      }
+      .save-status {
+        width: 100%;
+        margin-left: 0;
+      }
+      .hero h2 { font-size: 28px; }
+      table { font-size: 13px; }
+      th, td { padding: 10px; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .page { display: block; }
+      aside, .toolbar { display: none; }
+      main { max-width: none; padding: 0; }
+      .section, table { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <aside>
+      <h1>竞品20分钟<br>走查任务单</h1>
+      <p>用于配合 Day 3-5 竞品拆解</p>
+      <nav>
+        <a href="#how">怎么用</a>
+        <a href="#finch">Finch</a>
+        <a href="#howwefeel">How We Feel</a>
+        <a href="#wysa">Wysa</a>
+        <a href="#headspace">Headspace</a>
+        <a href="#duolingo">Duolingo</a>
+        <a href="#optional">可选竞品</a>
+        <a href="#summary">最终汇总</a>
+      </nav>
+    </aside>
+
+    <main>
+      <div class="toolbar" aria-label="填写工具栏">
+        <button class="primary" type="button" id="saveBtn">保存</button>
+        <button type="button" id="exportHtmlBtn">导出填写版HTML</button>
+        <button type="button" id="exportJsonBtn">导出JSON备份</button>
+        <label for="importJsonInput">导入JSON</label>
+        <input id="importJsonInput" type="file" accept="application/json,.json">
+        <button type="button" id="printBtn">打印/PDF</button>
+        <button class="danger" type="button" id="clearBtn">清空填写内容</button>
+        <span class="save-status" id="saveStatus">未保存</span>
+      </div>
+
+      <section class="hero" id="how">
+        <div class="eyebrow">AI星球 / 减压星球 · 竞品人工体验</div>
+        <h2>Day 03-05 · 竞品20分钟走查任务单</h2>
+        <p class="summary">这份任务单回答“打开竞品后怎么走”。每个 App 控制在 20-30 分钟，只走和 Flow A/B/C 相关的核心路径，不深挖全功能。</p>
+      </section>
+
+      <section class="callout">
+        <strong>走查原则</strong>
+        每个 App 截 5-8 张关键图即可：首次打开、状态/选择、核心行动、AI/反馈、完成/奖励、安全边界。记录重点不是“好不好看”，而是它如何降低压力、引导下一步、给反馈。
+      </section>
+
+      <section class="section" id="finch">
+        <span class="tag">Flow A</span>
+        <span class="tag amber">Flow C</span>
+        <h2>Finch · 自我照顾与伙伴反馈</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>时间</th>
+              <th>你要走什么</th>
+              <th>重点看什么</th>
+              <th>建议截图</th>
+              <th>你的记录</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>0-5 分钟</td><td>首次打开、onboarding、角色/宠物建立。</td><td>它如何降低“我要做心理任务”的压力。</td><td>首屏、角色建立页、第一句引导。</td><td class="blank"></td></tr>
+            <tr><td>5-10 分钟</td><td>做一次 check-in 或 mood 选择。</td><td>情绪表达是否轻，是否允许不说清楚。</td><td>情绪选择页、输入提示。</td><td class="blank"></td></tr>
+            <tr><td>10-18 分钟</td><td>完成一个 self-care task。</td><td>它怎么把状态引向一个小行动。</td><td>任务推荐、任务详情、进行中。</td><td class="blank"></td></tr>
+            <tr><td>18-25 分钟</td><td>看完成反馈、奖励、伙伴成长。</td><td>完成后有没有“被看见”的感觉。</td><td>完成页、奖励页、伙伴反馈。</td><td class="blank"></td></tr>
+          </tbody>
+        </table>
+        <p><strong>一句话结论：</strong></p>
+        <p class="blank"></p>
+      </section>
+
+      <section class="section" id="howwefeel">
+        <span class="tag">Flow A</span>
+        <h2>How We Feel · 情绪词与低压力表达</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>时间</th>
+              <th>你要走什么</th>
+              <th>重点看什么</th>
+              <th>建议截图</th>
+              <th>你的记录</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>0-5 分钟</td><td>首次打开和情绪记录入口。</td><td>第一步是否清楚，是否像工具还是陪伴。</td><td>首页/入口页。</td><td class="blank"></td></tr>
+            <tr><td>5-12 分钟</td><td>选择一个情绪词，观察词库和分类。</td><td>它如何帮助用户找到“更准确的词”。</td><td>情绪词矩阵/分类页。</td><td class="blank"></td></tr>
+            <tr><td>12-18 分钟</td><td>完成一次 feeling log。</td><td>是否需要解释原因，是否有压力。</td><td>记录确认页、补充信息页。</td><td class="blank"></td></tr>
+            <tr><td>18-25 分钟</td><td>看记录后的反馈、洞察或策略。</td><td>打卡后它给了什么价值。</td><td>反馈页、历史/趋势页。</td><td class="blank"></td></tr>
+          </tbody>
+        </table>
+        <p><strong>一句话结论：</strong></p>
+        <p class="blank"></p>
+      </section>
+
+      <section class="section" id="wysa">
+        <span class="tag green">Flow B</span>
+        <h2>Wysa · AI对话与安全边界</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>时间</th>
+              <th>你要走什么</th>
+              <th>重点看什么</th>
+              <th>建议截图</th>
+              <th>你的记录</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>0-5 分钟</td><td>首次打开、隐私/免责声明、AI定位。</td><td>它怎么说明“我能做什么/不能做什么”。</td><td>AI说明页、隐私/边界页。</td><td class="blank"></td></tr>
+            <tr><td>5-12 分钟</td><td>进入一次 AI chat，选择或输入轻压力话题。</td><td>开场是否让人愿意说。</td><td>对话开场、话题选择。</td><td class="blank"></td></tr>
+            <tr><td>12-20 分钟</td><td>聊 2-3 轮，观察追问和建议。</td><td>它怎么从安慰转向结构化支持。</td><td>追问、建议、练习入口。</td><td class="blank"></td></tr>
+            <tr><td>20-25 分钟</td><td>找安全/危机相关说明，不触发真实危机场景。</td><td>边界是否清楚、是否吓人。</td><td>安全提示、求助说明。</td><td class="blank"></td></tr>
+          </tbody>
+        </table>
+        <p><strong>一句话结论：</strong></p>
+        <p class="blank"></p>
+      </section>
+
+      <section class="section" id="headspace">
+        <span class="tag">Flow A</span>
+        <span class="tag green">Flow B</span>
+        <h2>Headspace · 推荐、放松训练与AI陪伴</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>时间</th>
+              <th>你要走什么</th>
+              <th>重点看什么</th>
+              <th>建议截图</th>
+              <th>你的记录</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>0-5 分钟</td><td>首次打开、目标选择、首页推荐。</td><td>它如何根据目标组织内容。</td><td>目标选择、首页推荐。</td><td class="blank"></td></tr>
+            <tr><td>5-15 分钟</td><td>完成一次短冥想/呼吸/放松练习。</td><td>练习入口是否低压力，过程是否清楚。</td><td>练习详情、进行中页面。</td><td class="blank"></td></tr>
+            <tr><td>15-22 分钟</td><td>看完成反馈和下一步推荐。</td><td>它是否解释为什么推荐下一项。</td><td>完成页、推荐页。</td><td class="blank"></td></tr>
+            <tr><td>可选</td><td>如果能看到 Ebb/AI companion，体验一次开场。</td><td>AI如何承接表达并推荐练习。</td><td>AI入口、对话开场、推荐卡。</td><td class="blank"></td></tr>
+          </tbody>
+        </table>
+        <p><strong>一句话结论：</strong></p>
+        <p class="blank"></p>
+      </section>
+
+      <section class="section" id="duolingo">
+        <span class="tag amber">Flow C</span>
+        <h2>Duolingo · 短任务、即时反馈与留存激励</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>时间</th>
+              <th>你要走什么</th>
+              <th>重点看什么</th>
+              <th>建议截图</th>
+              <th>你的记录</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>0-5 分钟</td><td>首次打开、目标/水平选择。</td><td>它如何快速把用户带入第一课。</td><td>onboarding、目标选择。</td><td class="blank"></td></tr>
+            <tr><td>5-15 分钟</td><td>完成第一课。</td><td>任务是否短、反馈是否即时。</td><td>题目页、正确/错误反馈。</td><td class="blank"></td></tr>
+            <tr><td>15-22 分钟</td><td>看奖励、经验、streak 或下一课。</td><td>它如何让用户想继续，但不必复制竞争机制。</td><td>完成页、奖励页、下一步。</td><td class="blank"></td></tr>
+            <tr><td>22-25 分钟</td><td>观察提醒/连续使用引导。</td><td>哪些激励适合减压产品，哪些太强。</td><td>提醒设置、streak说明。</td><td class="blank"></td></tr>
+          </tbody>
+        </table>
+        <p><strong>一句话结论：</strong></p>
+        <p class="blank"></p>
+      </section>
+
+      <section class="section" id="optional">
+        <span class="tag amber">可选</span>
+        <h2>Elevate / Lumosity · 训练结果与成长反馈</h2>
+        <p class="small">二选一即可。主要服务 Flow C，不必两个都深度体验。</p>
+        <table>
+          <thead>
+            <tr>
+              <th>时间</th>
+              <th>你要走什么</th>
+              <th>重点看什么</th>
+              <th>建议截图</th>
+              <th>你的记录</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>0-8 分钟</td><td>首次打开、训练计划/能力维度说明。</td><td>它如何降低“训练很复杂”的压力。</td><td>onboarding、能力维度。</td><td class="blank"></td></tr>
+            <tr><td>8-18 分钟</td><td>完成一个短训练。</td><td>任务过程是否清楚，是否像考试。</td><td>训练页、过程反馈。</td><td class="blank"></td></tr>
+            <tr><td>18-25 分钟</td><td>看结果、分数、进步、下一步。</td><td>它如何把结果解释成成长，而不是打击。</td><td>结果页、进度页、推荐页。</td><td class="blank"></td></tr>
+          </tbody>
+        </table>
+        <p><strong>一句话结论：</strong></p>
+        <p class="blank"></p>
+      </section>
+
+      <section class="section" id="summary">
+        <h2>最终汇总：转回 AI星球 Demo</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Flow</th>
+              <th>最值得借鉴</th>
+              <th>明确不借鉴</th>
+              <th>Demo必须落地成什么</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Flow A：首页启动</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+            <tr><td>Flow B：AI伙伴</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+            <tr><td>Flow C：完成反馈</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = "ai_planet_competitor_walkthrough_v1";
+      const status = document.getElementById("saveStatus");
+      let saveTimer = null;
+
+      function nowText() {
+        return new Date().toLocaleString("zh-CN", {
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit"
+        });
+      }
+
+      function fields() {
+        return Array.from(document.querySelectorAll(".blank"));
+      }
+
+      function setup() {
+        fields().forEach((el, index) => {
+          el.contentEditable = "true";
+          el.spellcheck = false;
+          el.dataset.fieldId = el.dataset.fieldId || "field_" + index;
+          el.dataset.placeholder = el.dataset.placeholder || "点击填写";
+          el.addEventListener("input", scheduleSave);
+          el.addEventListener("blur", saveAll);
+        });
+      }
+
+      function readData() {
+        const data = {};
+        fields().forEach((el) => {
+          data[el.dataset.fieldId] = el.innerHTML;
+        });
+        return data;
+      }
+
+      function applyData(data) {
+        fields().forEach((el) => {
+          if (Object.prototype.hasOwnProperty.call(data, el.dataset.fieldId)) {
+            el.innerHTML = data[el.dataset.fieldId];
+          }
+        });
+      }
+
+      function saveAll() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          updatedAt: new Date().toISOString(),
+          title: document.title,
+          fields: readData()
+        }));
+        status.textContent = "已自动保存 · " + nowText();
+      }
+
+      function scheduleSave() {
+        status.textContent = "正在编辑...";
+        window.clearTimeout(saveTimer);
+        saveTimer = window.setTimeout(saveAll, 500);
+      }
+
+      function loadSaved() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          status.textContent = "可直接填写，内容会自动保存";
+          return;
+        }
+        try {
+          const payload = JSON.parse(raw);
+          if (payload && payload.fields) applyData(payload.fields);
+          status.textContent = "已恢复上次保存 · " + nowText();
+        } catch (error) {
+          status.textContent = "本地保存读取失败";
+        }
+      }
+
+      function download(filename, content, type) {
+        const blob = new Blob([content], { type });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function exportJson() {
+        saveAll();
+        download("Day03-05_竞品20分钟走查任务单_填写备份.json", localStorage.getItem(STORAGE_KEY) || "{}", "application/json;charset=utf-8");
+      }
+
+      function exportHtml() {
+        saveAll();
+        const clone = document.documentElement.cloneNode(true);
+        clone.querySelectorAll(".toolbar").forEach((el) => el.remove());
+        clone.querySelectorAll("[contenteditable]").forEach((el) => {
+          el.removeAttribute("contenteditable");
+          el.removeAttribute("spellcheck");
+        });
+        download("Day03-05_竞品20分钟走查任务单_填写版.html", "<!doctype html>\n" + clone.outerHTML, "text/html;charset=utf-8");
+      }
+
+      function importJson(file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const payload = JSON.parse(String(reader.result || "{}"));
+            applyData(payload.fields || payload);
+            saveAll();
+            status.textContent = "已导入并保存 · " + nowText();
+          } catch (error) {
+            status.textContent = "导入失败，请确认是JSON备份";
+          }
+        };
+        reader.readAsText(file);
+      }
+
+      function clearAll() {
+        if (!window.confirm("确认清空所有填写内容？")) return;
+        fields().forEach((el) => { el.innerHTML = ""; });
+        localStorage.removeItem(STORAGE_KEY);
+        status.textContent = "已清空填写内容";
+      }
+
+      setup();
+      loadSaved();
+
+      document.getElementById("saveBtn").addEventListener("click", saveAll);
+      document.getElementById("exportJsonBtn").addEventListener("click", exportJson);
+      document.getElementById("exportHtmlBtn").addEventListener("click", exportHtml);
+      document.getElementById("printBtn").addEventListener("click", () => window.print());
+      document.getElementById("clearBtn").addEventListener("click", clearAll);
+      document.getElementById("importJsonInput").addEventListener("change", (event) => {
+        const file = event.target.files && event.target.files[0];
+        if (file) importJson(file);
+        event.target.value = "";
+      });
+    })();
+  </script>
+</body>
+</html>

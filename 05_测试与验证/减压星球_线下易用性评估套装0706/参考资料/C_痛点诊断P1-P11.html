@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>减压星球 · 核心痛点诊断（P1–P11）</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+  background: #EDE7DA;
+  color: #1F2421;
+  line-height: 1.7;
+  padding: 40px 20px 80px;
+}
+.container { max-width: 920px; margin: 0 auto; }
+
+/* ── PAGE HEADER ── */
+.page-header { margin-bottom: 36px; }
+.page-header h1 {
+  font-size: 26px; font-weight: 800; color: #1F2421;
+  letter-spacing: -0.5px; margin-bottom: 6px;
+}
+.page-header .sub { font-size: 13px; color: #8A8A80; margin-bottom: 4px; }
+.page-header .meta { font-size: 12px; color: #B0A898; }
+.header-rule { margin-top: 16px; height: 3px; background: linear-gradient(to right, #C8853F, #E2C9A8); border-radius: 2px; }
+
+/* ── CORRECTION BOX ── */
+.correction-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+.correction-card-head {
+  background: #2A2723;
+  padding: 13px 22px;
+  display: flex; align-items: center; gap: 10px;
+}
+.correction-card-head span {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.8px;
+  text-transform: uppercase; color: #C8853F;
+}
+.correction-card-body { padding: 22px 24px; }
+.correction-item { margin-bottom: 18px; }
+.correction-item:last-child { margin-bottom: 0; }
+.correction-item .ci-label {
+  font-size: 12px; font-weight: 700; color: #C8853F;
+  text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px;
+}
+.correction-row {
+  display: flex; gap: 10px; align-items: flex-start;
+  font-size: 13.5px; line-height: 1.65; margin-bottom: 6px;
+}
+.correction-row:last-child { margin-bottom: 0; }
+.cr-badge {
+  flex-shrink: 0; margin-top: 2px;
+  font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px;
+  white-space: nowrap;
+}
+.cr-old { background: #F3E8E8; color: #A03030; text-decoration: line-through; opacity: 0.7; }
+.cr-new { background: #E8F3EB; color: #2A7A3A; }
+.cr-text-old { color: #A03030; text-decoration: line-through; opacity: 0.65; }
+.cr-text-new { color: #2A7A3A; font-weight: 500; }
+.cr-text-pending { color: #8A6020; }
+
+/* ── NOTICE BAR ── */
+.notice-bar {
+  background: #FFF8EE;
+  border: 1px solid #E2C9A8;
+  border-left: 4px solid #C8853F;
+  border-radius: 8px;
+  padding: 12px 18px;
+  margin-bottom: 32px;
+  font-size: 13px;
+  color: #5A3E1B;
+  line-height: 1.7;
+}
+
+/* ── SECTION TITLE ── */
+.section-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: #B0A898;
+  margin-bottom: 14px; padding-left: 2px;
+}
+
+/* ── PRIORITY GROUP HEADER ── */
+.priority-group { margin-bottom: 32px; }
+.priority-head {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 16px;
+}
+.priority-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+.priority-label {
+  font-size: 13px; font-weight: 700; letter-spacing: 0.3px;
+}
+.priority-head .ph-rule {
+  flex: 1; height: 1px; background: #D8D0C4;
+}
+
+/* ── PAIN CARDS ── */
+.pain-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 14px;
+}
+@media (max-width: 860px) {
+  .pain-grid { grid-template-columns: 1fr; }
+}
+
+.pain-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  overflow: hidden;
+  position: relative;
+}
+.pain-card.updated {
+  box-shadow: 0 0 0 2px #C8853F, 0 1px 6px rgba(0,0,0,0.06);
+}
+.pain-card-head {
+  padding: 14px 18px 0;
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.updated-badge {
+  flex-shrink: 0; margin-top: 3px;
+  font-size: 10px; font-weight: 700; padding: 2px 7px;
+  border-radius: 4px; background: #C8853F; color: #fff;
+  letter-spacing: 0.3px;
+}
+.pain-id {
+  flex-shrink: 0; margin-top: 2px;
+  font-size: 11px; font-weight: 700; padding: 2px 8px;
+  border-radius: 4px; color: #fff; letter-spacing: 0.3px;
+}
+.sev-high .pain-id { background: #C04040; }
+.sev-mid  .pain-id  { background: #C8853F; }
+.sev-low  .pain-id  { background: #4A7A9B; }
+
+.pain-title {
+  font-size: 14px; font-weight: 700; color: #1F2421; line-height: 1.5;
+}
+.sev-high .pain-title { color: #C04040; }
+.sev-mid  .pain-title { color: #8A5020; }
+.sev-low  .pain-title { color: #2A5A7A; }
+
+.pain-card-body { padding: 12px 18px 16px; }
+.pain-evidence {
+  font-size: 12.5px; color: #5A5A58;
+  background: #F8F4EF; border-radius: 7px;
+  padding: 10px 13px; margin-bottom: 10px;
+  line-height: 1.7; font-style: italic;
+}
+.pain-evidence strong { font-style: normal; color: #3A3A38; }
+.pain-impact { font-size: 13px; color: #3A3A38; line-height: 1.65; }
+.pain-tags { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+.ptag {
+  font-size: 11px; font-weight: 700; padding: 2px 9px;
+  border-radius: 20px; white-space: nowrap;
+}
+.ptag-red    { background: #FDEAEA; color: #C04040; }
+.ptag-orange { background: #FEF0E0; color: #A05020; }
+.ptag-blue   { background: #E8F0F8; color: #2A5A7A; }
+
+/* ── FOOTER ── */
+.page-footer {
+  text-align: center; font-size: 12px; color: #9A9A90;
+  margin-top: 36px; padding-top: 20px;
+  border-top: 1px solid #D8D0C4; line-height: 1.9;
+}
+
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-left: auto;
+}
+.priority-high {
+  background: #FDEAEA;
+  color: #C04040;
+}
+.priority-medium {
+  background: #FEF0E0;
+  color: #A05020;
+}
+.priority-low {
+  background: #E8F3EB;
+  color: #2A7A3A;
+}
+.priority-timeline {
+  font-size: 11px;
+  opacity: 0.8;
+  font-weight: 600;
+}
+
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <h1>减压星球 · 核心痛点诊断（P1–P11）</h1>
+    <p class="sub">基于23张实机截图 + APK代码分析 · P1、P2 已更正</p>
+    <p class="meta">AI星球 v1.0.2801 · Huawei AGS5Z-W09 · 供产品团队讨论用</p>
+    <div class="header-rule"></div>
+  </div>
+
+  <!-- CORRECTION CARD -->
+  <div class="correction-card">
+    <div class="correction-card-head">
+      <span>P1 · P2 诊断说明</span>
+    </div>
+    <div class="correction-card-body">
+
+      <div class="correction-item">
+        <div class="ci-label">P1 · 首页视觉焦点</div>
+        <div class="correction-row">
+          <span class="cr-text-new">打卡大卡片首屏可见，入口不弱。真正问题是打卡卡片与AI心理伙伴卡片权重相当，首屏无视觉主角，用户不知道先做哪个</span>
+        </div>
+      </div>
+
+      <div class="correction-item">
+        <div class="ci-label">P2 · AI对话入口</div>
+        <div class="correction-row">
+          <span class="cr-text-new">AI对话入口首屏可见，无需滑屏。真正问题：切Tab后AI伙伴完全消失，无全局悬浮入口（已确认）</span>
+        </div>
+        <div class="correction-row">
+          <span class="cr-text-pending">首页两个AI对话入口（大卡片 vs「我想聊聊」tag栏）外观差异大，用户是否知道都通向AI对话，待易用性测试验证</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="notice-bar">
+    所有描述为可见界面事实，基于实机截图观察。标注 ⚠️ 的条目为本次更正项，非用户研究数据。
+  </div>
+
+  <!-- HIGH PRIORITY -->
+  <div class="priority-group">
+    <div class="section-label">核心痛点诊断（P1–P11）</div>
+    <div class="priority-head">
+      <div class="priority-dot" style="background:#C04040;"></div>
+      <span class="priority-label" style="color:#C04040;">高优先级</span>
+      <div class="ph-rule"></div>
+    </div>
+    <div class="pain-grid">
+
+      <!-- P1 -->
+      <div class="pain-card sev-high">
+        <div class="pain-card-head">
+          <span class="pain-id">P1</span>
+          <div class="pain-title">首屏双大卡片权重相当，无视觉主角，用户无法判断先做什么</div>
+          <div class="priority-badge priority-high">
+            <span>🔴紧急</span>
+            <span class="priority-timeline">2周</span>
+          </div>
+        </div>
+        <div class="pain-card-body">
+          <div class="pain-evidence">截图证实：首屏左侧「打卡今日心情」大卡片（含「去打卡」按钮）与右侧「我的AI心理伙伴」大卡片并排，两者视觉体量相近，首屏即可见，均无需滑屏。问题不是入口不显眼，而是两个核心动作平起平坐，没有一个明确的主角告诉用户「第一件事该做什么」。首屏以下还叠加「我想聊聊」tag栏和心理剧场banner，进一步分散注意力。</div>
+          <div class="pain-impact">用户打开App的前3秒没有获得行动指引，容易停顿或直接划走。情绪打卡和AI对话是两个不同深度的行为（打卡30秒 vs 对话5分钟），但首屏给予相同视觉权重，决策成本上升。</div>
+          <div class="pain-tags">
+            <span class="ptag ptag-red">高留存风险</span>
+            <span class="ptag ptag-orange">首次体验破坏</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- P2 -->
+      <div class="pain-card sev-high">
+        <div class="pain-card-head">
+          <span class="pain-id">P2</span>
+          <div class="pain-title">AI对话无全局持续入口，切 Tab 后伙伴消失；首页双入口认知存疑</div>
+          <div class="priority-badge priority-high">
+            <span>🔴紧急</span>
+            <span class="priority-timeline">2周</span>
+          </div>
+        </div>
+        <div class="pain-card-body">
+          <div class="pain-evidence">截图证实：首屏右侧「我的AI心理伙伴」大卡片（含三IP形象+「与吉塔分享近况」按钮）和下方「我想聊聊」预制话题栏，入口视觉权重充足，首屏即可见，无需滑屏。<br><br>
+          <strong>问题①（已确认）：</strong>底部6 Tab切换后，AI伙伴完全从界面消失，没有悬浮球或固定入口保持全局可达。<br><br>
+          <strong>问题②（待易用性测试验证）：</strong>首页两个并行AI对话入口——大卡片「与吉塔分享近况」和「我想聊聊」预制话题栏——外观差异大，用户是否知道两者都通向AI对话，尚未经过用户验证。</div>
+          <div class="pain-impact">三个AI角色是产品最强差异化优势，却只存在于首页。用户在脑之岛完成训练、在任务页遇到焦虑时，无法立即唤起AI伙伴，陪伴关系被导航结构强制中断。</div>
+          <div class="pain-tags">
+            <span class="ptag ptag-red">核心资产浪费</span>
+            <span class="ptag ptag-red">陪伴感断裂</span>
+            <span class="ptag ptag-orange">入口认知待验证</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- P3 -->
+      <div class="pain-card sev-high">
+        <div class="pain-card-head">
+          <span class="pain-id">P3</span>
+          <div class="pain-title">对话界面无情感记忆，每次从零开始</div>
+          <div class="priority-badge priority-medium">
+            <span>🟠重要</span>
+            <span class="priority-timeline">1月</span>
+          </div>
+        </div>
+        <div class="pain-card-body">
+          <div class="pain-evidence">对话1.jpg显示AI对话页面，无历史情绪摘要、无上次聊天的记忆呈现，对话框顶部没有"上次你说…"等记忆钩子。</div>
+          <div class="pain-impact">对于青少年用户，AI伙伴的核心价值是"它记得我"。每次从零开始等于否认了持续关系的存在，严重削弱情感黏性。</div>
+          <div class="pain-tags">
+            <span class="ptag ptag-red">陪伴价值归零</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- P4 -->
+      <div class="pain-card sev-high">
+        <div class="pain-card-head">
+          <span class="pain-id">P4</span>
+          <div class="pain-title">无年级内容过滤，小学生看到选科志愿</div>
+          <div class="priority-badge priority-medium">
+            <span>🟠重要</span>
+            <span class="priority-timeline">1月</span>
+          </div>
+        </div>
+        <div class="pain-card-body">
+          <div class="pain-evidence">APK代码中存在 gradeCode/phaseCode 字段，但探索Tab截图显示"升学择业"主题对所有用户统一展示，没有年级判断隐藏机制。</div>
+          <div class="pain-impact">小学高年级用户首屏看到"3+1+2选科分析"完全超出认知范围，造成困惑和信任损耗。系统有数据却没有用。</div>
+          <div class="pain-tags">
+            <span class="ptag ptag-red">分层失效</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MID PRIORITY -->
+  <div class="priority-group">
+    <div class="priority-head">
+      <div class="priority-dot" style="background:#C8853F;"></div>
+      <span class="priority-label" style="color:#8A5020;">中优先级</span>
+      <div class="ph-rule"></div>
+    </div>
+    <div class="pain-grid">
+
+      <!-- P5 -->
+      <div class="pain-card sev-mid">
+        <div class="pain-card-head">
+          <span class="pain-id">P5</span>
+          <div class="pain-title">脑之岛成就不外溢，与首页和 IP 系统割裂</div>
+          <div class="priority-badge priority-medium">
+            <span>🟠重要</span>
+            <span class="priority-timeline">1月</span>
+          </div>
+        </div>
+        <div class="pain-card-body">
+          <div class="pain-evidence">APK代码与实机截图验证：脑之岛内部体验完整——有4岛分区认知、引导弹窗（island-info-part1-4）、3个顶部按钮（介绍/今日任务/荣誉）、勋章系统3个入口（训练列表弹窗顶部5槽位+训练详情页最高等级+/medalWall勋章墙）、任务卡、下载流程、年级权限控制。但训练成果完全封闭在脑之岛 Tab 内：完成训练后，首页内容推荐不变、IP 悬浮球无感知、首页无任何「已完成」的反馈。</div>
+          <div class="pain-impact">认知训练是强留存功能，勋章系统本身已经存在且设计完整（3个入口确保可见性），但成就无法传递给整体心理成长叙事。学生完成训练后，回到首页一切如常——「这件事和我的情绪健康有什么关系」没有答案。内部体验无问题，真正痛点是跨模块数据孤岛。</div>
+          <div class="pain-tags">
+            <span class="ptag ptag-orange">成就不外溢</span>
+            <span class="ptag ptag-orange">模块数据孤岛</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- P6 -->
+      <div class="pain-card sev-mid">
+        <div class="pain-card-head">
+          <span class="pain-id">P6</span>
+          <div class="pain-title">解忧信箱是信息孤岛，缺乏关闭反馈</div>
+          <div class="priority-badge priority-low">
+            <span>🟢长期</span>
+            <span class="priority-timeline">3-6月</span>
+          </div>
+        </div>
+        <div class="pain-card-body">
+          <div class="pain-evidence">解忧信箱03_写信.jpg显示写信界面有文字输入，但截图中没有明确的"已读回执"或"AI已回复"的反馈机制可见。</div>
+          <div class="pain-impact">写信是高情感投入动作，用户写完信后没有即时的情感确认（"你的信已被好好收下"），容易产生"发进虚空"的挫败感。</div>
+          <div class="pain-tags">
+            <span class="ptag ptag-orange">情感断点</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- P7 -->
+      <div class="pain-card sev-mid">
+        <div class="pain-card-head">
+          <span class="pain-id">P7</span>
+          <div class="pain-title">换装系统与情绪成长割裂</div>
+          <div class="priority-badge priority-low">
+            <span>🟢长期</span>
+            <span class="priority-timeline">3-6月</span>
+          </div>
+        </div>
+        <div class="pain-card-body">
+          <div class="pain-evidence">对话3_人物换装.jpg显示服饰选择（墨镜/帽子/围巾）和声音选择（暖心姐姐/开朗女生），但换装入口标注"New"，暗示这是偶发性的新功能，非系统性成长奖励。</div>
+          <div class="pain-impact">换装是高情绪价值的游戏化奖励，但目前与用户行为（完成打卡、对话、训练）的成长体系未绑定，错失最强激励机制。</div>
+          <div class="pain-tags">
+            <span class="ptag ptag-orange">游戏化价值未释放</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- P8 -->
+      <div class="pain-card sev-mid">
+        <div class="pain-card-head">
+          <span class="pain-id">P8</span>
+          <div class="pain-title">星星商店激励闭环不清晰</div>
+          <div class="priority-badge priority-low">
+            <span>🟢长期</span>
+            <span class="priority-timeline">3-6月</span>
+          </div>
+        </div>
+        <div class="pain-card-body">
+          <div class="pain-evidence">头像_星星商店弹窗.jpg显示星星商店入口，个人中心显示星星数量，但从首页到"如何获得星星→去哪里用星星"的完整路径没有在首页明确呈现。</div>
+          <div class="pain-impact">激励系统若不在用户首次进入时就建立"行动→奖励→消费"的心理模型，激励效果大幅衰减。</div>
+          <div class="pain-tags">
+            <span class="ptag ptag-orange">激励机制弱化</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- LOW PRIORITY -->
+  <div class="priority-group">
+    <div class="priority-head">
+      <div class="priority-dot" style="background:#4A7A9B;"></div>
+      <span class="priority-label" style="color:#2A5A7A;">体验细节</span>
+      <div class="ph-rule"></div>
+    </div>
+    <div class="pain-grid">
+
+      <!-- P9 -->
+      <div class="pain-card sev-low">
+        <div class="pain-card-head">
+          <span class="pain-id">P9</span>
+          <div class="pain-title">对话界面底部免责声明削弱信任感</div>
+          <div class="priority-badge priority-medium">
+            <span>🟠重要</span>
+            <span class="priority-timeline">1月</span>
+          </div>
+        </div>
+        <div class="pain-card-body">
+          <div class="pain-evidence">对话1.jpg底部显示"小星对话内容由AI生成 仅供参考"灰色小字。</div>
+          <div class="pain-impact">面向青少年的AI伙伴产品，频繁的免责声明传递"不要信任我"的信号，与产品"7×24陪伴"的情感承诺相矛盾。需要重新设计合规提示的呈现方式。</div>
+          <div class="pain-tags">
+            <span class="ptag ptag-blue">信任感损耗</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- P10 -->
+      <div class="pain-card sev-low">
+        <div class="pain-card-head">
+          <span class="pain-id">P10</span>
+          <div class="pain-title">咨询Tab功能极弱，占据导航资源</div>
+          <div class="priority-badge priority-low">
+            <span>🟢长期</span>
+            <span class="priority-timeline">3-6月</span>
+          </div>
+        </div>
+        <div class="pain-card-body">
+          <div class="pain-evidence">咨询_选择咨询时间与知情同意书.jpg，Tab 5 咨询页内容仅为时间选择+知情同意书，且注明"仅部分学校购买"。</div>
+          <div class="pain-impact">对未购买该模块的学校，Tab 5是一个死链入口，消耗导航认知成本，降低整体Tab利用率。</div>
+          <div class="pain-tags">
+            <span class="ptag ptag-blue">导航空间浪费</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- P11 -->
+      <div class="pain-card sev-low">
+        <div class="pain-card-head">
+          <span class="pain-id">P11</span>
+          <div class="pain-title">任务系统缺乏情境化推送</div>
+          <div class="priority-badge priority-medium">
+            <span>🟠重要</span>
+            <span class="priority-timeline">1月</span>
+          </div>
+        </div>
+        <div class="pain-card-body">
+          <div class="pain-evidence">任务列表.jpg显示普通任务列表，任务弹窗.jpg显示弹窗提醒，红点显示数字"4"。</div>
+          <div class="pain-impact">任务是每日留存的关键触点，但列表式呈现缺乏与用户当前情绪状态的关联，任务感知价值低。</div>
+          <div class="pain-tags">
+            <span class="ptag ptag-blue">精准推送缺失</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div class="page-footer">
+  减压星球 · 核心痛点诊断 · 供产品团队讨论 · 2026.06.29<br>
+  数据来源：23张实机截图 + APK反编译路由分析
+</div>
+
+</body>
+</html>

@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI星球20天优化Demo · Day01-07 三维度基线估分表</title>
+  <style>
+    :root {
+      --ink: #1f2937;
+      --muted: #64748b;
+      --line: #dce4ee;
+      --soft: #f6f8fb;
+      --blue: #2f70d0;
+      --green: #228367;
+      --amber: #a96812;
+      --red: #bd4a4a;
+      --paper: #ffffff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.62;
+      background: #eef3f7;
+    }
+    .page {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+    aside {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 28px 22px;
+      border-right: 1px solid var(--line);
+      background: #fff;
+      overflow: auto;
+    }
+    aside h1 { margin: 0 0 8px; font-size: 18px; line-height: 1.35; }
+    aside p { margin: 0 0 20px; color: var(--muted); font-size: 13px; }
+    nav a { display: block; padding: 9px 10px; color: #435063; text-decoration: none; border-radius: 8px; font-size: 14px; }
+    nav a:hover { background: var(--soft); color: var(--blue); }
+    main { padding: 42px 52px 72px; max-width: 1280px; }
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin: -42px -52px 28px;
+      padding: 14px 52px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.96);
+      backdrop-filter: blur(10px);
+    }
+    .toolbar button, .toolbar label {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: #334155;
+      background: #fff;
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .toolbar button.primary { border-color: var(--blue); color: #fff; background: var(--blue); }
+    .toolbar button.danger { color: var(--red); }
+    .toolbar input[type="file"] { display: none; }
+    .save-status { margin-left: auto; color: var(--muted); font-size: 13px; }
+    .hero { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+    .eyebrow { margin-bottom: 10px; color: var(--blue); font-size: 13px; font-weight: 700; }
+    h2 { margin: 34px 0 14px; font-size: 24px; line-height: 1.34; }
+    h3 { margin: 22px 0 10px; font-size: 17px; }
+    .hero h2 { margin: 0 0 12px; font-size: 34px; line-height: 1.2; }
+    .summary { max-width: 900px; color: var(--muted); font-size: 16px; }
+    .callout { margin: 18px 0; padding: 16px 18px; border-left: 4px solid var(--blue); border-radius: 8px; background: #eef5ff; }
+    .callout strong { display: block; margin-bottom: 4px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; margin: 16px 0; }
+    .card { padding: 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
+    .card h3 { margin-top: 0; }
+    .metric { font-size: 26px; font-weight: 800; color: var(--blue); line-height: 1.1; }
+    .small { color: var(--muted); font-size: 13px; }
+    .tag { display: inline-flex; align-items: center; min-height: 24px; margin: 0 6px 8px 0; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; background: #eaf1fb; color: var(--blue); }
+    .tag.green { background: #e9f6f1; color: var(--green); }
+    .tag.amber { background: #fff3dc; color: var(--amber); }
+    .tag.red { background: #fdeeee; color: var(--red); }
+    table { width: 100%; margin: 14px 0 24px; border-collapse: collapse; overflow: hidden; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+    th, td { padding: 10px 11px; vertical-align: top; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); text-align: left; font-size: 13px; }
+    th { color: #334155; background: #f7f9fc; font-weight: 700; }
+    tr:last-child td { border-bottom: 0; }
+    th:last-child, td:last-child { border-right: 0; }
+    .score { min-width: 56px; text-align: center; color: var(--ink); font-weight: 700; }
+    .blank { min-height: 42px; color: #a3adbb; }
+    .blank.filled { color: var(--ink); }
+    .check { color: #93a0b2; white-space: nowrap; }
+    .blank[contenteditable="true"], .check[contenteditable="true"], .score[contenteditable="true"] { outline: none; cursor: text; }
+    .blank[contenteditable="true"]:focus, .check[contenteditable="true"]:focus, .score[contenteditable="true"]:focus { color: var(--ink); background: #fffceb; box-shadow: inset 0 0 0 1px #e3b341; }
+    .blank[contenteditable="true"]:empty::before, .score[contenteditable="true"]:empty::before { content: attr(data-placeholder); color: #a3adbb; font-weight: 400; }
+    .dim { min-width: 68px; text-align: center; }
+    .p-high { color: var(--red); font-weight: 700; }
+    .p-mid { color: var(--amber); font-weight: 700; }
+    .p-low { color: var(--blue); font-weight: 700; }
+    @media (max-width: 1080px) {
+      .page { display: block; }
+      aside { position: static; height: auto; }
+      main { padding: 28px 18px 56px; }
+      .toolbar { position: static; margin: -28px -18px 24px; padding: 12px 18px; }
+      .save-status { width: 100%; margin-left: 0; }
+      .grid-3 { grid-template-columns: 1fr; }
+      .hero h2 { font-size: 28px; }
+      table { display: block; overflow-x: auto; }
+    }
+    @media print {
+      body { background: #fff; }
+      .page { display: block; }
+      aside, .toolbar { display: none; }
+      main { max-width: none; padding: 0; }
+      .card, table { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <aside>
+      <h1>Day 01-07<br>基线估分</h1>
+      <p>现状产品 / 竞品 / Demo目标</p>
+      <nav>
+        <a href="#how">怎么用</a>
+        <a href="#dimensions">三维定义</a>
+        <a href="#baseline">P1-P11估分表</a>
+        <a href="#competitors">竞品走查记录</a>
+        <a href="#summary">本周结论</a>
+      </nav>
+    </aside>
+
+    <main>
+      <div class="toolbar" aria-label="填写工具栏">
+        <button class="primary" type="button" id="saveBtn">保存</button>
+        <button type="button" id="exportHtmlBtn">导出填写版HTML</button>
+        <button type="button" id="exportJsonBtn">导出JSON备份</button>
+        <label for="importJsonInput">导入JSON</label>
+        <input id="importJsonInput" type="file" accept="application/json,.json">
+        <button type="button" id="printBtn">打印/PDF</button>
+        <button class="danger" type="button" id="clearBtn">清空填写内容</button>
+        <span class="save-status" id="saveStatus">未保存</span>
+      </div>
+
+      <section class="hero" id="how">
+        <div class="eyebrow">减压星球 Q3 改版 · 本周到 7.27</div>
+        <h2>三维度基线估分表</h2>
+        <p class="summary">这张表用于把当前 APK、竞品实机走查和后续 Demo 目标放到同一个评分口径里。它不是严谨量表，而是本周做范围判断和原型优先级时的工作底稿。</p>
+      </section>
+
+      <section class="callout">
+        <strong>本周使用方法</strong>
+        先用现状产品估分列确认 P1-P11 的基线，再走查 Headspace、Finch、Woebot 三个核心竞品，把竞品参考分补上。Demo 目标分先不用急着填，等 Day06-08 低保真定稿后再填。
+      </section>
+
+      <section id="dimensions">
+        <h2>1. 三个评分维度</h2>
+        <div class="grid-3">
+          <div class="card">
+            <span class="tag">维度 1</span>
+            <h3>可理解性 / 易用性</h3>
+            <p>学生能不能看懂页面、知道先做什么、少停顿、少误点。</p>
+            <p class="small">对应 P1、P4、P10，以及各流程第一步。</p>
+          </div>
+          <div class="card">
+            <span class="tag green">维度 2</span>
+            <h3>流程连续性</h3>
+            <p>功能之间是否接得上，AI、首页、训练、反馈是否互相记得。</p>
+            <p class="small">对应 P2、P3、P5、P6、P11。</p>
+          </div>
+          <div class="card">
+            <span class="tag amber">维度 3</span>
+            <h3>情绪价值 / 信任感</h3>
+            <p>用户是否感到被接住、有反馈、可信、安全，不会产生新压力。</p>
+            <p class="small">对应 P0、P3、P6、P7、P8、P9。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="baseline">
+        <h2>2. P1-P11 三维度基线估分表</h2>
+        <p class="small">评分口径：1 = 明显阻碍，2 = 偏弱，3 = 可用但不突出，4 = 体验较好，5 = 行业标杆。现状产品分为基于 A5 与当前 APK 分析的初始估分，你可以直接修改。</p>
+        <table>
+          <thead>
+            <tr>
+              <th>痛点</th>
+              <th>核心问题</th>
+              <th>对应 Flow</th>
+              <th class="dim">现状易用性</th>
+              <th class="dim">现状连续性</th>
+              <th class="dim">现状情绪/信任</th>
+              <th class="dim">竞品参考分</th>
+              <th class="dim">Demo目标分</th>
+              <th>备注/证据</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="p-high">P0</span></td><td>未成年人安全、隐私、危机边界需要重新定义。</td><td>Flow B</td><td class="score">2</td><td class="score">2</td><td class="score">1</td><td class="score"></td><td class="score"></td><td class="blank filled">当前需避免绝对保密承诺；参考 Woebot / 988 / Crisis Text Line 的边界说明。</td></tr>
+            <tr><td><span class="p-high">P1</span></td><td>首屏无视觉主角，用户不知道先做什么。</td><td>Flow A</td><td class="score">2</td><td class="score">2</td><td class="score">2</td><td class="score"></td><td class="score"></td><td class="blank filled">Flow A 已升级为 Pad 首页启动中枢，重点验证 3 秒内是否能找到第一行动。</td></tr>
+            <tr><td><span class="p-high">P2</span></td><td>AI 没有全局持续入口，首页双入口认知存疑。</td><td>Flow A / B</td><td class="score">2</td><td class="score">1</td><td class="score">2</td><td class="score"></td><td class="score"></td><td class="blank filled">走查时重点看切 Tab 后 AI 是否仍可被找到。</td></tr>
+            <tr><td><span class="p-high">P3</span></td><td>AI 对话无跨会话记忆，每次从零开始。</td><td>Flow B</td><td class="score">2</td><td class="score">1</td><td class="score">2</td><td class="score"></td><td class="score"></td><td class="blank filled">参考 Replika 的轻量记忆，但必须做未成年人安全边界。</td></tr>
+            <tr><td><span class="p-high">P4</span></td><td>无年级内容过滤，小学生可能看到不适龄内容。</td><td>横向原则</td><td class="score">2</td><td class="score">2</td><td class="score">2</td><td class="score"></td><td class="score"></td><td class="blank filled">Demo 不做完整分年级系统，但文案和推荐要区分小学高年级/初高中语气。</td></tr>
+            <tr><td><span class="p-mid">P5</span></td><td>脑之岛成就不外溢，与首页和 IP 系统割裂。</td><td>Flow C / A</td><td class="score">3</td><td class="score">1</td><td class="score">2</td><td class="score"></td><td class="score"></td><td class="blank filled">参考 Finch：完成行为必须被首页、AI 或成长记录看见。</td></tr>
+            <tr><td><span class="p-mid">P6</span></td><td>解忧信箱缺少关闭反馈，情感悬空。</td><td>Flow C 变体</td><td class="score">3</td><td class="score">2</td><td class="score">2</td><td class="score"></td><td class="score"></td><td class="blank filled">本轮不单独做完整写信 Flow，可吸收到完成反馈原则里。</td></tr>
+            <tr><td><span class="p-mid">P7</span></td><td>换装系统与情绪成长割裂。</td><td>Flow C</td><td class="score">3</td><td class="score">2</td><td class="score">2</td><td class="score"></td><td class="score"></td><td class="blank filled">奖励需要说明来源，不做完整换装系统。</td></tr>
+            <tr><td><span class="p-mid">P8</span></td><td>星星激励闭环不清晰。</td><td>Flow C</td><td class="score">3</td><td class="score">2</td><td class="score">2</td><td class="score"></td><td class="score"></td><td class="blank filled">参考 Finch / Duolingo 的即时反馈，但避免 streak 压力。</td></tr>
+            <tr><td><span class="p-low">P9</span></td><td>AI 免责声明削弱信任感。</td><td>Flow B</td><td class="score">3</td><td class="score">3</td><td class="score">2</td><td class="score"></td><td class="score"></td><td class="blank filled">从冷免责声明改为能力边界和安全支持说明。</td></tr>
+            <tr><td><span class="p-low">P10</span></td><td>咨询 Tab 功能弱，占用导航资源。</td><td>Flow B</td><td class="score">2</td><td class="score">1</td><td class="score">2</td><td class="score"></td><td class="score"></td><td class="blank filled">本轮不改完整咨询 Tab，只验证安全支持入口是否可理解。</td></tr>
+            <tr><td><span class="p-low">P11</span></td><td>任务缺乏情境化推送。</td><td>Flow A / C</td><td class="score">2</td><td class="score">1</td><td class="score">2</td><td class="score"></td><td class="score"></td><td class="blank filled">Flow A 首页推荐必须来自状态，而不是泛功能推荐。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="competitors">
+        <h2>3. 本周竞品实机走查记录</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>竞品</th>
+              <th>对应痛点</th>
+              <th>必须跑的路径</th>
+              <th>SUS 原始分</th>
+              <th>关键截图/观察</th>
+              <th>对 Demo 的影响</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Headspace</strong></td><td>P1 / Flow A</td><td>首次进入 → 首页推荐 → 开始一次练习 → 完成反馈。</td><td class="score"></td><td class="blank"></td><td class="blank filled">验证 Pad 首页是否应只保留一个主行动，以及推荐理由如何表达。</td></tr>
+            <tr><td><strong>Finch</strong></td><td>P5 / P7 / P8 / Flow C</td><td>首次进入 → check-in → self-care task → reward。</td><td class="score"></td><td class="blank"></td><td class="blank filled">验证奖励与行为绑定、完成后被伙伴看见的表达。</td></tr>
+            <tr><td><strong>Woebot</strong></td><td>P0 / P3 / P9 / Flow B</td><td>进入对话 → 表达低落/压力 → AI回应 → 安全边界/下一步。</td><td class="score"></td><td class="blank"></td><td class="blank filled">验证 AI 先接住再建议，以及安全边界如何不吓人。</td></tr>
+            <tr><td><strong>可选：Daylio</strong></td><td>P1 / P11 / Flow A</td><td>mood log → activity tag → note optional → trend。</td><td class="score"></td><td class="blank"></td><td class="blank filled">验证低压力记录和渐进披露。</td></tr>
+            <tr><td><strong>可选：Replika</strong></td><td>P3 / Flow B</td><td>首次对话 → 再次打开 → 记忆引用/关系连续感。</td><td class="score"></td><td class="blank"></td><td class="blank filled">只看记忆机制，不看成人化关系模型。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="summary">
+        <h2>4. 到 7.27 需要形成的结论</h2>
+        <table>
+          <tbody>
+            <tr><th>竞品走查是否完成</th><td class="check">□ Headspace □ Finch □ Woebot □ Daylio可选 □ Replika可选</td></tr>
+            <tr><th>当前 APK 基线是否确认</th><td class="check">□ 已确认 □ 还要调整</td></tr>
+            <tr><th>Flow A 是否按 Pad 首页中枢推进</th><td class="check">□ 确认 □ 需要再讨论</td></tr>
+            <tr><th>Flow B 安全边界是否进入高保真</th><td class="check">□ 确认 □ 需要再讨论</td></tr>
+            <tr><th>Flow C 是否只做轻闭环</th><td class="check">□ 确认 □ 改为更重 □ 暂缓</td></tr>
+            <tr><th>一句话结论</th><td class="blank">本周结论：</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = "ai_planet_week01_baseline_score_v1";
+      const STATUS_IDLE = "已自动保存";
+      const status = document.getElementById("saveStatus");
+      const editableSelector = ".blank, .check, .score";
+      let saveTimer = null;
+
+      function nowText() {
+        const d = new Date();
+        return d.toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+      }
+
+      function getFields() { return Array.from(document.querySelectorAll(editableSelector)); }
+
+      function setupEditableFields() {
+        getFields().forEach((el, index) => {
+          el.contentEditable = "true";
+          el.spellcheck = false;
+          el.dataset.fieldId = el.dataset.fieldId || "field_" + index;
+          if (el.classList.contains("blank")) el.dataset.placeholder = el.dataset.placeholder || "点击填写";
+          if (el.classList.contains("score") && !el.textContent.trim()) el.dataset.placeholder = el.dataset.placeholder || "1-5";
+          el.addEventListener("input", scheduleSave);
+          el.addEventListener("blur", saveAll);
+        });
+      }
+
+      function readData() {
+        const data = {};
+        getFields().forEach((el) => { data[el.dataset.fieldId] = el.innerHTML; });
+        return data;
+      }
+
+      function applyData(data) {
+        getFields().forEach((el) => {
+          if (Object.prototype.hasOwnProperty.call(data, el.dataset.fieldId)) el.innerHTML = data[el.dataset.fieldId];
+        });
+      }
+
+      function saveAll() {
+        const payload = { updatedAt: new Date().toISOString(), title: document.title, fields: readData() };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+        status.textContent = STATUS_IDLE + " · " + nowText();
+      }
+
+      function scheduleSave() {
+        status.textContent = "正在编辑...";
+        window.clearTimeout(saveTimer);
+        saveTimer = window.setTimeout(saveAll, 500);
+      }
+
+      function loadSaved() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) { status.textContent = "可直接填写，内容会自动保存"; return; }
+        try {
+          const payload = JSON.parse(raw);
+          if (payload && payload.fields) { applyData(payload.fields); status.textContent = "已恢复上次保存 · " + nowText(); }
+        } catch (error) { status.textContent = "本地保存读取失败"; }
+      }
+
+      function download(filename, content, type) {
+        const blob = new Blob([content], { type });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function exportJson() {
+        saveAll();
+        const raw = localStorage.getItem(STORAGE_KEY) || "{}";
+        download("Day01-07_三维度基线估分表_填写备份.json", raw, "application/json;charset=utf-8");
+      }
+
+      function exportHtml() {
+        saveAll();
+        const clone = document.documentElement.cloneNode(true);
+        clone.querySelectorAll(".toolbar").forEach((el) => el.remove());
+        clone.querySelectorAll("[contenteditable]").forEach((el) => {
+          el.removeAttribute("contenteditable");
+          el.removeAttribute("spellcheck");
+        });
+        const html = "<!doctype html>\n" + clone.outerHTML;
+        download("Day01-07_三维度基线估分表_填写版.html", html, "text/html;charset=utf-8");
+      }
+
+      function importJson(file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const payload = JSON.parse(String(reader.result || "{}"));
+            const fields = payload.fields || payload;
+            applyData(fields);
+            saveAll();
+            status.textContent = "已导入并保存 · " + nowText();
+          } catch (error) { status.textContent = "导入失败，请确认是JSON备份"; }
+        };
+        reader.readAsText(file);
+      }
+
+      function clearAll() {
+        const ok = window.confirm("确认清空所有填写内容？这个操作会覆盖当前本机保存。");
+        if (!ok) return;
+        getFields().forEach((el) => {
+          if (el.classList.contains("check")) return;
+          el.innerHTML = "";
+        });
+        localStorage.removeItem(STORAGE_KEY);
+        status.textContent = "已清空填写内容";
+      }
+
+      setupEditableFields();
+      loadSaved();
+      document.getElementById("saveBtn").addEventListener("click", saveAll);
+      document.getElementById("exportJsonBtn").addEventListener("click", exportJson);
+      document.getElementById("exportHtmlBtn").addEventListener("click", exportHtml);
+      document.getElementById("printBtn").addEventListener("click", () => window.print());
+      document.getElementById("clearBtn").addEventListener("click", clearAll);
+      document.getElementById("importJsonInput").addEventListener("change", (event) => {
+        const file = event.target.files && event.target.files[0];
+        if (file) importJson(file);
+        event.target.value = "";
+      });
+    })();
+  </script>
+</body>
+</html>

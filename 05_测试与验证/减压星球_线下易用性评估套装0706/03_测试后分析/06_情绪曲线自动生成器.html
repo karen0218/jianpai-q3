@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>情绪曲线自动生成器 - 减压星球</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+            background: #EDE7DA;
+            color: #1F2421;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        .header {
+            background: #2A2723;
+            padding: 48px 40px;
+            border-radius: 16px;
+            color: white;
+            margin-bottom: 32px;
+            border-bottom: 3px solid #C8853F;
+        }
+
+        .header h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+        .header p { font-size: 16px; opacity: 0.9; }
+
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            font-size: 20px;
+            color: #1F2421;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #E2D9C8;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .flow-input {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .flow-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #8A8A80;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .flow-input input {
+            padding: 10px;
+            border: 2px solid #E2D9C8;
+            border-radius: 6px;
+            font-size: 14px;
+            text-align: center;
+            background: #FDFAF5;
+        }
+
+        .flow-input input:focus {
+            outline: none;
+            border-color: #C8853F;
+            background: #fff;
+        }
+
+        .student-row {
+            display: grid;
+            grid-template-columns: 100px repeat(7, 1fr) 50px;
+            gap: 12px;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+
+        .student-num {
+            font-size: 14px;
+            font-weight: 600;
+            color: #5A5A58;
+        }
+
+        .emotion-select {
+            padding: 8px;
+            border: 2px solid #E2D9C8;
+            border-radius: 6px;
+            font-size: 13px;
+            background: #FDFAF5;
+            cursor: pointer;
+        }
+
+        .emotion-select:focus {
+            outline: none;
+            border-color: #C8853F;
+            background: #fff;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #C8853F;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #A06B2F;
+        }
+
+        .btn-secondary {
+            background: #E2D9C8;
+            color: #3A3A38;
+        }
+
+        .btn-secondary:hover {
+            background: #CFC6B4;
+        }
+
+        .btn-remove {
+            background: #B03030;
+            color: white;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-remove:hover {
+            background: #8A2020;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-top: 24px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .stat-card {
+            background: #FDF8F0;
+            border: 1px solid #E2D9C8;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #8A8A80;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1F2421;
+        }
+
+        .stat-value.positive { color: #2A7A3A; }
+        .stat-value.neutral { color: #8A8A80; }
+        .stat-value.negative { color: #B03030; }
+
+        .legend {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            margin-top: 16px;
+            padding: 16px;
+            background: #FDF8F0;
+            border-radius: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .note-box {
+            background: #FFF8F0;
+            border-left: 4px solid #C8853F;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #5A3E1B;
+            line-height: 1.75;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📈 情绪曲线自动生成器</h1>
+            <p>输入每位学生在7个Flow的情绪标记，自动计算平均分并生成曲线图</p>
+        </div>
+
+        <div class="card">
+            <h2>数据输入</h2>
+            <div class="note-box" style="margin-bottom: 20px;">
+                <strong>📝 使用说明：</strong><br>
+                1. 为每位学生输入7个Flow的情绪标记（😊 顺利=1分，😐 一般=0分，😟 困难=-1分）<br>
+                2. 点击「生成情绪曲线」查看汇总结果<br>
+                3. 曲线会自动标注最低谷（最大痛点）和最高峰
+            </div>
+
+            <!-- Flow标题行 -->
+            <div class="student-row" style="margin-bottom: 8px;">
+                <div class="student-num" style="color: #C8853F; font-weight: 700;">学生编号</div>
+                <div style="font-size: 11px; font-weight: 700; color: #8A8A80; text-align: center; line-height: 1.4;">Flow 1<br>AI对话入口</div>
+                <div style="font-size: 11px; font-weight: 700; color: #8A8A80; text-align: center; line-height: 1.4;">Flow 2<br>文字输入</div>
+                <div style="font-size: 11px; font-weight: 700; color: #8A8A80; text-align: center; line-height: 1.4;">Flow 3<br>三IP认知</div>
+                <div style="font-size: 11px; font-weight: 700; color: #8A8A80; text-align: center; line-height: 1.4;">Flow 4<br>情绪打卡</div>
+                <div style="font-size: 11px; font-weight: 700; color: #8A8A80; text-align: center; line-height: 1.4;">Flow 5<br>危机响应</div>
+                <div style="font-size: 11px; font-weight: 700; color: #8A8A80; text-align: center; line-height: 1.4;">Flow 6<br>对话报告</div>
+                <div style="font-size: 11px; font-weight: 700; color: #8A8A80; text-align: center; line-height: 1.4;">Flow 7<br>脑之岛训练</div>
+                <div style="width: 50px;"></div>
+            </div>
+
+            <div id="studentsContainer"></div>
+
+            <div class="actions">
+                <button class="btn btn-secondary" onclick="addStudent()">➕ 添加学生</button>
+                <button class="btn btn-primary" onclick="generateChart()">生成情绪曲线</button>
+            </div>
+        </div>
+
+        <div class="card" id="resultCard" style="display: none;">
+            <h2>情绪曲线图</h2>
+            <div class="chart-container">
+                <canvas id="emotionChart"></canvas>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #2A7A3A;"></div>
+                    <span>😊 顺利 (+1分)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #8A8A80;"></div>
+                    <span>😐 一般 (0分)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #B03030;"></div>
+                    <span>😟 困难 (-1分)</span>
+                </div>
+            </div>
+
+            <div class="stats-grid" id="statsGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        let studentCount = 0;
+        let chart = null;
+
+        const flowNames = [
+            'Flow 1\nAI对话入口认知',
+            'Flow 2\n文字输入与对话深度',
+            'Flow 3\n三IP认知与选择',
+            'Flow 4\n情绪打卡全流程',
+            'Flow 5\n极端情绪词危机响应',
+            'Flow 6\n对话报告生成',
+            'Flow 7\n脑之岛认知训练'
+        ];
+
+        function addStudent() {
+            studentCount++;
+            const container = document.getElementById('studentsContainer');
+
+            const row = document.createElement('div');
+            row.className = 'student-row';
+            row.id = `student_${studentCount}`;
+
+            row.innerHTML = `
+                <div class="student-num">学生 ${studentCount}</div>
+                ${Array(7).fill(0).map((_, i) => `
+                    <select class="emotion-select" data-flow="${i}">
+                        <option value="">未填</option>
+                        <option value="1">😊 顺利</option>
+                        <option value="0">😐 一般</option>
+                        <option value="-1">😟 困难</option>
+                    </select>
+                `).join('')}
+                <button class="btn btn-remove" onclick="removeStudent(${studentCount})">删除</button>
+            `;
+
+            container.appendChild(row);
+        }
+
+        function removeStudent(id) {
+            const row = document.getElementById(`student_${id}`);
+            if (row) row.remove();
+        }
+
+        function generateChart() {
+            const students = document.querySelectorAll('.student-row');
+            if (students.length === 0) {
+                alert('请至少添加一位学生的数据');
+                return;
+            }
+
+            // 收集数据
+            const flowData = Array(7).fill(0).map(() => []);
+
+            students.forEach(student => {
+                const selects = student.querySelectorAll('.emotion-select');
+                selects.forEach((select, flowIndex) => {
+                    const value = select.value;
+                    if (value !== '') {
+                        flowData[flowIndex].push(parseFloat(value));
+                    }
+                });
+            });
+
+            // 计算平均分
+            const averages = flowData.map(data => {
+                if (data.length === 0) return null;
+                return data.reduce((a, b) => a + b, 0) / data.length;
+            });
+
+            // 找最低谷和最高峰
+            let minIndex = 0, maxIndex = 0;
+            let minValue = averages[0], maxValue = averages[0];
+
+            averages.forEach((val, idx) => {
+                if (val !== null) {
+                    if (val < minValue) { minValue = val; minIndex = idx; }
+                    if (val > maxValue) { maxValue = val; maxIndex = idx; }
+                }
+            });
+
+            // 显示结果卡片
+            document.getElementById('resultCard').style.display = 'block';
+
+            // 生成统计卡片
+            const statsGrid = document.getElementById('statsGrid');
+            statsGrid.innerHTML = averages.map((avg, idx) => {
+                if (avg === null) return `
+                    <div class="stat-card">
+                        <div class="stat-label">Flow ${idx + 1}</div>
+                        <div class="stat-value neutral">-</div>
+                    </div>
+                `;
+
+                const colorClass = avg > 0.3 ? 'positive' : avg < -0.3 ? 'negative' : 'neutral';
+                const emoji = avg > 0.3 ? '😊' : avg < -0.3 ? '😟' : '😐';
+
+                return `
+                    <div class="stat-card">
+                        <div class="stat-label">Flow ${idx + 1}</div>
+                        <div class="stat-value ${colorClass}">${emoji} ${avg.toFixed(2)}</div>
+                    </div>
+                `;
+            }).join('');
+
+            // 绘制图表
+            const ctx = document.getElementById('emotionChart').getContext('2d');
+
+            if (chart) chart.destroy();
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: flowNames,
+                    datasets: [{
+                        label: '平均情绪分数',
+                        data: averages,
+                        borderColor: '#C8853F',
+                        backgroundColor: 'rgba(200, 133, 63, 0.1)',
+                        borderWidth: 3,
+                        pointRadius: averages.map((_, idx) =>
+                            idx === minIndex ? 8 : idx === maxIndex ? 8 : 6
+                        ),
+                        pointBackgroundColor: averages.map((_, idx) =>
+                            idx === minIndex ? '#B03030' : idx === maxIndex ? '#2A7A3A' : '#C8853F'
+                        ),
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.parsed.y;
+                                    const emoji = value > 0.3 ? '😊' : value < -0.3 ? '😟' : '😐';
+                                    return ` ${emoji} ${value.toFixed(2)}分`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            min: -1,
+                            max: 1,
+                            ticks: {
+                                callback: function(value) {
+                                    if (value === 1) return '😊 +1 顺利';
+                                    if (value === 0) return '😐 0 一般';
+                                    if (value === -1) return '😟 -1 困难';
+                                    return value;
+                                }
+                            },
+                            grid: {
+                                color: function(context) {
+                                    if (context.tick.value === 0) return '#C8853F';
+                                    return '#E2D9C8';
+                                },
+                                lineWidth: function(context) {
+                                    if (context.tick.value === 0) return 2;
+                                    return 1;
+                                }
+                            }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+
+            // 滚动到结果
+            document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 初始化：添加3个学生行
+        for (let i = 0; i < 3; i++) {
+            addStudent();
+        }
+    </script>
+</body>
+</html>

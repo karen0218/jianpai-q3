@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>减压星球 · 6大核心流程图</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', sans-serif; background: #EDE7DA; color: #1F2421; line-height: 1.6; padding: 40px 20px 60px; }
+
+  .container { max-width: 960px; margin: 0 auto; }
+
+  .page-header { margin-bottom: 36px; }
+  .page-header h1 { font-size: 30px; font-weight: 800; color: #1F2421; letter-spacing: -0.5px; margin-bottom: 6px; }
+  .page-header p  { font-size: 14px; color: #8A8A80; }
+  .header-rule { margin-top: 18px; height: 3px; background: linear-gradient(to right, #C8853F, #E2C9A8); border-radius: 2px; }
+
+  .flow-block { background: #fff; border-radius: 14px; box-shadow: 0 1px 8px rgba(0,0,0,0.07); margin-bottom: 28px; overflow: hidden; }
+  .flow-head { background: #2A2723; padding: 16px 24px; display: flex; align-items: center; gap: 12px; }
+  .flow-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; color: #C8853F; background: rgba(200,133,63,0.2); padding: 3px 9px; border-radius: 4px; white-space: nowrap; }
+  .flow-name { font-size: 16px; font-weight: 700; color: #fff; flex: 1; }
+  .badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+  .badge-must    { background: #C8853F; color: #fff; }
+  .badge-core    { background: #C04040; color: #fff; }
+  .badge-control { background: #5A6A7A; color: #fff; }
+
+  .flow-body { padding: 24px 28px; }
+
+  .meta-row { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 18px; font-size: 13px; color: #3A3A38; }
+  .meta-item strong { color: #C8853F; font-weight: 600; }
+
+  .diagram-wrap { background: #f8f6f2; border: 1px solid #e8e0d4; border-radius: 10px; padding: 20px; overflow-x: auto; }
+  .mermaid { display: flex; justify-content: center; }
+
+  .obs-box { margin-top: 16px; background: #FDF3E7; border-left: 3px solid #C8853F; border-radius: 0 8px 8px 0; padding: 12px 16px; font-size: 13px; color: #3A2E1F; }
+  .obs-box strong { display: block; margin-bottom: 6px; font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; color: #B0A898; }
+  .obs-box ul { padding-left: 16px; }
+  .obs-box li { margin: 4px 0; }
+
+  .footer { text-align: center; font-size: 12px; color: #94a3b8; padding: 24px; margin-top: 10px; border-top: 1px solid #d4c9ba; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="page-header">
+  <h1>减压星球 · 7大核心流程图</h1>
+  <p>易用性评估执行手册 · Flow 1–7 · 数字化还原</p>
+  <div class="header-rule"></div>
+</div>
+
+<!-- FLOW 1 -->
+<div class="flow-block">
+  <div class="flow-head">
+    <span class="flow-tag">FLOW 1</span>
+    <span class="flow-name">AI对话入口认知：双入口混淆 + Banner动态内容感知 + 跨模块可达性</span>
+    <span class="badge badge-must">必测</span>
+  </div>
+  <div class="flow-body">
+    <div class="meta-row">
+      <span><strong>核心问题：</strong>不是「能不能找到」，而是「两个入口认知是否统一」「Banner动态内容是否被感知」「正在其他模块深处时想找AI怎么办」</span>
+      <span><strong>任务：</strong>① 从首页进入AI对话；② 进入脑之岛某个训练的深处，调研员突然问「你现在想跟吉塔说句话，怎么做」</span>
+      <span><strong>样本：</strong>≥ 5人（含首次用户和回访用户各至少1名）</span>
+    </div>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    A([打开App首页]) --> DT{API: getDialogScenes\n对话类型标识 = ?}
+
+    DT -- "1·首次用户" --> NEW["Banner：三IP浮动动画\n无文字说明\n无上次对话内容"]
+    DT -- "2或3·回访用户" --> OLD["Banner：上次IP形象\n上次对话内容 上次对话回显\ninquiriesText 今日开场白"]
+
+    NEW --> Q1{用户自发行为？}
+    Q1 -- "点击IP形象或Banner" --> ENTER["进入 /chooseRole"]
+    Q1 -- "不知道要做什么\n看着动画没动" --> OB1["[观察] 首次Banner\n行动引导不明确"]
+    OB1 --> ENTER
+
+    OLD --> Q2{用户是否注意到\n回显的对话内容？}
+    Q2 -- "主动提及\n「它记得我说的」" --> CONT_FEEL["[记录] 连续感生效"]
+    Q2 -- "完全没注意\n直接点进去" --> OB2["[观察] 回显内容\n被忽视"]
+    CONT_FEEL --> ENTER2["进入 /AIChatgpt\n上次IP直接继续"]
+    OB2 --> ENTER2
+
+    ENTER --> DUAL{首页还有\n「我想聊聊」tag栏\n用户理解是？}
+    DUAL -- "和大卡片是同一功能" --> OK1["[记录] 双入口认知统一"]
+    DUAL -- "以为是不同功能" --> OB3["[观察] 双入口认知混乱\n大卡片≠tag栏 误判"]
+
+    ENTER2 --> DUAL
+
+    OK1 --> DEEP["调研员引导：\n进入脑之岛某训练模块深处"]
+    OB3 --> DEEP
+    DEEP --> P2Q{"现在想找吉塔说话\n你会怎么做？"}
+    P2Q -- "知道退出→回首页→点Banner" --> P2OK["路径清晰但步骤多\n[记录] 接受度如何？"]
+    P2Q -- "找不到/不确定" --> P2OB["[观察⚠️] P2痛点确认\n无悬浮球·跨模块断裂"]
+    P2OK --> K([✅ 完成记录])
+    P2OB --> K
+
+    style A fill:#22c55e,color:#fff,stroke:none
+    style K fill:#22c55e,color:#fff,stroke:none
+    style DT fill:#fbbf24,color:#1e293b,stroke:#d97706
+    style Q1 fill:#fbbf24,color:#1e293b,stroke:#d97706
+    style Q2 fill:#fbbf24,color:#1e293b,stroke:#d97706
+    style DUAL fill:#fbbf24,color:#1e293b,stroke:#d97706
+    style P2Q fill:#fbbf24,color:#1e293b,stroke:#d97706
+    style NEW fill:#f0fdf4,color:#166534,stroke:#86efac
+    style OLD fill:#dbeafe,color:#1e40af,stroke:#93c5fd
+    style OB1 fill:#fee2e2,color:#991b1b,stroke:#fca5a5
+    style OB2 fill:#fee2e2,color:#991b1b,stroke:#fca5a5
+    style OB3 fill:#fee2e2,color:#991b1b,stroke:#fca5a5
+    style P2OB fill:#fee2e2,color:#991b1b,stroke:#fca5a5
+      </div>
+    </div>
+    <div class="obs-box">
+      <strong>关键观察点</strong>
+      <ul>
+        <li><strong>【首次用户·Banner三IP动画】</strong> 三IP同时浮动、没有文字说明——用户是否知道要点击某一个？还是等着看动画？自发点击的比例有多高？</li>
+        <li><strong>【回访用户·对话回显感知】</strong> 上次对话内容（上次说的内容）是否被注意到？用户是否主动提到「它记得我上次说的」？如果完全没注意，这个「连续感」设计就没有落地。</li>
+        <li><strong>【双入口认知】</strong> 「我的AI心理伙伴」大卡片 + 「我想聊聊」tag栏同时存在——用户第一眼是否理解两者都进同一个对话？还是以为是两个不同功能（一个聊情绪，一个聊别的）？</li>
+        <li><strong>【P2痛点·跨模块可达性】</strong> 核心问题不是切回首页找不找得到，而是：正在脑之岛训练中途，突然想找AI说话，怎么办？现在唯一路径是退出训练→回首页→点Banner，用户是否知道这条路？接受度如何？</li>
+        <li>【延伸口述】「如果你正在脑之岛做练习，突然很想跟吉塔说句话，你会怎么做？」——用来量化P2痛点的严重程度，不要改成观察任务，保持口述形式。</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- FLOW 2 -->
+<div class="flow-block">
+  <div class="flow-head">
+    <span class="flow-tag">FLOW 2</span>
+    <span class="flow-name">文字输入与对话深度</span>
+    <span class="badge badge-must">必测</span>
+  </div>
+  <div class="flow-body">
+    <div class="meta-row">
+      <span><strong>任务：</strong>完成一轮完整的文字对话（发送消息→收到回复→再次发送）</span>
+      <span><strong>成功标准：</strong>能够流畅完成3轮对话，无明显卡顿或困惑</span>
+      <span><strong>样本：</strong>≥ 5人</span>
+    </div>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    A([进入对话页]) --> B["点击底部输入框"]
+    B --> C["键盘弹起"]
+    C --> D["输入文字内容"]
+    D --> E["点击发送按钮"]
+    E --> F["消息上屏\n显示为用户气泡"]
+    F --> G["等待AI回复"]
+    G --> H["收到AI回复\n显示为IP气泡"]
+    H --> I{用户是否\n继续对话？}
+    I -- "继续输入" --> D
+    I -- "结束对话" --> K([✅ 完成])
+
+    style A fill:#22c55e,color:#fff,stroke:none
+    style K fill:#22c55e,color:#fff,stroke:none
+    style I fill:#fbbf24,color:#1e293b,stroke:#d97706
+      </div>
+    </div>
+    <div class="obs-box">
+      <strong>关键观察点</strong>
+      <ul>
+        <li><strong>【输入框可发现性】</strong> 底部输入框是否容易被发现？输入框提示文字文案是否清晰？</li>
+        <li><strong>【键盘弹起后布局】</strong> 键盘弹起后对话内容是否被遮挡？是否需要手动滚动才能看到最新消息？</li>
+        <li><strong>【发送按钮触达】</strong> 发送按钮位置是否符合预期？是否有用户找不到发送按钮？</li>
+        <li><strong>【AI回复等待时长感知】</strong> 等待AI回复期间是否有loading状态？用户是否感到等待时间过长？</li>
+        <li><strong>【多轮对话流畅度】</strong> 连续多轮对话是否流畅？是否有用户在第2轮对话时出现困惑？</li>
+        <li><strong>【消息气泡区分度】</strong> 用户消息与AI消息的气泡样式是否容易区分（颜色/位置/头像）？</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- FLOW 3 -->
+<div class="flow-block">
+  <div class="flow-head">
+    <span class="flow-tag">FLOW 3</span>
+    <span class="flow-name">三IP认知与选择（首次 /chooseRole + 非首次直达对话）</span>
+    <span class="badge badge-core">核心</span>
+  </div>
+  <div class="flow-body">
+    <div class="meta-row">
+      <span><strong>任务：</strong>从首页进入AI对话，观察首次/非首次用户的不同路径</span>
+      <span><strong>成功标准：</strong>首次用户能说出选择的IP及理由；非首次用户能找到切换IP入口</span>
+      <span><strong>样本：</strong>≥ 8人（4人首次 + 4人非首次）</span>
+    </div>
+
+    <div style="font-size:12px;font-weight:700;color:#8A8A80;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;">路径分支：对话类型标识=1（首次）vs 2/3（非首次）</div>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    A([首页AI对话Banner\n点击进入]) --> CHECK{对话类型标识?}
+    CHECK -- "1（首次用户\nnever chatted）" --> CHOOSE["/chooseRole\n浏览三IP卡片"]
+    CHECK -- "2/3（非首次\nhas history）" --> DIRECT["/AIChatgpt\n直接进入对话页\n显示历史对话"]
+
+    CHOOSE --> BROWSE["浏览三IP卡片\n小星🤍 / 吉塔🐼 / 罗素🐳\nipTag + ipDescription"]
+    BROWSE --> SELECT["选择目标IP\n点击「和TA聊聊」"]
+    SELECT --> FIRST_CHAT["/AIChatgpt\n功能引导参数=1\n显示功能引导overlay"]
+    FIRST_CHAT --> GUIDE["功能引导（首次使用）\n引导点击推荐话题\n引导输入文字"]
+    GUIDE --> Z1([✅ 首次流程完成])
+
+    DIRECT --> HISTORY["对话页显示历史记录\n上次对话内容\n（上次聊天的内容回显）"]
+    HISTORY --> GEAR["右上角「设置」齿轮图标"]
+    GEAR --> DROP{用户是否\n主动点击设置？}
+    DROP -- "点击" --> MENU["下拉菜单：\n清除聊天记录\n切换聊天对象"]
+    DROP -- "不点击" --> CONTINUE["继续对话\n不切换IP"]
+    CONTINUE --> Z2([✅ 非首次·不换IP])
+    MENU --> SWITCH{选择\n切换聊天对象？}
+    SWITCH -- "是" --> CHOOSE
+    SWITCH -- "否" --> Z2
+
+    style A fill:#22c55e,color:#fff,stroke:none
+    style Z1 fill:#22c55e,color:#fff,stroke:none
+    style Z2 fill:#22c55e,color:#fff,stroke:none
+    style CHECK fill:#fbbf24,color:#1e293b,stroke:#d97706
+    style DROP fill:#fbbf24,color:#1e293b,stroke:#d97706
+    style SWITCH fill:#fbbf24,color:#1e293b,stroke:#d97706
+      </div>
+    </div>
+
+    <div class="obs-box">
+      <strong>关键观察点</strong>
+      <ul>
+        <li><strong>【首次·IP卡片区分度】</strong> /chooseRole三张卡片的ipTag和ipDescription能否让用户快速区分？小星/吉塔/罗素的定位是否清晰？</li>
+        <li><strong>【首次·选择耗时】</strong> 从进入/chooseRole到选定IP点击「和TA聊聊」的时长——≤30s说明快速决策，>1分钟说明犹豫/阅读详细</li>
+        <li><strong>【首次·功能引导】</strong> 功能引导参数=1触发的功能引导overlay是否被完整查看？还是直接跳过？引导内容是否帮助用户理解如何开始对话？</li>
+        <li><strong>【非首次·历史回显感知】</strong> 直接进入/AIChatgpt后，上次对话内容（上次对话内容）是否被注意到？用户是否感受到"IP记得我"？</li>
+        <li><strong>【非首次·设置入口可发现性】</strong> 右上角齿轮图标——有多少非首次用户主动点击？不主动点击的用户是否知道可以切换IP？</li>
+        <li><strong>【非首次·切换IP路径】</strong> 点击设置→下拉菜单→"切换聊天对象"→回到/chooseRole——这个路径是否符合用户预期？文案"切换聊天对象"是否清晰？</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- FLOW 4 -->
+<div class="flow-block">
+  <div class="flow-head">
+    <span class="flow-tag">FLOW 4</span>
+    <span class="flow-name">情绪打卡全流程（首页5态 + /clockIn 完形填空4步）</span>
+    <span class="badge badge-must">必测</span>
+  </div>
+  <div class="flow-body">
+    <div class="meta-row">
+      <span><strong>主测任务（signStatus=1或2）：</strong>从首页卡片进入 /clockIn，完成完形填空4步 → Step4打卡成功页 → 可选AI追问</span>
+      <span><strong>成功标准：</strong>5分钟内完成全流程；能说出完形填空句子的意思</span>
+      <span><strong>次测场景：</strong>signStatus=3/4（已打卡快捷路径）/ signStatus=5（月历视图）</span>
+      <span><strong>样本：</strong>≥ 5人，尽量覆盖三类状态</span>
+    </div>
+
+    <div style="font-size:12px;font-weight:700;color:#8A8A80;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;">第一层：首页卡片 5 种状态（API: getSignStatus → 打卡状态值字段）</div>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    A([打开App首页]) --> B["API: getSignStatus\n返回 打卡状态值 + 附加参数"]
+    B --> C{打卡状态值 = ?}
+
+    C -- "1\n今日未打卡\n无连续天数" --> D1["文案：Hi，今天感觉怎么样？\nbtn：去打卡"]
+    C -- "2\n今日未打卡\n有连续天数" --> D2["文案：你已经打卡X天啦，坚持哦\nbtn：去打卡\n附加参数=连续天数"]
+    C -- "3\n今日已打卡\n引导抽问题" --> D3["文案：抽一个灵感提问，来场自我对话\nbtn：抽问题"]
+    C -- "4\n今日已打卡\n引导记录瞬间" --> D4["文案：记录今日最重要的瞬间\nbtn：记录今日"]
+    C -- "5\n查看历史月历" --> D5["文案：翻翻日历，来看看X月\nbtn：查看日历\n附加参数=月份"]
+
+    D1 -- "点击「去打卡」" --> E["进入 /clockIn\nStep 1 起始"]
+    D2 -- "点击「去打卡」" --> E
+    D3 -- "点击「抽问题」" --> F["进入 /clockIn?step=4\n跳过1-3步直接完成态+AI追问"]
+    D4 -- "点击「记录今日」" --> F
+    D5 -- "点击「查看日历」" --> G["/moonCalendar\n月历视图"]
+
+    F --> Z2([✅ 快捷路径·已打卡用户])
+    G --> Z3([✅ 月历场景·结束])
+
+    style A fill:#22c55e,color:#fff,stroke:none
+    style Z2 fill:#22c55e,color:#fff,stroke:none
+    style Z3 fill:#22c55e,color:#fff,stroke:none
+    style C fill:#fbbf24,color:#1e293b,stroke:#d97706
+    style D3 fill:#dbeafe,color:#1e40af,stroke:#93c5fd
+    style D4 fill:#dbeafe,color:#1e40af,stroke:#93c5fd
+    style D5 fill:#ede9fe,color:#5b21b6,stroke:#c4b5fd
+    style F fill:#dbeafe,color:#1e40af,stroke:#93c5fd
+    style G fill:#ede9fe,color:#5b21b6,stroke:#c4b5fd
+      </div>
+    </div>
+
+    <div style="font-size:12px;font-weight:700;color:#8A8A80;letter-spacing:0.5px;text-transform:uppercase;margin:20px 0 8px;">第二层：/clockIn 完形填空4步（打卡状态值=1或2进入）</div>
+    <div style="font-size:12px;color:#6B6B65;margin-bottom:12px;background:#f8f6f2;border-radius:8px;padding:10px 14px;">
+      完形填空句子：<strong>「今天我过得 [Step1情绪]，因为 [Step2事件]，这些事情让我感觉 [Step3情感]」</strong>——随步骤渐进填入，Step4展示完整句子 + 妙笔提问引导写回答
+    </div>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    E([进入 /clockIn\nStep 1]) --> S1["Step 1：选择今日情绪\n5选1（单选必填）\n很开心/开心/毫无波澜\n不开心/很不开心\n背景色随情绪变化"]
+    S1 --> S2["Step 2：选择今日事件\n12类多选\n考试/同学/老师/父母\n兄弟姐妹/亲人/爷爷奶奶\n作业/睡眠/饮食/身体/其他+\nAPI getEvents"]
+    S2 --> S3["Step 3：选择情感词\n10选2+（至少2个）\n幸福/惊喜/愤怒/厌恶/恐惧\n悲伤/兴奋/感恩/嫉妒/好奇"]
+    S3 --> SUB["提交\nAPI: submitRecord\nsignDesc=完形填空全句"]
+    SUB --> S4["Step 4：打卡成功\n展示完整完形填空句子\n连续打卡天数"]
+    S4 --> TIP{showQuestionTip\n= true?}
+    TIP -- "是\n显示「妙笔提问」按钮" --> BTN["点击妙笔提问\nAPI: getClockInQuestion\n返回 signRequest 问题文字"]
+    TIP -- "否\n直接展示问题" --> BTN
+    BTN --> ANS["问题气泡 + textarea\n用户自由填写回答\n输入框提示文字: 您还没有回答这个问题哦~"]
+    ANS --> FIN["提交回答\nAPI: submitClockInAnswer\n→ /summarize"]
+    FIN --> DONE([✅ 打卡全流程完成\n/summarize展示旅程数据\n近7日情绪波动图])
+
+    style E fill:#22c55e,color:#fff,stroke:none
+    style DONE fill:#22c55e,color:#fff,stroke:none
+    style TIP fill:#fbbf24,color:#1e293b,stroke:#d97706
+      </div>
+    </div>
+
+    <div class="obs-box">
+      <strong>关键观察点</strong>
+      <ul>
+        <li><strong>【首页卡片·打卡状态值辨别】</strong> 打卡状态值=1和2仅文案不同（有无连续天数），用户是否注意到激励文案「打卡X天」？是否影响打卡动机？</li>
+        <li><strong>【首页卡片·打卡状态值=3/4快捷路径】</strong> 「抽问题/记录今日」按钮是否被用户理解为「已完成今日打卡」的状态？还是误以为还没打卡？</li>
+        <li><strong>【Step1 情绪粒度】</strong> 5个情绪选项是否够用？学生在「毫无波澜」附近是否犹豫？有无想选却选不到的情绪？</li>
+        <li><strong>【Step2 事件分类】</strong> 12类事件是否覆盖学生真实场景？「其他+」是否有人使用？多选是否符合预期（同一天可能多件事）？</li>
+        <li><strong>【Step3 情感词】</strong> 10个情感词是否容易理解？「嫉妒/厌恶/恐惧」等负面词学生是否愿意选？最少选2个的限制是否引起困惑？</li>
+        <li><strong>【完形填空句子】</strong> Step4展示完整句子「今天我过得…」——用户是否阅读？是否觉得句子表达了自己想说的？</li>
+        <li><strong>【妙笔提问引导】</strong> 「妙笔提问」按钮的功能——用户是否理解这是"帮你想一个问题来引导你写回答"？还是误以为是跳转AI对话？是否有人主动点击？</li>
+        <li><strong>【textarea回答填写】</strong> 有了问题引导后，用户是否愿意填写文字回答？填写长度如何？还是直接跳过提交空答案？</li>
+        <li><strong>【背景色变化】</strong> Step1选择情绪后，页面背景会根据心情变化（mood 1/2→bg1暖色系，mood 3→bg2中性，mood 4/5→bg3冷色系）——用户是否感知到氛围变化？背景色是否帮助情绪表达？</li>
+        <li><strong>【次测·打卡状态值=5月历】</strong> /moonCalendar 月历视图中，已打卡日期显示星球图标；能否快速找到历史记录？今日未打卡时右下角浮动按钮「今天感觉如何？+」是否被发现？</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- FLOW 5 -->
+<div class="flow-block">
+  <div class="flow-head">
+    <span class="flow-tag">FLOW 5</span>
+    <span class="flow-name">极端情绪词触发危机响应</span>
+    <span class="badge badge-control">控制场景</span>
+  </div>
+  <div class="flow-body">
+    <div class="meta-row">
+      <span><strong>任务：</strong>（测试人员模拟）在对话中输入压力/自伤类情绪词</span>
+      <span><strong>样本：</strong>≥ 3人（控制场景，非真实情绪用户）</span>
+    </div>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    A([测试人员进入对话]) --> B["输入压力/自伤类关键词"]
+    B --> C{危机响应卡片\n是否出现？}
+    C -- "出现" --> D["[记录] 响应速度\n及触发阈值"]
+    C -- "未出现" --> E["[观察⚠️] 危机响应\n未触发"]
+    D --> F{卡片内容\n是否清晰？}
+    E --> G([⚠️ P0问题记录])
+    F -- "清晰\n（有明确下一步）" --> H["[记录] 引导路径\n是否含联系老师"]
+    F -- "模糊\n（缺少下一步）" --> I["[观察] 认知负担\nIP肢体语言+卡片同时出现"]
+    H --> J([✅ 危机响应达标])
+    I --> K([⚠️ 交互优化需求])
+
+    style A fill:#22c55e,color:#fff,stroke:none
+    style J fill:#22c55e,color:#fff,stroke:none
+    style G fill:#ef4444,color:#fff,stroke:none
+    style K fill:#ef4444,color:#fff,stroke:none
+    style C fill:#fbbf24,color:#1e293b,stroke:#d97706
+    style F fill:#fbbf24,color:#1e293b,stroke:#d97706
+    style E fill:#fee2e2,color:#991b1b,stroke:#fca5a5
+    style I fill:#fee2e2,color:#991b1b,stroke:#fca5a5
+      </div>
+    </div>
+    <div class="obs-box">
+      <strong>关键观察点</strong>
+      <ul>
+        <li>危机响应卡片是否及时出现</li>
+        <li>卡片与IP肢体语言前缀是否形成认知负担（两个来源同时出现）</li>
+        <li>引导路径是否清晰（是否有"联系老师"等明确下一步）</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- FLOW 6 -->
+<div class="flow-block">
+  <div class="flow-head">
+    <span class="flow-tag">FLOW 6</span>
+    <span class="flow-name">对话报告生成与历史查阅</span>
+    <span class="badge badge-must">必测</span>
+  </div>
+  <div class="flow-body">
+    <div class="meta-row">
+      <span><strong>前提条件：</strong>必须完成至少一轮完整的"一问一答"才会生成报告</span>
+      <span><strong>任务：</strong>完成对话→查看报告→从历史记录回看报告</span>
+      <span><strong>成功标准：</strong>用户能理解报告内容，能从历史中找到过往报告</span>
+      <span><strong>样本：</strong>≥ 5人</span>
+    </div>
+
+    <div style="font-size:12px;font-weight:700;color:#8A8A80;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;">第一步：完成对话并触发报告生成</div>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    A([进入AI对话]) --> B["完成至少一轮\n用户提问 + IP回答"]
+    B --> C{对话是否\n满足条件？}
+    C -- "是：一问一答完整" --> D["结束对话\n或退出页面"]
+    C -- "否：只发了问题\n未收到回复" --> FAIL["不生成报告"]
+    D --> GEN["系统触发报告生成\n跳转 /tongDialogueReport"]
+    GEN --> LOAD["加载页面\nIP形象 + 进度条\n「正在生成报告」"]
+    LOAD --> REPORT["报告详情页\n话语_关怀词查看"]
+
+    style A fill:#22c55e,color:#fff,stroke:none
+    style C fill:#fbbf24,color:#1e293b,stroke:#d97706
+    style FAIL fill:#fee2e2,color:#991b1b,stroke:#fca5a5
+      </div>
+    </div>
+
+    <div style="font-size:12px;font-weight:700;color:#8A8A80;letter-spacing:0.5px;text-transform:uppercase;margin:20px 0 8px;">第二步：查看报告内容</div>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    REPORT([报告详情页]) --> READ{用户是否\n阅读报告？}
+    READ -- "完整阅读" --> UNDER["能否理解\n报告内容？"]
+    READ -- "快速滑过\n未仔细看" --> OB1["[观察] 报告内容\n未被关注"]
+    UNDER -- "理解" --> OK1["[记录] 报告有效性"]
+    UNDER -- "困惑/不理解" --> OB2["[观察] 报告文案\n理解困难"]
+    OK1 --> EXIT["退出报告\n回到首页"]
+    OB1 --> EXIT
+    OB2 --> EXIT
+
+    style REPORT fill:#22c55e,color:#fff,stroke:none
+    style READ fill:#fbbf24,color:#1e293b,stroke:#d97706
+    style UNDER fill:#fbbf24,color:#1e293b,stroke:#d97706
+    style OB1 fill:#fee2e2,color:#991b1b,stroke:#fca5a5
+    style OB2 fill:#fee2e2,color:#991b1b,stroke:#fca5a5
+      </div>
+    </div>
+
+    <div style="font-size:12px;font-weight:700;color:#8A8A80;letter-spacing:0.5px;text-transform:uppercase;margin:20px 0 8px;">第三步：从历史记录查阅过往报告</div>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    HOME([首页或打卡模块]) --> HIST["点击历史记录\n查看过往对话"]
+    HIST --> CAL["打开某日历史\n2026/06/05等"]
+    CAL --> FIND{能否找到\n该日对话报告？}
+    FIND -- "找到并点击" --> VIEW["查看历史报告"]
+    FIND -- "找不到入口" --> OB3["[观察⚠️] 历史报告\n入口不明确"]
+    VIEW --> COMP{报告内容\n与当日对话一致？}
+    COMP -- "一致" --> OK2([✅ 数据联动正确])
+    COMP -- "不一致/错位" --> ERROR([⚠️ 数据同步问题])
+    OB3 --> K([测试结束])
+
+    style HOME fill:#22c55e,color:#fff,stroke:none
+    style OK2 fill:#22c55e,color:#fff,stroke:none
+    style FIND fill:#fbbf24,color:#1e293b,stroke:#d97706
+    style COMP fill:#fbbf24,color:#1e293b,stroke:#d97706
+    style OB3 fill:#fee2e2,color:#991b1b,stroke:#fca5a5
+    style ERROR fill:#ef4444,color:#fff,stroke:none
+      </div>
+    </div>
+
+    <div class="obs-box">
+      <strong>关键观察点</strong>
+      <ul>
+        <li><strong>【报告生成条件】</strong> 用户是否理解"必须完成一轮问答"才有报告？如果只发问题就退出，是否会困惑"为什么没有报告"？</li>
+        <li><strong>【加载等待体验】</strong> 生成报告的加载时长用户能否接受？进度条/IP动画是否缓解等待焦虑？</li>
+        <li><strong>【报告内容理解】</strong> "话语_关怀词查看"等报告内容用户是否理解？是否觉得有价值？</li>
+        <li><strong>【报告阅读行为】</strong> 用户是完整阅读还是快速滑过？停留时长多久？</li>
+        <li><strong>【历史报告入口】</strong> 从首页/打卡模块能否快速找到历史对话报告？入口是否清晰？</li>
+        <li><strong>【数据一致性】</strong> 历史报告中的对话内容是否与当时实际对话一致？有无数据错位或丢失？</li>
+        <li><strong>【跨模块联动】</strong> 对话数据是否正确同步到打卡/历史模块？能否从不同入口都查到同一份报告？</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- FLOW 7 -->
+<div class="flow-block">
+  <div class="flow-head">
+    <span class="flow-tag">FLOW 7</span>
+    <span class="flow-name">脑之岛认知训练：4岛分区认知 + 训练任务启动 + 下载流程 + 勋章系统</span>
+    <span class="badge badge-core">核心</span>
+  </div>
+  <div class="flow-body">
+    <div class="meta-row">
+      <span><strong>核心问题：</strong>4个岛屿能力分区是否被理解？训练任务入口是否清晰？下载资源提示是否造成困惑？勋章激励是否被感知？</span>
+      <span><strong>任务：</strong>① 进入脑之岛，理解4个岛屿代表的能力类型；② 点击岛屿介绍了解详情；③ 启动一个训练任务，完成下载流程；④ 查看勋章墙</span>
+      <span><strong>样本：</strong>≥ 5人</span>
+    </div>
+
+    <div style="font-size:12px;font-weight:700;color:#8A8A80;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;">第一步：进入脑之岛 + 4岛分区认知</div>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    A([首页底部导航\n点击「脑之岛」]) --> MAP["脑之岛地图\n4个岛屿分区可见\nislandData[0-3]"]
+    MAP --> Q1{用户是否\n理解4个岛屿\n代表不同能力？}
+    Q1 -- "能区分\n主动描述差异" --> OK1["[记录] 分区认知清晰"]
+    Q1 -- "不确定\n看不出区别" --> OB1["[观察⚠️] 分区认知混淆\n视觉/文字引导不足"]
+    OK1 --> BTN["顶部3个按钮可见\n脑之岛介绍 / 今日任务 / 荣誉"]
+    OB1 --> BTN
+    BTN --> Q2{是否点击\n「脑之岛介绍」？}
+    Q2 -- "主动点击" --> INTRO["岛屿介绍弹窗\nisland-info-part1/2/3/4"]
+    Q2 -- "不点击\n直接找训练" --> SKIP["[观察] 介绍弹窗\n被跳过"]
+    INTRO --> K1([第一步完成])
+    SKIP --> K1
+
+    style A fill:#22c55e,color:#fff,stroke:none
+    style K1 fill:#22c55e,color:#fff,stroke:none
+    style Q1 fill:#fbbf24,color:#1e293b,stroke:#d97706
+    style Q2 fill:#fbbf24,color:#1e293b,stroke:#d97706
+    style OB1 fill:#fee2e2,color:#991b1b,stroke:#fca5a5
+      </div>
+    </div>
+
+    <div style="font-size:12px;font-weight:700;color:#8A8A80;letter-spacing:0.5px;text-transform:uppercase;margin:20px 0 8px;">第二步：启动训练任务 + 下载流程</div>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    K1([第一步完成]) --> SEL{用户如何\n选择训练？}
+    SEL -- "点击岛屿区域" --> ISLAND["进入岛屿\n显示 seriesList"]
+    SEL -- "点击任务卡" --> TASK["任务卡详情\ntask-item / task-info"]
+    ISLAND --> GAME["训练游戏列表\nseriesName / gameCode"]
+    TASK --> GAME
+    GAME --> CLICK["点击某个训练"]
+    CLICK --> CHECK{年级权限\ncanPlay判断}
+    CHECK -- "可以玩" --> DOWN{是否需要\n下载资源？}
+    CHECK -- "不可以玩" --> REJECT["提示：该游戏暂未\n对你所在年级开放"]
+    REJECT --> OB2["[观察] 被拒绝后\n用户知道可以玩什么吗？"]
+    DOWN -- "需要下载" --> DL["显示「下载资源」按钮"]
+    DOWN -- "已下载" --> START["直接启动训练"]
+    DL --> Q3{用户是否\n理解为什么要下载？}
+    Q3 -- "理解\n点击下载" --> PROGRESS["下载中...\n显示进度"]
+    Q3 -- "困惑\n犹豫或询问" --> OB3["[观察⚠️] 下载提示\n造成认知负担"]
+    OB3 --> PROGRESS
+    PROGRESS --> COMPLETE["下载完成"]
+    COMPLETE --> START
+    START --> K2([第二步完成])
+    OB2 --> K2
+
+    style K1 fill:#22c55e,color:#fff,stroke:none
+    style K2 fill:#22c55e,color:#fff,stroke:none
+    style SEL fill:#fbbf24,color:#1e293b,stroke:#d97706
+    style CHECK fill:#fbbf24,color:#1e293b,stroke:#d97706
+    style DOWN fill:#fbbf24,color:#1e293b,stroke:#d97706
+    style Q3 fill:#fbbf24,color:#1e293b,stroke:#d97706
+    style OB2 fill:#fee2e2,color:#991b1b,stroke:#fca5a5
+    style OB3 fill:#fee2e2,color:#991b1b,stroke:#fca5a5
+      </div>
+    </div>
+
+    <div style="font-size:12px;font-weight:700;color:#8A8A80;letter-spacing:0.5px;text-transform:uppercase;margin:20px 0 8px;">第三步：勋章系统认知</div>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+flowchart LR
+    K2([第二步完成]) --> TRAIN["完成一次训练"]
+    TRAIN --> Q4{训练结束后\n是否知道有勋章？}
+    Q4 -- "知道\n主动寻找" --> FIND["点击右上角\n「荣誉」按钮"]
+    Q4 -- "不知道\n没有反馈" --> OB4["[观察⚠️] 勋章激励\n未被感知"]
+    FIND --> MEDAL["进入 /medalWall\n勋章墙页面"]
+    MEDAL --> DETAIL["点击某个勋章\n查看详情弹窗"]
+    DETAIL --> Q5{勋章系统\n是否有激励作用？}
+    Q5 -- "有\n想继续收集" --> OK2["[记录] 激励有效"]
+    Q5 -- "无感\n不关心勋章" --> OB5["[观察] 勋章系统\n激励作用弱"]
+    OK2 --> K3([✅ 全流程完成])
+    OB5 --> K3
+    OB4 --> K3
+
+    style K2 fill:#22c55e,color:#fff,stroke:none
+    style K3 fill:#22c55e,color:#fff,stroke:none
+    style Q4 fill:#fbbf24,color:#1e293b,stroke:#d97706
+    style Q5 fill:#fbbf24,color:#1e293b,stroke:#d97706
+    style OB4 fill:#fee2e2,color:#991b1b,stroke:#fca5a5
+    style OB5 fill:#fee2e2,color:#991b1b,stroke:#fca5a5
+      </div>
+    </div>
+
+    <div class="obs-box">
+      <strong>关键观察点</strong>
+      <ul>
+        <li><strong>【4岛分区认知】</strong> 用户能否快速理解4个岛屿代表不同能力类型（如注意力、记忆力、思维力等）？岛屿命名/图标是否足够区分？是否需要点击介绍才能理解？</li>
+        <li><strong>【岛屿介绍弹窗】</strong> 「脑之岛介绍」按钮被多少人主动点击？弹窗内容是否帮助理解？还是被跳过？</li>
+        <li><strong>【训练入口可发现性】</strong> 用户如何找到具体训练？点击岛屿区域？还是点击任务卡？首次使用的引导弹窗是否清晰？</li>
+        <li><strong>【训练列表弹窗·勋章展示感知】</strong> 点击某个训练系列（如"注意力训练"）后，弹窗顶部直接显示该系列的5个勋章槽位（×2标记 = 获得过2次）——用户是否注意到这个勋章进度展示？这是否激发收集动力？</li>
+        <li><strong>【训练详情页·最高等级勋章】</strong> 进入单个训练的详情页（如"表情巡点大侦探"），顶部显示「最高等级」勋章卡片——用户是否理解这是自己在此训练中获得过的最高成就？</li>
+        <li><strong>【年级权限提示】</strong> 「该游戏暂未对你所在年级开放」提示出现时，用户反应如何？被拒绝后是否知道可以玩其他训练？还是感到困惑退出？</li>
+        <li><strong>【下载资源流程】</strong> 「下载资源」按钮（橙色）是否造成认知负担？用户是否理解为什么要下载（而不是直接玩）？下载进度反馈是否清晰？与「去训练」按钮（绿色）的区分度如何？</li>
+        <li><strong>【下载失败处理】</strong> 如出现「重新下载」或「继续下载」，用户是否知道如何操作？失败提示是否清晰？</li>
+        <li><strong>【训练完成反馈】</strong> 完成训练后，是否有明确的完成反馈？用户是否知道获得了勋章？是否主动回到训练列表查看勋章槽位的变化？</li>
+        <li><strong>【勋章系统整体认知】</strong> 综合训练列表弹窗顶部勋章展示 + 训练详情页最高等级 + 右上角荣誉按钮三个入口，用户对勋章系统的整体认知如何？是否理解勋章与训练成就的关联？</li>
+        <li><strong>【今日任务功能】</strong> 顶部「今日任务」按钮的作用是否被理解？点击后显示什么内容？</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</div>
+<div class="footer">
+  减压星球 · 7大核心流程图 · 易用性评估执行手册数字化版 · 2026.06.26
+</div>
+
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'default', flowchart: { curve: 'basis', padding: 16 } });
+</script>
+</body>
+</html>

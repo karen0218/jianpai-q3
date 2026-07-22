@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>用户旅程地图 · 单次使用20分钟 · 减压星球</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+  background: #EDE7DA;
+  color: #1F2421;
+  line-height: 1.6;
+  padding: 40px 20px 80px;
+}
+.container { max-width: 1400px; margin: 0 auto; }
+
+.page-header { margin-bottom: 28px; }
+.page-header h1 { font-size: 26px; font-weight: 800; margin-bottom: 4px; }
+.page-header p { font-size: 13px; color: #8A8A80; }
+.header-rule { margin-top: 14px; height: 3px; background: linear-gradient(to right, #C8853F, #E2C9A8); border-radius: 2px; }
+
+.intro-box {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  font-size: 14px;
+  color: #3A3A38;
+  border-left: 3px solid #C8853F;
+}
+
+/* Timeline Container */
+.timeline-wrapper {
+  position: relative;
+  margin: 40px 0;
+  padding: 60px 0 40px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  overflow-x: auto;
+}
+
+.timeline-axis {
+  position: relative;
+  height: 3px;
+  background: linear-gradient(to right, #C8853F, #E2C9A8);
+  margin: 0 40px;
+}
+
+.time-marker {
+  position: absolute;
+  top: -8px;
+  width: 2px;
+  height: 20px;
+  background: #C8853F;
+}
+
+.time-label {
+  position: absolute;
+  top: 25px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #8A8A80;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+/* Phase Cards */
+.phases-container {
+  display: flex;
+  gap: 16px;
+  margin: 0 40px;
+  margin-top: 60px;
+}
+
+.phase-card {
+  flex: 1;
+  background: #FBF7EF;
+  border: 2px solid #E2D9C8;
+  border-radius: 10px;
+  padding: 18px 16px;
+  position: relative;
+}
+
+.phase-card::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  left: 0;
+  width: 2px;
+  height: 30px;
+  background: #E2D9C8;
+}
+
+.phase-time {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #C8853F;
+  margin-bottom: 8px;
+}
+
+.phase-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #2A2723;
+  margin-bottom: 10px;
+}
+
+.phase-flows {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.flow-tag {
+  display: inline-block;
+  background: rgba(200,133,63,0.15);
+  color: #8A5020;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+.phase-desc {
+  font-size: 12px;
+  color: #5A5A58;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.stuck-marker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #B03030;
+  margin-top: 8px;
+  padding: 6px 10px;
+  background: #FDEAEA;
+  border-radius: 6px;
+}
+
+.stuck-marker::before {
+  content: '⚠';
+  font-size: 13px;
+}
+
+/* Pain Point Badges */
+.pain-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.pain-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: help;
+}
+
+.pain-badge.high {
+  background: #FDEAEA;
+  color: #B03030;
+  border: 1.5px solid #EAB8B8;
+}
+
+.pain-badge.mid {
+  background: #FEF0E0;
+  color: #8A5020;
+  border: 1.5px solid #E2C9A8;
+}
+
+.pain-badge.low {
+  background: #E8F0F8;
+  color: #1A5A8A;
+  border: 1.5px solid #B8CEDE;
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="page-header">
+  <h1>用户旅程地图 · 单次使用20分钟</h1>
+  <p>横向时间轴 · 情绪曲线 · F1-F7流程映射 · P1-P11痛点触发位置</p>
+  <div class="header-rule"></div>
+</div>
+
+<div class="intro-box">
+  <p><strong>地图用途：</strong>可视化一个学生用户从打开减压星球到退出的完整20分钟体验，标注情绪高低点和痛点触发时机。</p>
+</div>
+
+<!-- Timeline Visualization -->
+<div class="timeline-wrapper">
+  <div class="timeline-axis">
+    <div class="time-marker" style="left:0%;"></div>
+    <div class="time-label" style="left:0%;">0 分钟</div>
+
+    <div class="time-marker" style="left:25%;"></div>
+    <div class="time-label" style="left:25%;">5 分钟</div>
+
+    <div class="time-marker" style="left:50%;"></div>
+    <div class="time-label" style="left:50%;">10 分钟</div>
+
+    <div class="time-marker" style="left:75%;"></div>
+    <div class="time-label" style="left:75%;">15 分钟</div>
+
+    <div class="time-marker" style="left:100%;"></div>
+    <div class="time-label" style="left:100%;">20 分钟</div>
+  </div>
+
+  <div class="phases-container">
+    <!-- Phase 1: 0-4min 打开首页+情绪打卡 -->
+    <div class="phase-card">
+      <div class="phase-time">0-4 分钟</div>
+      <div class="phase-title">打开首页 · 完成情绪打卡</div>
+
+      <div class="phase-flows">
+        <span class="flow-tag">F1 入口认知</span>
+        <span class="flow-tag">F4 情绪打卡</span>
+      </div>
+
+      <div class="phase-desc">
+        用户首次看到首页，扫视 Banner 三IP 动画，注意到两个并行的 AI 对话入口（大卡片 + 预制话题栏），尝试理解"与吉塔分享近况"与"我想聊聊"的区别。点击情绪打卡，完成 5 态选择 + 完形填空 4 步流程。
+      </div>
+
+      <div class="stuck-marker">
+        ⚠ 卡点：双入口功能混淆，Banner 动态内容未被感知
+      </div>
+
+      <div class="pain-badges">
+        <span class="pain-badge high" title="P1 首屏无视觉主角">P1</span>
+        <span class="pain-badge high" title="P2 AI无全局入口">P2</span>
+      </div>
+    </div>
+
+    <!-- Phase 2: 5-9min 选择AI伙伴+开始对话 -->
+    <div class="phase-card">
+      <div class="phase-time">5-9 分钟</div>
+      <div class="phase-title">选择 IP · 启动对话</div>
+
+      <div class="phase-flows">
+        <span class="flow-tag">F3 三IP认知</span>
+        <span class="flow-tag">F2 文字对话</span>
+      </div>
+
+      <div class="phase-desc">
+        用户在首页选择 AI 伙伴（小星 / 吉塔 / 罗素），耗时观察三者差异。进入对话界面，寻找输入框，发送第一条消息，等待 AI 回复。老用户期待看到上次对话回显，新用户尝试理解对话机制。
+      </div>
+
+      <div class="stuck-marker">
+        ⚠ 卡点：IP 选择犹豫时间长（>1分钟），输入框可发现性低
+      </div>
+
+      <div class="pain-badges">
+        <span class="pain-badge high" title="P3 对话无情感记忆">P3</span>
+      </div>
+    </div>
+
+    <!-- Phase 3: 10-14min 深度对话+危机响应+报告 -->
+    <div class="phase-card">
+      <div class="phase-time">10-14 分钟</div>
+      <div class="phase-title">深度倾诉 · 查看报告</div>
+
+      <div class="phase-flows">
+        <span class="flow-tag">F2 对话深度</span>
+        <span class="flow-tag">F5 危机响应</span>
+        <span class="flow-tag">F6 对话报告</span>
+      </div>
+
+      <div class="phase-desc">
+        用户多轮对话（3-5轮），表达情绪强烈内容。极端情绪词触发危机响应卡片（IP 肢体语言前缀 + 危机引导）。对话结束后，查找对话报告入口，等待报告生成，阅读报告内容。
+      </div>
+
+      <div class="stuck-marker">
+        ⚠ 卡点：报告入口不明显，历史报告查阅路径模糊
+      </div>
+
+      <div class="pain-badges">
+        <span class="pain-badge mid" title="P6 解忧信箱无回执">P6</span>
+      </div>
+    </div>
+
+    <!-- Phase 4: 15-18min 脑之岛训练 -->
+    <div class="phase-card">
+      <div class="phase-time">15-18 分钟</div>
+      <div class="phase-title">脑之岛 · 认知训练</div>
+
+      <div class="phase-flows">
+        <span class="flow-tag">F7 脑之岛</span>
+      </div>
+
+      <div class="phase-desc">
+        切换到脑之岛 Tab（此时 AI 伙伴从界面消失），理解 4 岛分区逻辑，选择岛屿，启动训练任务。遇到"下载资源"提示或"该游戏暂未对你所在年级开放"权限拒绝。完成训练后查看勋章系统。
+      </div>
+
+      <div class="stuck-marker">
+        ⚠ 卡点：切 Tab 后找不到 AI，年级权限提示不清晰，勋章入口难发现
+      </div>
+
+      <div class="pain-badges">
+        <span class="pain-badge high" title="P4 无年级内容过滤">P4</span>
+        <span class="pain-badge mid" title="P5 脑之岛成就不外溢">P5</span>
+      </div>
+    </div>
+
+    <!-- Phase 5: 18-20min 退出回顾 -->
+    <div class="phase-card">
+      <div class="phase-time">18-20 分钟</div>
+      <div class="phase-title">退出 · 整体回顾</div>
+
+      <div class="phase-flows">
+        <span class="flow-tag">整体体验</span>
+      </div>
+
+      <div class="phase-desc">
+        用户完成测试任务，主动或被引导退出应用。此时进行 SUS 系统可用性量表填写（10题）、NPS 净推荐值打分（0-10分）、即时满意度评分（1-5星）。记录整体印象和开放式反馈。
+      </div>
+
+      <div class="pain-badges">
+        <span class="pain-badge low" title="P9 免责声明削弱信任">P9</span>
+        <span class="pain-badge low" title="P11 任务缺乏情境推送">P11</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Emotion Curve Legend -->
+<div class="intro-box" style="margin-top:32px;">
+  <p><strong>情绪曲线解读：</strong></p>
+  <p>😊 顺利（正向高峰） — 用户完成情绪打卡、AI 回复让其感到被理解、脑之岛训练完成获得勋章</p>
+  <p>😐 一般（平静中性） — 正常浏览首页、阅读对话报告、切换 Tab</p>
+  <p>😟 困难（负向低谷） — 双入口混淆、切 Tab 后找不到 AI、年级权限被拒绝、报告入口难找</p>
+</div>
+
+<!-- Pain Point Reference -->
+<div class="intro-box" style="margin-top:16px;">
+  <p><strong>痛点标注说明：</strong></p>
+  <p><span class="pain-badge high">P#</span> 高优先级痛点（≥5人触发） · <span class="pain-badge mid">P#</span> 中优先级痛点（3-4人触发） · <span class="pain-badge low">P#</span> 低优先级痛点（≤2人触发）</p>
+  <p>完整痛点清单详见《参考资料/C_痛点诊断P1-P11.html》</p>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>AI星球 · 阅读指引 · 2026.06.11</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'PingFang SC','Noto Sans SC',sans-serif; background:#07080f; color:#e2e8f0; line-height:1.75; }
+
+.hero {
+  min-height:60vh; display:flex; flex-direction:column;
+  justify-content:center; align-items:center; text-align:center;
+  background:
+    radial-gradient(ellipse at 25% 30%, rgba(99,102,241,0.2) 0%, transparent 55%),
+    radial-gradient(ellipse at 78% 65%, rgba(20,184,166,0.12) 0%, transparent 50%),
+    #07080f;
+  padding:64px 40px;
+}
+.hero-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12);
+  border-radius:100px; padding:6px 18px; font-size:12px; font-weight:700;
+  color:#94a3b8; margin-bottom:24px; letter-spacing:1px;
+}
+.hero h1 {
+  font-size:42px; font-weight:900; line-height:1.1; margin-bottom:16px;
+  background:linear-gradient(135deg,#ffffff 0%,#c4b5fd 40%,#5eead4 80%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.hero-sub { font-size:15px; color:#64748b; max-width:600px; line-height:1.7; }
+
+/* NAV */
+.sticky-nav {
+  position:sticky; top:0; z-index:100;
+  background:rgba(7,8,15,0.97); backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,0.05);
+  display:flex; justify-content:center; overflow-x:auto; flex-wrap:nowrap;
+}
+.sticky-nav a {
+  display:block; padding:12px 14px; font-size:11px; font-weight:700;
+  color:#475569; text-decoration:none; white-space:nowrap;
+  border-bottom:2px solid transparent; transition:all 0.2s; letter-spacing:.3px;
+}
+.sticky-nav a:hover { color:#c4b5fd; border-bottom-color:#6366f1; }
+
+.wrap { padding:64px 40px; max-width:1000px; margin:0 auto; }
+
+/* 章节标题 */
+.chapter {
+  display:flex; align-items:flex-start; gap:20px; margin-bottom:36px;
+}
+.ch-num {
+  font-size:56px; font-weight:900; line-height:1; flex-shrink:0;
+  background:linear-gradient(135deg,#c4b5fd,#6366f1);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.ch-meta { flex:1; }
+.ch-eyebrow { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:2px; color:#6366f1; margin-bottom:6px; }
+.ch-title { font-size:26px; font-weight:900; color:#f1f5f9; margin-bottom:6px; }
+.ch-sub { font-size:13px; color:#64748b; line-height:1.7; }
+
+/* 卡片 */
+.block { border-radius:16px; padding:28px 32px; margin-bottom:20px; border:1px solid; }
+.block-purple { background:rgba(99,102,241,0.07); border-color:rgba(99,102,241,0.2); }
+.block-teal   { background:rgba(20,184,166,0.07);  border-color:rgba(20,184,166,0.2); }
+.block-amber  { background:rgba(251,191,36,0.07);  border-color:rgba(251,191,36,0.2); }
+.block-red    { background:rgba(239,68,68,0.07);   border-color:rgba(239,68,68,0.2); }
+.block-blue   { background:rgba(56,189,248,0.07);  border-color:rgba(56,189,248,0.2); }
+.block-gray   { background:rgba(255,255,255,0.03); border-color:rgba(255,255,255,0.08); }
+
+.block-label { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:10px; }
+.block-title { font-size:16px; font-weight:800; color:#f1f5f9; margin-bottom:8px; }
+.block-body { font-size:13px; color:#94a3b8; line-height:1.9; }
+.block-body b { color:#e2e8f0; }
+.block-body em { color:#c4b5fd; font-style:normal; font-weight:700; }
+
+/* 讲解要点列表 */
+.talk-points { margin-top:14px; display:flex; flex-direction:column; gap:8px; }
+.tp { display:flex; gap:12px; align-items:flex-start; }
+.tp-dot { width:20px; height:20px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; margin-top:2px; }
+.tp-purple { background:rgba(99,102,241,0.25); color:#a5b4fc; }
+.tp-teal   { background:rgba(20,184,166,0.25); color:#5eead4; }
+.tp-amber  { background:rgba(251,191,36,0.25); color:#fbbf24; }
+.tp-body { font-size:13px; color:#94a3b8; line-height:1.7; }
+.tp-body b { color:#e2e8f0; }
+
+/* 文档链接 */
+.doc-links { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px; }
+.doc-link { display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:12px 14px; text-decoration:none; transition:background .15s; }
+.doc-link:hover { background:rgba(255,255,255,0.08); }
+.dl-icon { font-size:18px; flex-shrink:0; }
+.dl-text { flex:1; min-width:0; }
+.dl-title { font-size:12px; font-weight:700; color:#c4b5fd; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.dl-sub { font-size:11px; color:#475569; margin-top:1px; }
+
+/* 观众标签 */
+.audience-row { display:flex; gap:8px; flex-wrap:wrap; margin:12px 0; }
+.aud { font-size:11px; font-weight:800; padding:3px 10px; border-radius:99px; }
+.aud-pm     { background:rgba(99,102,241,0.2); color:#a5b4fc; }
+.aud-line   { background:rgba(20,184,166,0.2); color:#5eead4; }
+.aud-ux     { background:rgba(251,191,36,0.2); color:#fbbf24; }
+.aud-all    { background:rgba(255,255,255,0.1); color:#e2e8f0; }
+
+/* 时间线 */
+.timeline { position:relative; margin-left:20px; }
+.timeline::before { content:''; position:absolute; left:0; top:0; bottom:0; width:2px; background:rgba(99,102,241,0.25); border-radius:2px; }
+.tl-item { position:relative; padding:0 0 28px 28px; }
+.tl-item::before { content:''; position:absolute; left:-5px; top:5px; width:12px; height:12px; border-radius:50%; border:2px solid rgba(99,102,241,0.5); background:#07080f; }
+.tl-time { font-size:11px; font-weight:800; color:#6366f1; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; }
+.tl-title { font-size:14px; font-weight:800; color:#f1f5f9; margin-bottom:4px; }
+.tl-body { font-size:12px; color:#64748b; line-height:1.7; }
+
+/* 观点框 */
+.viewpoint { background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(167,139,250,0.06)); border:1px solid rgba(99,102,241,0.25); border-radius:14px; padding:20px 24px; margin:14px 0; }
+.vp-label { font-size:11px; font-weight:800; color:#6366f1; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+.vp-body { font-size:14px; color:#e2e8f0; line-height:1.8; font-style:italic; }
+
+.divider { height:1px; background:rgba(255,255,255,0.04); margin:56px 0; }
+
+/* 开场速查 */
+.intro-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:20px 0; }
+.ig-card { border-radius:12px; padding:18px; text-align:center; border:1px solid; }
+.ig-pm   { background:rgba(99,102,241,0.08); border-color:rgba(99,102,241,0.2); }
+.ig-line { background:rgba(20,184,166,0.08); border-color:rgba(20,184,166,0.2); }
+.ig-ux   { background:rgba(251,191,36,0.08); border-color:rgba(251,191,36,0.2); }
+.ig-icon { font-size:28px; margin-bottom:8px; }
+.ig-name { font-size:13px; font-weight:800; color:#f1f5f9; margin-bottom:4px; }
+.ig-focus { font-size:12px; color:#64748b; line-height:1.5; }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-badge">✦ AI星球产品分析 · 阅读指引 · 2026.06.11</div>
+  <h1>AI星球<br>产品分析与升级方向</h1>
+  <p class="hero-sub">完整分析成果阅读导航 · 产品经理 / 产线负责人 / UX负责人<br>建议阅读时长：30–45分钟 · 文档总数：21份 · 含代码级APK证据</p>
+</section>
+
+<nav class="sticky-nav">
+  <a href="#prep">🎯 阅读准备</a>
+  <a href="#s0">开篇</a>
+  <a href="#s1">① 产品诊断</a>
+  <a href="#s2">② 用户洞察</a>
+  <a href="#s3">③ 竞品格局</a>
+  <a href="#s4">④ 设计系统</a>
+  <a href="#s5">⑤ 核心原型</a>
+  <a href="#s6">⑥ 世界观IP</a>
+  <a href="#s7">⑦ 战略方向</a>
+  <a href="#s8">总结要点</a>
+</nav>
+
+<!-- ── 阅读准备 ── -->
+<section id="prep" style="background:#0a0c16; padding:64px 0;">
+<div class="wrap">
+  <div class="chapter">
+    <div class="ch-num">00</div>
+    <div class="ch-meta">
+      <div class="ch-eyebrow">开始阅读前 · 了解文档结构</div>
+      <div class="ch-title">三类读者的关注重点</div>
+      <div class="ch-sub">同样一份分析成果,三类读者的关注点完全不同。可根据你的角色重点阅读对应章节。</div>
+    </div>
+  </div>
+
+  <div class="intro-grid">
+    <div class="ig-card ig-pm">
+      <div class="ig-icon">📋</div>
+      <div class="ig-name">产品经理</div>
+      <div class="ig-focus">重点阅读：功能缺口在哪里?优先级怎么排?下一个迭代做什么?数据和APK代码支撑的决策依据</div>
+    </div>
+    <div class="ig-card ig-line">
+      <div class="ig-icon">🏭</div>
+      <div class="ig-name">产线负责人</div>
+      <div class="ig-focus">重点阅读：这些升级工作量多大?资源投入合理吗?风险在哪里?能不能分阶段交付?</div>
+    </div>
+    <div class="ig-card ig-ux">
+      <div class="ig-icon">🎨</div>
+      <div class="ig-name">UX负责人</div>
+      <div class="ig-focus">重点阅读：设计系统有没有可执行性?IP方向对不对?规范文档能不能直接落地?</div>
+    </div>
+  </div>
+
+  <div class="block block-gray" style="margin-top:8px;">
+    <div class="block-label" style="color:#94a3b8;">建议阅读顺序</div>
+    <div class="block-body">
+      根据不同角色可以选择以下阅读路径：<br><br>
+      <b style="color:#c4b5fd;">产品经理快速路径：</b>A2多维度分析(全局诊断) → A6竞品分析(护城河) → C2战略报告(优先级) → D系列(原型验证)<br><br>
+      <b style="color:#7dd3fc;">产线负责人快速路径：</b>A5产品升级分析(工作量评估) → B2设计规范(实施成本) → C1商业模式(投入产出) → C2战略报告(分阶段方案)<br><br>
+      <b style="color:#fbbf24;">UX负责人快速路径：</b>B1现有诊断(问题现状) → B2设计规范(解决方案) → E1世界观圣经(IP体系) → D系列(设计落地)<br><br>
+      <b style="color:#5eead4;">⚡ 三端说明：</b>本次分析深度覆盖学生端和家长端,教师端 Web 后台是下一阶段待分析方向——这是三端闭环生态中教务采购决策的关键界面,但本轮优先梳理学生体验和家校协同路径。
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ── 开篇导读 ── -->
+<section id="s0" style="background:#07080f; padding:64px 0;">
+<div class="wrap">
+  <div class="chapter">
+    <div class="ch-num">01</div>
+    <div class="ch-meta">
+      <div class="ch-eyebrow">开篇 · 分析背景</div>
+      <div class="ch-title">为什么要做这次分析</div>
+      <div class="ch-sub">建立对分析目标和方法论的共同认知,了解「这份报告能给你带来什么」。</div>
+    </div>
+  </div>
+
+  <div class="audience-row"><span class="aud aud-all">全体读者</span> <span style="font-size:12px;color:#64748b;">建议阅读时长：2-3分钟</span></div>
+
+  <div class="block block-purple">
+    <div class="block-label" style="color:#a5b4fc;">核心内容</div>
+    <div class="block-body">
+      这是一次对 AI星球的系统性产品分析,覆盖产品结构、用户洞察、竞品格局、设计系统、核心原型和品牌世界观,共21份文档。<br><br>
+      在开始阅读之前,需要明确一个认知：<b>AI星球是一个完整的三端生态</b>——学生端 iPad App 是学生在校使用的主入口,教师端 Web 后台负责课程资源配置、学生数据管理和心理预警处理,家长端微信小程序实现家校协同和危机通知。这是一个<b>「在校学生使用 → 教师管理预警 → 家长协同跟进」</b>的闭环产品。<br><br>
+      本次分析以<b>APK源代码</b>切入做诊断,所有结论都有代码级证据支撑,不是感觉,是可落地的事实。报告分7个章节,每章都包含具体的行动建议,帮助明确下一步优先级。
+    </div>
+  </div>
+
+  <div class="viewpoint">
+    <div class="vp-label">核心观点</div>
+    <div class="vp-body">AI星球现在的问题不是功能不够多,而是功能之间没有形成一个让人信任的统一体验。产品有好骨架,缺的是把骨架变成有灵魂的方式。这次分析就是找到那条线。</div>
+  </div>
+</div>
+</section>
+
+<!-- ── 第一章：产品诊断 ── -->
+<section id="s1" style="background:#0a0c16; padding:64px 0;">
+<div class="wrap">
+  <div class="chapter">
+    <div class="ch-num">02</div>
+    <div class="ch-meta">
+      <div class="ch-eyebrow">Chapter 01 · 产品诊断</div>
+      <div class="ch-title">我们从APK里看到了什么</div>
+      <div class="ch-sub">从代码出发，不是从感觉出发。这是这份分析最有说服力的部分——建立信任的最好时机。</div>
+    </div>
+  </div>
+
+  <div class="audience-row">
+    <span class="aud aud-pm">产品经理</span>
+    <span class="aud aud-line">产线负责人</span>
+    <span style="font-size:12px;color:#64748b;">建议阅读时长：8-10分钟</span>
+  </div>
+
+  <div class="block block-teal">
+    <div class="block-label" style="color:#5eead4;">核心论点</div>
+    <div class="block-title">APK代码揭示了三个关键事实</div>
+    <div class="talk-points">
+      <div class="tp">
+        <div class="tp-dot tp-teal">1</div>
+        <div class="tp-body"><b>模块化分包销售已设计好</b>：APK中存在 <code style="background:rgba(255,255,255,0.1);padding:1px 5px;border-radius:3px;">appAuth: ONLY_MENTAL=1 / ONLY_CAREER=2 / ONLY_AI_SCREENING=3</code> 三个权限常量,说明商业模式已经在技术层面预留好了灵活销售的接口,但产品层面对这三种模式的体验差异化还没有做。</div>
+      </div>
+      <div class="tp">
+        <div class="tp-dot tp-teal">2</div>
+        <div class="tp-body"><b>年级数据采集了但没用</b>：代码中有 <code style="background:rgba(255,255,255,0.1);padding:1px 5px;border-radius:3px;">gradeCode / phaseCode</code> 字段,系统知道每个学生是小学/初中/高中,但首页完全没有根据这个做内容过滤。一个四年级学生会看到「3+1+2选科分析」——这是一个有数据、没用数据的典型问题。</div>
+      </div>
+      <div class="tp">
+        <div class="tp-dot tp-teal">3</div>
+        <div class="tp-body"><b>设计系统碎片化有代码证据</b>：从APK CSS中提取出<b>5种不同蓝色值</b>在同一个产品里并存,字号最小出现过 7.5px(远低于WCAG标准12px)。这不是设计偏好,是历史遗留和多团队各自发展造成的。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-links">
+    <a class="doc-link" href="A_产品诊断与分析/A1_产品结构树.html">
+      <div class="dl-icon">🌳</div>
+      <div class="dl-text"><div class="dl-title">A1 · 产品结构树</div><div class="dl-sub">基于APK+截图重建的完整功能地图</div></div>
+    </a>
+    <a class="doc-link" href="A_产品诊断与分析/A2_多维度深度分析.html">
+      <div class="dl-icon">🔍</div>
+      <div class="dl-text"><div class="dl-title">A2 · 多维度深度分析</div><div class="dl-sub">用户体验×技术×商业×战略四维分析</div></div>
+    </a>
+    <a class="doc-link" href="B_设计规范与系统/B1_现有设计系统诊断（APK提取）.html">
+      <div class="dl-icon">🔬</div>
+      <div class="dl-text"><div class="dl-title">B1 · 现有设计系统诊断</div><div class="dl-sub">CSS提取 · 五蓝色证据 · 字号问题清单</div></div>
+    </a>
+    <a class="doc-link" href="A_产品诊断与分析/A5_产品升级分析报告.html">
+      <div class="dl-icon">📈</div>
+      <div class="dl-text"><div class="dl-title">A5 · 产品升级分析报告</div><div class="dl-sub">痛点诊断 · 用户旅程 · 快赢升级点</div></div>
+    </a>
+  </div>
+
+  <div class="block block-blue" style="margin-top:20px;">
+    <div class="block-label" style="color:#7dd3fc;">三端生态 · 产品全貌</div>
+    <div class="block-title">AI星球不是一个App，是三端闭环生态</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px;">
+      <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px;border-left:3px solid rgba(167,139,250,0.5);">
+        <div style="font-size:12px;font-weight:800;color:#c4b5fd;margin-bottom:6px;">📱 学生端 · iPad App</div>
+        <div style="font-size:12px;color:#94a3b8;line-height:1.7;">在校使用，仅限校内设备。情绪签到、AI对话、心理测评、生涯探索、放松专区。<b style="color:#e2e8f0;">数据产生端。</b></div>
+      </div>
+      <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px;border-left:3px solid rgba(56,189,248,0.5);">
+        <div style="font-size:12px;font-weight:800;color:#7dd3fc;margin-bottom:6px;">💻 教师端 · Web后台</div>
+        <div style="font-size:12px;color:#94a3b8;line-height:1.7;">课程资源配置、学生数据管理、心理预警工单处理、班级情绪健康看板。<b style="color:#e2e8f0;">数据管理端、采购决策者主界面。</b></div>
+      </div>
+      <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px;border-left:3px solid rgba(52,211,153,0.5);">
+        <div style="font-size:12px;font-weight:800;color:#34d399;margin-bottom:6px;">📲 家长端 · 微信小程序</div>
+        <div style="font-size:12px;color:#94a3b8;line-height:1.7;">接收学校心理数据、查看孩子整体状态、接收危机预警通知、家校协同管理。<b style="color:#e2e8f0;">数据通知端、家校信任建立端。</b></div>
+      </div>
+    </div>
+    <div style="margin-top:12px;font-size:12px;color:#64748b;line-height:1.8;">
+      ⚡ <b style="color:#e2e8f0;">商业模式定位：</b>学校采购决策者(教务/心理老师)的核心使用界面是<b style="color:#7dd3fc;">教师端 Web</b>,不是学生端。商业化路径包括B2B学校采购、IP衍生商业(周边/授权)、线下场景延伸(心理治疗室/疗愈舱主题空间)。教师端体验质量直接影响学校续约,但本次分析重点在学生端——教师端是下一阶段待深入的方向。
+    </div>
+  </div>
+
+  <div class="viewpoint">
+    <div class="vp-label">对产品经理的参考建议</div>
+    <div class="vp-body">年级过滤是一个工程量极小、用户感知极大的快赢点。数据已经在,逻辑已经在,只需要在首页内容渲染层加一个 if-else 判断。建议列为下一版本 P0。</div>
+  </div>
+</div>
+</section>
+
+<!-- ── 第二章：用户洞察 ── -->
+<section id="s2" style="background:#07080f; padding:64px 0;">
+<div class="wrap">
+  <div class="chapter">
+    <div class="ch-num">03</div>
+    <div class="ch-meta">
+      <div class="ch-eyebrow">Chapter 02 · 用户洞察</div>
+      <div class="ch-title">你面对的不是「学生」，是五类完全不同的人</div>
+      <div class="ch-sub">三端产品覆盖三类使用者：学生（小学/初中/高中三段）、学校教师（心理老师/班主任）、家长。每类用户诉求不同，产品优先级也不同。</div>
+    </div>
+  </div>
+
+  <div class="audience-row">
+    <span class="aud aud-pm">产品经理</span>
+    <span style="font-size:12px;color:#64748b;">建议阅读时长：6-8分钟</span>
+  </div>
+
+  <div class="block block-amber">
+    <div class="block-label" style="color:#fbbf24;">核心论点</div>
+    <div class="block-title">三个年龄段，三套完全不同的产品优先级</div>
+    <div class="talk-points">
+      <div class="tp">
+        <div class="tp-dot tp-amber">小</div>
+        <div class="tp-body"><b>小学高年级（10-12岁）</b>：游戏化反馈是唯一驱动力。勋章、角色、脑之岛对他们有效；生涯规划内容不仅无效，还会造成焦虑。<em>当前缺口：需要年级过滤，让这部分内容不出现在他们面前。</em></div>
+      </div>
+      <div class="tp">
+        <div class="tp-dot tp-amber">初</div>
+        <div class="tp-body"><b>初中生（12-15岁）</b>：身份认同危机期，同伴关系是第一优先。吉塔心愈AI、心理剧场最契合。<em>当前缺口：人际关系模块（校园霸凌、友情破裂）几乎是空白，是高价值功能空白。</em></div>
+      </div>
+      <div class="tp">
+        <div class="tp-dot tp-amber">高</div>
+        <div class="tp-body"><b>高中生（15-18岁）</b>：高考压力峰值，生涯规划、选科是刚需。<em>当前缺口：考前/考后专项情绪支持流程不完整——压力最大的那几天，产品的支持最薄弱。</em></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block block-gray">
+    <div class="block-label" style="color:#94a3b8;">家校协同的核心矛盾</div>
+    <div class="block-body">
+      家长端(微信小程序)和学生端形成一套<b>三级隐私分层</b>模型:<br>
+      <b>第1级</b> 自动推送整体健康趋势(不含具体内容)→ 家长放心、学生安心<br>
+      <b>第2级</b> 学生主动分享测评报告 → 把主动权还给学生<br>
+      <b>第3级</b> 危机强制通知(不可关闭)→ 安全底线不妥协<br>
+      这个模型直接回应「家长知情权 vs 学生隐私」的核心矛盾,也是学校信任和家校协同的关键。
+    </div>
+  </div>
+
+  <div class="doc-links">
+    <a class="doc-link" href="A_产品诊断与分析/A3_补充深度分析（用户分层·家校协同·商业模式）.html">
+      <div class="dl-icon">👥</div>
+      <div class="dl-text"><div class="dl-title">A3 · 补充深度分析</div><div class="dl-sub">用户分层 · 家校协同 · 三级隐私模型</div></div>
+    </a>
+    <a class="doc-link" href="A_产品诊断与分析/A4_第二轮补充分析（合规·AI伦理）.html">
+      <div class="dl-icon">⚖️</div>
+      <div class="dl-text"><div class="dl-title">A4 · 合规与AI伦理</div><div class="dl-sub">未成年人保护法 · AIGC合规边界</div></div>
+    </a>
+  </div>
+</div>
+</section>
+
+<!-- ── 第三章：竞品格局 ── -->
+<section id="s3" style="background:#0a0c16; padding:64px 0;">
+<div class="wrap">
+  <div class="chapter">
+    <div class="ch-num">04</div>
+    <div class="ch-meta">
+      <div class="ch-eyebrow">Chapter 03 · 竞品格局</div>
+      <div class="ch-title">AI星球的护城河在哪里</div>
+      <div class="ch-sub">六大竞品深度剖析，找到真正可防御的差异化优势。</div>
+    </div>
+  </div>
+
+  <div class="audience-row">
+    <span class="aud aud-pm">产品经理</span>
+    <span class="aud aud-line">产线负责人</span>
+    <span style="font-size:12px;color:#64748b;">建议阅读时长：8-10分钟</span>
+  </div>
+
+  <div class="block block-blue">
+    <div class="block-label" style="color:#7dd3fc;">核心论点</div>
+    <div class="block-title">竞争定位：对标优秀C端产品,保持B2B独特优势</div>
+    <div class="talk-points">
+      <div class="tp">
+        <div class="tp-dot" style="background:rgba(56,189,248,0.25);color:#7dd3fc;">1</div>
+        <div class="tp-body"><b>真正的竞争对手</b>：朝夕/林间、Finch等优秀C端产品——它们在AI对话深度、情感化设计、用户黏性上有成熟经验。AI星球需要对标它们的产品能力,而非过度担心大厂威胁。</div>
+      </div>
+      <div class="tp">
+        <div class="tp-dot" style="background:rgba(56,189,248,0.25);color:#7dd3fc;">2</div>
+        <div class="tp-body"><b>B2B渠道护城河</b>：学校采购模式意味着用户不需要自主下载,部署在学习机上直接触达。这是C端产品做不到的渗透方式,也是AI星球最难复制的壁垒。</div>
+      </div>
+      <div class="tp">
+        <div class="tp-dot" style="background:rgba(56,189,248,0.25);color:#7dd3fc;">3</div>
+        <div class="tp-body"><b>大厂威胁被高估</b>：字节/腾讯受强监管制约(数据、内容审核、未成年人保护)且ROI不够吸引,短期(2-3年)内不太可能将青少年心理健康作为战略重点。监管壁垒+低商业优先级使大厂威胁远低于市场预期。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-links" style="grid-template-columns:1fr;">
+    <a class="doc-link" href="A_产品诊断与分析/A6_竞品深度分析.html">
+      <div class="dl-icon">⚔️</div>
+      <div class="dl-text"><div class="dl-title">A6 · 竞品深度分析(完整版)</div><div class="dl-sub">六大竞品剖析 · 十维功能矩阵 · 真正威胁来自优秀C端产品而非大厂 · B2B渠道护城河分析</div></div>
+    </a>
+  </div>
+
+  <div class="viewpoint">
+    <div class="vp-label">对产线负责人的参考建议</div>
+    <div class="vp-body">真正的竞争来自优秀的C端心理健康产品(朝夕/林间、Finch)——它们在AI对话深度、情感化设计上有成熟经验。AI星球需要对标它们的产品能力,同时保持B2B学校采购这一独特优势。大厂(字节/腾讯)受监管壁垒和低商业优先级制约,短期威胁被高估。</div>
+  </div>
+</div>
+</section>
+
+<!-- ── 第四章：设计系统 ── -->
+<section id="s4" style="background:#07080f; padding:64px 0;">
+<div class="wrap">
+  <div class="chapter">
+    <div class="ch-num">05</div>
+    <div class="ch-meta">
+      <div class="ch-eyebrow">Chapter 04 · 设计系统</div>
+      <div class="ch-title">从「碎片化」到「一套可执行的规范」</div>
+      <div class="ch-sub">先呈现问题严重程度，再展示已经解决好的方案——这个节奏最有说服力。</div>
+    </div>
+  </div>
+
+  <div class="audience-row">
+    <span class="aud aud-ux">UX负责人</span>
+    <span class="aud aud-line">产线负责人</span>
+    <span style="font-size:12px;color:#64748b;">建议阅读时长：10-12分钟</span>
+  </div>
+
+  <div class="block block-purple">
+    <div class="block-label" style="color:#a5b4fc;">本章节要点</div>
+    <div class="block-body">
+      本章节基于APK源代码展开诊断,建议重点查看以下文档:<br>
+      打开 B1 文档,查看从APK CSS提取的色值清单。关键问题包括:<br>
+      • <b>五蓝色并存</b>：#368FFF、#1890FF、#4096FF、#165DFF、#2563EB 都出现在同一个产品里<br>
+      • <b>7.5px 字体</b>：不符合WCAG 2.1 AA的无障碍标准(最小12px)<br>
+      • <b>WebView 与原生字号割裂</b>：WebView 内容用一套字号,原生页面用另一套<br>
+      这些不是视觉风格问题,<em>这是会影响用户信任感的质量问题</em>。
+    </div>
+  </div>
+
+  <div class="block block-teal" style="margin-top:12px;">
+    <div class="block-label" style="color:#5eead4;">解决方案(B2文档)</div>
+    <div class="block-title">Design Token v2.0：一套变量,全局统一</div>
+    <div class="talk-points">
+      <div class="tp">
+        <div class="tp-dot tp-teal">色</div>
+        <div class="tp-body"><b>主色统一为 #368FFF(Brand-500)</b>,向上下扩展完整10级色阶,五蓝色全部收归这一套,设计和开发从此对同一个变量名。</div>
+      </div>
+      <div class="tp">
+        <div class="tp-dot tp-teal">字</div>
+        <div class="tp-body"><b>1920×1080px 标准屏 Type Scale</b>：Display 48px → Caption 12px,7个层级,字号偶数化,行高和字重全部配套定义。</div>
+      </div>
+      <div class="tp">
+        <div class="tp-dot tp-teal">落</div>
+        <div class="tp-body"><b>迁移成本可控</b>：所有Token以CSS变量(:root)形式定义,现有130+个WebView页面可分批迁移,优先迁高频页面(首页/AI对话/测评结果),不需要全量重写。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block block-amber" style="margin-top:12px;">
+    <div class="block-label" style="color:#fbbf24;">情绪色系(重点关注)</div>
+    <div class="block-body">
+      七种情绪各有专属色值(开心/#FEF9C3 → 难过/#FEE2E2),用于情绪签到选项底色、AI对话气泡色、页面背景叠加色。<br>
+      <b>效果</b>：情绪签到完成后,界面背景色会轻微变成当天情绪的颜色——<em>「界面感受到了你今天的状态」</em>。这是情感化设计的核心,也是Headspace的成功路径之一。
+    </div>
+  </div>
+
+  <div class="doc-links">
+    <a class="doc-link" href="B_设计规范与系统/B1_现有设计系统诊断（APK提取）.html">
+      <div class="dl-icon">🔬</div>
+      <div class="dl-text"><div class="dl-title">B1 · 现有设计系统诊断</div><div class="dl-sub">APK CSS提取 · 问题清单 · 诊断证据</div></div>
+    </a>
+    <a class="doc-link" href="B_设计规范与系统/B2_升级设计系统规范v2.0.html">
+      <div class="dl-icon">✅</div>
+      <div class="dl-text"><div class="dl-title">B2 · 升级设计系统规范 v2.0</div><div class="dl-sub">完整Design Token · 情绪色系 · 设计方向定位 · 2026趋势</div></div>
+    </a>
+    <a class="doc-link" href="B_设计规范与系统/B3_年级自适应视图设计.html">
+      <div class="dl-icon">📐</div>
+      <div class="dl-text"><div class="dl-title">B3 · 年级自适应视图</div><div class="dl-sub">一套代码渲染三种年级密度</div></div>
+    </a>
+  </div>
+
+  <div class="viewpoint">
+    <div class="vp-label">对UX负责人的观点</div>
+    <div class="vp-body">「设计系统不是让产品变漂亮，是让团队效率翻倍。一套Token下去，新组件的开发时间从「从头找颜色」变成「直接引用变量」。迁移成本是一次性的，之后每次迭代都在省钱。」</div>
+  </div>
+</div>
+</section>
+
+<!-- ── 第五章：核心原型 ── -->
+<section id="s5" style="background:#0a0c16; padding:64px 0;">
+<div class="wrap">
+  <div class="chapter">
+    <div class="ch-num">06</div>
+    <div class="ch-meta">
+      <div class="ch-eyebrow">Chapter 05 · 核心原型</div>
+      <div class="ch-title">关键页面重设计：从想象到可演示</div>
+      <div class="ch-sub">产品页面级的重设计原型，直接打开让听众感受，不用口头描述。</div>
+    </div>
+  </div>
+
+  <div class="audience-row">
+    <span class="aud aud-ux">UX负责人</span>
+    <span class="aud aud-pm">产品经理</span>
+    <span style="font-size:12px;color:#64748b;">建议阅读时长：10-12分钟</span>
+  </div>
+
+  <div class="block block-purple">
+    <div class="block-label" style="color:#a5b4fc;">建议阅读顺序(每个文档1-2分钟)</div>
+    <div class="talk-points">
+      <div class="tp">
+        <div class="tp-dot tp-purple">1</div>
+        <div class="tp-body"><b>D2 学生端首页重设计</b>：查看「情绪签到卡 + 三IP入口 + 任务进度 + AI推荐卡」的整体布局,重点关注情绪色系如何影响首页氛围。</div>
+      </div>
+      <div class="tp">
+        <div class="tp-dot tp-purple">2</div>
+        <div class="tp-body"><b>D3 家长端首页重设计</b>：查看学生健康趋势看板、三级隐私分层如何在界面上体现、危机预警的视觉设计。</div>
+      </div>
+      <div class="tp">
+        <div class="tp-dot tp-purple">3</div>
+        <div class="tp-body"><b>D6 AI对话交互规范</b>：直接查看三IP的对话示例,了解小星/吉塔/罗素说话方式的差异。参考「学生表达焦虑→吉塔响应→危机L2确认」的完整流程。</div>
+      </div>
+      <div class="tp">
+        <div class="tp-dot tp-purple">4</div>
+        <div class="tp-body"><b>D4 心育模块流程图</b>：查看四条核心流程(AI心理筛查 / 日常情绪打卡 / 三IP对话路径 / 心理剧场互动),重点理解IP切换逻辑和剧场护城河。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-links">
+    <a class="doc-link" href="D_交互原型与设计/D2_学生端首页重设计原型.html">
+      <div class="dl-icon">📱</div>
+      <div class="dl-text"><div class="dl-title">D2 · 学生端首页重设计</div><div class="dl-sub">iPad首页 · 情绪签到 · 三IP入口</div></div>
+    </a>
+    <a class="doc-link" href="D_交互原型与设计/D3_家长端首页重设计原型.html">
+      <div class="dl-icon">👨‍👩‍👧</div>
+      <div class="dl-text"><div class="dl-title">D3 · 家长端首页重设计</div><div class="dl-sub">微信小程序 · 三级隐私 · 危机预警</div></div>
+    </a>
+    <a class="doc-link" href="D_交互原型与设计/D6_AI对话交互规范（三IP人格）.html">
+      <div class="dl-icon">💬</div>
+      <div class="dl-text"><div class="dl-title">D6 · AI对话交互规范</div><div class="dl-sub">三IP人格 · 危机分级响应 · 话术库</div></div>
+    </a>
+    <a class="doc-link" href="D_交互原型与设计/D4_心育模块用户流程图.html">
+      <div class="dl-icon">🗺️</div>
+      <div class="dl-text"><div class="dl-title">D4 · 心育模块用户流程图</div><div class="dl-sub">四条核心流程 · IP对话切换 · 心理剧场互动路径</div></div>
+    </a>
+  </div>
+</div>
+</section>
+
+<!-- ── 第六章：世界观IP ── -->
+<section id="s6" style="background:#07080f; padding:64px 0;">
+<div class="wrap">
+  <div class="chapter">
+    <div class="ch-num">07</div>
+    <div class="ch-meta">
+      <div class="ch-eyebrow">Chapter 06 · 世界观与IP体系</div>
+      <div class="ch-title">减压星球——产品的情感灵魂</div>
+      <div class="ch-sub">这一章是产品差异化的核心，也是最容易让听众「感受到」而不只是「听懂」的部分。</div>
+    </div>
+  </div>
+
+  <div class="audience-row">
+    <span class="aud aud-pm">产品经理</span>
+    <span class="aud aud-line">产线负责人</span>
+    <span class="aud aud-ux">UX负责人</span>
+    <span style="font-size:12px;color:#64748b;">建议阅读时长：8-10分钟</span>
+  </div>
+
+  <div class="block block-purple">
+    <div class="block-label" style="color:#a5b4fc;">为什么需要世界观</div>
+    <div class="block-body">
+      Duolingo为什么能把语言学习App做到每天1亿用户?因为Duo猫头鹰有灵魂,它会生气、会失望、会庆祝。学生不是在用工具,是在和一个有情绪的朋友互动。<br><br>
+      <b>AI星球的三个IP——小星、吉塔、罗素——不是功能按钮的皮肤,是三个有来历、有执念、有说话方式的独立人格。</b>这是产品黏性的根本来源。
+    </div>
+  </div>
+
+  <div class="block block-gray" style="margin-top:12px;">
+    <div class="block-label" style="color:#94a3b8;">三IP核心分工(一句话理解每个IP)</div>
+    <div class="block-body">
+      🤍 <b>小星</b>：「我不是答案机器,我是那个愿意坐在你旁边的那颗星。」→ 全场景陪伴,什么都能聊<br>
+      🐼 <b>吉塔</b>：「你不需要解释你为什么难过,难过本身就是足够的理由。」→ 情绪守护,危机第一响应<br>
+      🐳 <b>罗素</b>：「混乱不是问题,混乱是还没找到框架。我来帮你找。」→ 逻辑框架,生涯规划<br>
+      🍐 <b>鸭梨</b>：「我的压力大到连宇宙都装不下,所以我就飘来这里了。」→ 同学视角,引发共鸣
+    </div>
+  </div>
+
+  <div class="block block-amber" style="margin-top:12px;">
+    <div class="block-label" style="color:#fbbf24;">「减压星球」的商业价值</div>
+    <div class="block-body">
+      世界观不只是创意,它直接驱动以下商业结果:<br>
+      • <b>每月心理剧场</b>：内容更新钩子,驱动日活和月活,每月解锁新居民<br>
+      • <b>IP衍生商业化</b>：三IP形象周边(盲盒/文具/手办)、学校定制IP联名、IP授权合作<br>
+      • <b>线下场景延伸</b>：心理治疗室/疗愈舱IP主题空间、学校心理中心装置落地<br>
+      • <b>学校采购黏性</b>：有情感连接的产品,学校不容易换掉,提升续约稳定性
+    </div>
+  </div>
+
+  <div class="doc-links">
+    <a class="doc-link" href="E_世界观与IP体系/E1_减压星球世界观圣经.html">
+      <div class="dl-icon">🪐</div>
+      <div class="dl-text"><div class="dl-title">E1 · 减压星球世界观圣经</div><div class="dl-sub">完整世界观 · 六区域地图 · 四IP小传 · 隐藏居民体系 · 心理剧场框架</div></div>
+    </a>
+    <a class="doc-link" href="E_世界观与IP体系/E2_减压星球×产品体验设计提案.html">
+      <div class="dl-icon">🌟</div>
+      <div class="dl-text"><div class="dl-title">E2 · 减压星球×产品体验设计提案</div><div class="dl-sub">世界观落地产品的具体设计提案</div></div>
+    </a>
+  </div>
+</div>
+</section>
+
+<!-- ── 第七章：战略方向 ── -->
+<section id="s7" style="background:#0a0c16; padding:64px 0;">
+<div class="wrap">
+  <div class="chapter">
+    <div class="ch-num">08</div>
+    <div class="ch-meta">
+      <div class="ch-eyebrow">Chapter 07 · 战略方向</div>
+      <div class="ch-title">接下来六个月，优先做什么</div>
+      <div class="ch-sub">把所有分析汇聚成可执行的优先级建议，让听众带着清单离场。</div>
+    </div>
+  </div>
+
+  <div class="audience-row">
+    <span class="aud aud-all">全体听众</span>
+    <span style="font-size:12px;color:#64748b;">建议阅读时长：8-10分钟</span>
+  </div>
+
+  <div style="margin-bottom:20px;">
+    <div style="font-size:12px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">优先级路线图（三阶段）</div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-time">P0 · 立即可做（0-1个月）</div>
+        <div class="tl-title">快赢：年级过滤 + 设计Token迁移（高频页面）</div>
+        <div class="tl-body">
+          利用已有的gradeCode数据做首页内容过滤；将主色统一为Brand-500，修复7.5px字体；这两项工程量最小、用户感知最直接。
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-time">P1 · 核心升级（1-3个月）</div>
+        <div class="tl-title">三IP人格差异化 + 情绪色系 + 危机分级系统完善</div>
+        <div class="tl-body">
+          让小星/吉塔/罗素的对话风格在产品中真正区分，不再是同一个AI换皮；情绪签到后界面背景跟随情绪色变化；L2/L3危机响应系统完整落地。
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-time">P2 · 体验升级（3-6个月）</div>
+        <div class="tl-title">减压星球世界观完整落地 + 心理剧场内容体系 + IP形象体系重构</div>
+        <div class="tl-body">
+          三主IP的2.5D形象 ≥ 12种情绪状态；每月心理剧场更新机制；Liquid Glass风格视觉语言全面应用。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-links">
+    <a class="doc-link" href="C_产品策略与商业/C2_产品战略全景报告.html">
+      <div class="dl-icon">🌐</div>
+      <div class="dl-text"><div class="dl-title">C2 · 产品战略全景报告</div><div class="dl-sub">六维战略全景 · 增长飞轮 · 护城河分析</div></div>
+    </a>
+    <a class="doc-link" href="C_产品策略与商业/C1_商业模式落地规划.html">
+      <div class="dl-icon">💰</div>
+      <div class="dl-text"><div class="dl-title">C1 · 商业模式落地规划</div><div class="dl-sub">SaaS分包定价 · 渠道策略 · 续费率分析</div></div>
+    </a>
+  </div>
+
+  <div class="viewpoint">
+    <div class="vp-label">总结观点</div>
+    <div class="vp-body">AI星球现在处于一个特殊的时间窗口——功能基础已经搭好,竞争壁垒已经存在,但情感连接还没有建立起来。接下来六个月的核心任务是：<b>让学生感觉AI星球是属于他的,不是给他用的</b>。</div>
+  </div>
+</div>
+</section>
+
+<!-- ── 总结要点 ── -->
+<section id="s8" style="background:#07080f; padding:64px 0;">
+<div class="wrap">
+  <div class="chapter">
+    <div class="ch-num">09</div>
+    <div class="ch-meta">
+      <div class="ch-eyebrow">总结 · 关键结论与行动建议</div>
+      <div class="ch-title">三个需要重点关注的方向</div>
+      <div class="ch-sub">基于完整分析得出的核心结论,明确下一步优先级和实施路径。</div>
+    </div>
+  </div>
+
+  <div class="block block-teal">
+    <div class="block-label" style="color:#5eead4;">三个关键问题</div>
+    <div class="talk-points">
+      <div class="tp">
+        <div class="tp-dot tp-teal">Q1</div>
+        <div class="tp-body"><b>年级过滤</b>是否排P0?工程评估需要多少时间?→ 建议产品经理+工程负责人共同评估</div>
+      </div>
+      <div class="tp">
+        <div class="tp-dot tp-teal">Q2</div>
+        <div class="tp-body"><b>IP形象重构</b>(2.5D + ≥12种情绪状态)作为下半年设计团队的核心输出,这个优先级建议团队确认→ 需要UX负责人+产线负责人对齐</div>
+      </div>
+      <div class="tp">
+        <div class="tp-dot tp-teal">Q3</div>
+        <div class="tp-body"><b>危机干预系统的L3强制通知</b>(通知家长端)需要法务和产品共同评审,这个评审建议尽快启动→ 需要产品经理协调</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block block-gray" style="margin-top:16px;">
+    <div class="block-label" style="color:#94a3b8;">全部分析文档目录</div>
+    <div class="doc-links" style="margin-top:12px;">
+      <a class="doc-link" href="A_产品诊断与分析/A1_产品结构树.html"><div class="dl-icon">🌳</div><div class="dl-text"><div class="dl-title">A1 产品结构树</div></div></a>
+      <a class="doc-link" href="A_产品诊断与分析/A2_多维度深度分析.html"><div class="dl-icon">🔍</div><div class="dl-text"><div class="dl-title">A2 多维度深度分析</div></div></a>
+      <a class="doc-link" href="A_产品诊断与分析/A3_补充深度分析（用户分层·家校协同·商业模式）.html"><div class="dl-icon">👥</div><div class="dl-text"><div class="dl-title">A3 补充深度分析</div></div></a>
+      <a class="doc-link" href="A_产品诊断与分析/A4_第二轮补充分析（合规·AI伦理）.html"><div class="dl-icon">⚖️</div><div class="dl-text"><div class="dl-title">A4 合规与AI伦理</div></div></a>
+      <a class="doc-link" href="A_产品诊断与分析/A5_产品升级分析报告.html"><div class="dl-icon">📈</div><div class="dl-text"><div class="dl-title">A5 产品升级分析报告</div></div></a>
+      <a class="doc-link" href="A_产品诊断与分析/A6_竞品深度分析.html"><div class="dl-icon">⚔️</div><div class="dl-text"><div class="dl-title">A6 竞品深度分析</div></div></a>
+      <a class="doc-link" href="A_产品诊断与分析/A7_AI对话功能现状分析_真实路径图.html"><div class="dl-icon">🗺️</div><div class="dl-text"><div class="dl-title">A7 AI对话功能现状分析</div></div></a>
+      <a class="doc-link" href="B_设计规范与系统/B1_现有设计系统诊断（APK提取）.html"><div class="dl-icon">🔬</div><div class="dl-text"><div class="dl-title">B1 现有设计系统诊断</div></div></a>
+      <a class="doc-link" href="B_设计规范与系统/B2_升级设计系统规范v2.0.html"><div class="dl-icon">✅</div><div class="dl-text"><div class="dl-title">B2 升级设计系统规范v2.0</div></div></a>
+      <a class="doc-link" href="B_设计规范与系统/B3_年级自适应视图设计.html"><div class="dl-icon">📐</div><div class="dl-text"><div class="dl-title">B3 年级自适应视图</div></div></a>
+      <a class="doc-link" href="C_产品策略与商业/C1_商业模式落地规划.html"><div class="dl-icon">💰</div><div class="dl-text"><div class="dl-title">C1 商业模式规划</div></div></a>
+      <a class="doc-link" href="C_产品策略与商业/C2_产品战略全景报告.html"><div class="dl-icon">🌐</div><div class="dl-text"><div class="dl-title">C2 产品战略全景</div></div></a>
+      <a class="doc-link" href="D_交互原型与设计/D1_用户反馈采集系统与弹窗原型.html"><div class="dl-icon">📋</div><div class="dl-text"><div class="dl-title">D1 用户反馈采集系统</div></div></a>
+      <a class="doc-link" href="D_交互原型与设计/D2_学生端首页重设计原型.html"><div class="dl-icon">📱</div><div class="dl-text"><div class="dl-title">D2 学生端首页原型</div></div></a>
+      <a class="doc-link" href="D_交互原型与设计/D3_家长端首页重设计原型.html"><div class="dl-icon">👨‍👩‍👧</div><div class="dl-text"><div class="dl-title">D3 家长端首页原型</div></div></a>
+      <a class="doc-link" href="D_交互原型与设计/D4_心育模块用户流程图.html"><div class="dl-icon">🗺️</div><div class="dl-text"><div class="dl-title">D4 心育流程图</div></div></a>
+      <a class="doc-link" href="D_交互原型与设计/D5_生涯规划流程原型.html"><div class="dl-icon">🎯</div><div class="dl-text"><div class="dl-title">D5 生涯规划原型</div></div></a>
+      <a class="doc-link" href="D_交互原型与设计/D6_AI对话交互规范（三IP人格）.html"><div class="dl-icon">💬</div><div class="dl-text"><div class="dl-title">D6 AI对话规范</div></div></a>
+      <a class="doc-link" href="E_世界观与IP体系/E1_减压星球世界观圣经.html"><div class="dl-icon">🪐</div><div class="dl-text"><div class="dl-title">E1 世界观圣经</div></div></a>
+      <a class="doc-link" href="E_世界观与IP体系/E2_减压星球×产品体验设计提案.html"><div class="dl-icon">🌟</div><div class="dl-text"><div class="dl-title">E2 减压星球×产品体验设计提案</div></div></a>
+    </div>
+  </div>
+</div>
+</section>
+
+<div style="background:#07080f; padding:40px; text-align:center; border-top:1px solid rgba(255,255,255,0.04);">
+  <div style="font-size:13px; color:#1e293b; line-height:2.5;">
+    配合文件夹 A–E 的 HTML 文档参考阅读 · 建议阅读时长 30–45 分钟
+  </div>
+  <div style="margin-top:16px; font-size:11px; color:#1e293b;">@ 代蓉婷_rtdai</div>
+</div>
+
+</body>
+</html>

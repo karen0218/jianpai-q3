@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>减压星球 · 三维度体验基线估分表</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, 'PingFang SC', '微软雅黑', sans-serif;
+  background: #f4f5f7;
+  color: #1a1d23;
+  padding: 40px 24px 80px;
+  min-height: 100vh;
+}
+.container { max-width: 1100px; margin: 0 auto; }
+
+/* Header */
+.page-header { margin-bottom: 40px; }
+.page-header h1 { font-size: 26px; font-weight: 700; color: #111318; margin-bottom: 6px; }
+.page-header .sub { font-size: 14px; color: #6b7280; margin-bottom: 16px; }
+.legend { display: flex; gap: 24px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #6b7280; }
+.legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+
+/* Section label */
+.sec-label {
+  font-size: 12px; font-weight: 700; color: #9ca3af;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  margin: 36px 0 12px;
+  display: flex; align-items: center; gap: 10px;
+}
+.sec-label::after { content: ''; flex: 1; height: 1px; background: #e5e7eb; }
+
+/* Column headers */
+.col-headers {
+  display: grid;
+  grid-template-columns: 220px 1fr 1fr 1fr 160px;
+  gap: 8px;
+  padding: 0 0 8px;
+}
+.col-head {
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  padding: 10px 14px; border-radius: 8px; text-align: center;
+}
+.col-head-label { background: transparent; color: #9ca3af; text-align: left; padding-left: 4px; }
+.col-head-current { background: #fef3c7; color: #92400e; }
+.col-head-comp { background: #ede9fe; color: #5b21b6; }
+.col-head-demo { background: #d1fae5; color: #065f46; }
+.col-head-note { background: transparent; color: #9ca3af; text-align: left; }
+
+/* Row */
+.score-row {
+  display: grid;
+  grid-template-columns: 220px 1fr 1fr 1fr 160px;
+  gap: 8px;
+  margin-bottom: 8px;
+  align-items: stretch;
+}
+.row-label {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex; flex-direction: column; justify-content: center; gap: 4px;
+}
+.row-label .p-code { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; display: inline-block; width: fit-content; margin-bottom: 4px; }
+.p-high { background: #fee2e2; color: #991b1b; }
+.p-mid  { background: #fef3c7; color: #92400e; }
+.p-low  { background: #dbeafe; color: #1e40af; }
+.row-label .p-name { font-size: 13px; font-weight: 600; color: #1f2937; line-height: 1.4; }
+.row-label .p-desc { font-size: 11px; color: #9ca3af; line-height: 1.4; margin-top: 2px; }
+
+/* Score cell */
+.score-cell {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  min-height: 80px;
+}
+.score-cell:hover { border-color: #d1d5db; }
+
+.stars { display: flex; gap: 4px; }
+.star {
+  width: 22px; height: 22px;
+  border-radius: 5px;
+  border: 1.5px solid #e5e7eb;
+  cursor: pointer;
+  transition: all 0.1s;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+}
+.star:hover { transform: scale(1.1); }
+
+/* Current (yellow) */
+.cell-current .star.active { background: #f59e0b; border-color: #f59e0b; }
+.cell-current .star.active::after { content: '★'; color: #fff; }
+.cell-current .star:not(.active) { background: #fef3c7; border-color: #fde68a; }
+.cell-current .star:not(.active):hover { background: #fcd34d; border-color: #f59e0b; }
+
+/* Competitor (purple) */
+.cell-comp .star.active { background: #8b5cf6; border-color: #8b5cf6; }
+.cell-comp .star.active::after { content: '★'; color: #fff; }
+.cell-comp .star:not(.active) { background: #ede9fe; border-color: #ddd6fe; }
+.cell-comp .star:not(.active):hover { background: #c4b5fd; border-color: #8b5cf6; }
+
+/* Demo (green) */
+.cell-demo .star.active { background: #10b981; border-color: #10b981; }
+.cell-demo .star.active::after { content: '★'; color: #fff; }
+.cell-demo .star:not(.active) { background: #d1fae5; border-color: #a7f3d0; }
+.cell-demo .star:not(.active):hover { background: #6ee7b7; border-color: #10b981; }
+
+.score-val { font-size: 20px; font-weight: 700; }
+.cell-current .score-val { color: #d97706; }
+.cell-comp .score-val { color: #7c3aed; }
+.cell-demo .score-val { color: #059669; }
+.score-label { font-size: 11px; color: #9ca3af; }
+
+/* Note cell */
+.note-cell {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.note-cell textarea {
+  width: 100%; border: none; outline: none; resize: none;
+  font-family: inherit; font-size: 12px; color: #4b5563;
+  background: transparent; line-height: 1.6;
+  height: 100%; min-height: 60px;
+}
+.note-cell textarea::placeholder { color: #d1d5db; }
+
+/* Gap indicator */
+.gap-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px;
+  white-space: nowrap;
+}
+.gap-high { background: #fee2e2; color: #991b1b; }
+.gap-mid  { background: #fef3c7; color: #92400e; }
+.gap-low  { background: #d1fae5; color: #065f46; }
+
+/* SUS score row */
+.sus-row {
+  background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+  border: 1px solid #a7f3d0; border-radius: 14px;
+  padding: 20px 24px; margin-top: 32px;
+  display: grid; grid-template-columns: 220px 1fr 1fr 1fr 160px; gap: 8px;
+  align-items: center;
+}
+.sus-label { font-size: 14px; font-weight: 700; color: #065f46; }
+.sus-label span { display: block; font-size: 11px; font-weight: 400; color: #6b7280; margin-top: 2px; }
+.sus-score-box {
+  text-align: center; padding: 12px;
+  background: #fff; border-radius: 10px; border: 1px solid #d1fae5;
+}
+.sus-score-box .sus-val {
+  font-size: 28px; font-weight: 700;
+  display: block; margin-bottom: 2px;
+}
+.sus-score-box.current .sus-val { color: #d97706; }
+.sus-score-box.comp .sus-val { color: #7c3aed; }
+.sus-score-box.demo .sus-val { color: #059669; }
+.sus-score-box input {
+  font-size: 28px; font-weight: 700; border: none; outline: none;
+  width: 80px; text-align: center; background: transparent;
+  font-family: inherit;
+}
+.sus-score-box.current input { color: #d97706; }
+.sus-score-box.comp input { color: #7c3aed; }
+.sus-score-box.demo input { color: #059669; }
+.sus-score-box .sus-sub { font-size: 11px; color: #9ca3af; }
+
+/* Summary */
+.summary-box {
+  margin-top: 32px; background: #fff; border: 1px solid #e5e7eb;
+  border-radius: 14px; padding: 24px 28px;
+}
+.summary-box h3 { font-size: 15px; font-weight: 700; color: #111318; margin-bottom: 16px; }
+.summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.summary-card { background: #f9fafb; border-radius: 10px; padding: 16px 18px; }
+.summary-card .sc-title { font-size: 12px; font-weight: 700; color: #9ca3af; text-transform: uppercase; margin-bottom: 8px; }
+.summary-card .sc-body { font-size: 13px; color: #4b5563; line-height: 1.7; }
+
+.note-bar {
+  margin-top: 24px; background: #fffbeb; border: 1px solid #fde68a;
+  border-radius: 10px; padding: 14px 18px;
+  font-size: 13px; color: #92400e; line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+  .col-headers, .score-row, .sus-row { grid-template-columns: 1fr; }
+  .col-head-label, .col-head-note { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="page-header">
+  <h1>减压星球 · 三维度体验基线估分表</h1>
+  <p class="sub">设计师启发式评估 · 基于 A5 产品诊断 + 竞品深度分析 · 2026.07</p>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#f59e0b;"></div>现状产品估分（设计师自评，1–5分）</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6;"></div>竞品参考分（同类产品最佳实践水平）</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#10b981;"></div>Demo目标分（改版预期达到的水平）</div>
+    <div class="legend-item" style="margin-left:8px;padding-left:8px;border-left:1px solid #e5e7eb;">9月实测SUS在底部单独填写</div>
+  </div>
+</div>
+
+<!-- Column headers -->
+<div class="col-headers">
+  <div class="col-head col-head-label">体验点</div>
+  <div class="col-head col-head-current">现状产品</div>
+  <div class="col-head col-head-comp">竞品参考</div>
+  <div class="col-head col-head-demo">Demo目标</div>
+  <div class="col-head col-head-note">备注 / 竞品来源</div>
+</div>
+
+<!-- ── 高优先级 P1–P4 ── -->
+<div class="sec-label">🔴 高优先级痛点（P1–P4）· 本周 Demo 聚焦改版</div>
+
+<!-- P1 -->
+<div class="score-row" id="row-p1">
+  <div class="row-label">
+    <span class="p-code p-high">P1 高</span>
+    <span class="p-name">首屏视觉引导</span>
+    <span class="p-desc">打开App后能快速判断先做什么吗？</span>
+  </div>
+  <div class="score-cell cell-current" onclick="cycleScore(this,1)">
+    <div class="stars" id="stars-p1-current"></div>
+    <span class="score-val" id="val-p1-current">1</span>
+    <span class="score-label">双卡片无主角</span>
+  </div>
+  <div class="score-cell cell-comp" onclick="cycleScore(this,2)">
+    <div class="stars" id="stars-p1-comp"></div>
+    <span class="score-val" id="val-p1-comp">4</span>
+    <span class="score-label">Headspace单主CTA</span>
+  </div>
+  <div class="score-cell cell-demo" onclick="cycleScore(this,3)">
+    <div class="stars" id="stars-p1-demo"></div>
+    <span class="score-val" id="val-p1-demo">4</span>
+    <span class="score-label">改版目标</span>
+  </div>
+  <div class="note-cell"><textarea placeholder="e.g. 竞品：Headspace 意图驱动导航&#10;参考：首屏导航流程分析.html">竞品：Headspace意图驱动首屏
+参考：Headspace_首屏导航流程分析.html §③</textarea></div>
+</div>
+
+<!-- P2 -->
+<div class="score-row" id="row-p2">
+  <div class="row-label">
+    <span class="p-code p-high">P2 高</span>
+    <span class="p-name">AI伙伴全局可达</span>
+    <span class="p-desc">切Tab后还能找到AI伙伴吗？</span>
+  </div>
+  <div class="score-cell cell-current" onclick="cycleScore(this,1)">
+    <div class="stars" id="stars-p2-current"></div>
+    <span class="score-val" id="val-p2-current">1</span>
+    <span class="score-label">切Tab即消失</span>
+  </div>
+  <div class="score-cell cell-comp" onclick="cycleScore(this,2)">
+    <div class="stars" id="stars-p2-comp"></div>
+    <span class="score-val" id="val-p2-comp">4</span>
+    <span class="score-label">Replika持续悬浮</span>
+  </div>
+  <div class="score-cell cell-demo" onclick="cycleScore(this,3)">
+    <div class="stars" id="stars-p2-demo"></div>
+    <span class="score-val" id="val-p2-demo">4</span>
+    <span class="score-label">改版目标</span>
+  </div>
+  <div class="note-cell"><textarea placeholder="备注">竞品：Replika全局持续入口
+参考：Replika_AI对话流程分析.html §⑤</textarea></div>
+</div>
+
+<!-- P3 -->
+<div class="score-row" id="row-p3">
+  <div class="row-label">
+    <span class="p-code p-high">P3 高</span>
+    <span class="p-name">AI对话记忆感</span>
+    <span class="p-desc">AI记得上次聊了什么吗？</span>
+  </div>
+  <div class="score-cell cell-current" onclick="cycleScore(this,1)">
+    <div class="stars" id="stars-p3-current"></div>
+    <span class="score-val" id="val-p3-current">1</span>
+    <span class="score-label">每次从零开始</span>
+  </div>
+  <div class="score-cell cell-comp" onclick="cycleScore(this,2)">
+    <div class="stars" id="stars-p3-comp"></div>
+    <span class="score-val" id="val-p3-comp">4</span>
+    <span class="score-label">Replika记忆钩子</span>
+  </div>
+  <div class="score-cell cell-demo" onclick="cycleScore(this,3)">
+    <div class="stars" id="stars-p3-demo"></div>
+    <span class="score-val" id="val-p3-demo">4</span>
+    <span class="score-label">改版目标</span>
+  </div>
+  <div class="note-cell"><textarea placeholder="备注">竞品：Replika「上次你说…今天怎样？」
+参考：Replika_AI对话流程分析.html §①STEP4</textarea></div>
+</div>
+
+<!-- P4 -->
+<div class="score-row" id="row-p4">
+  <div class="row-label">
+    <span class="p-code p-high">P4 高</span>
+    <span class="p-name">年级内容过滤</span>
+    <span class="p-desc">小学生会不会看到不适合的内容？</span>
+  </div>
+  <div class="score-cell cell-current" onclick="cycleScore(this,1)">
+    <div class="stars" id="stars-p4-current"></div>
+    <span class="score-val" id="val-p4-current">2</span>
+    <span class="score-label">字段有但未接通</span>
+  </div>
+  <div class="score-cell cell-comp" onclick="cycleScore(this,2)">
+    <div class="stars" id="stars-p4-comp"></div>
+    <span class="score-val" id="val-p4-comp">4</span>
+    <span class="score-label">Woebot年龄适配</span>
+  </div>
+  <div class="score-cell cell-demo" onclick="cycleScore(this,3)">
+    <div class="stars" id="stars-p4-demo"></div>
+    <span class="score-val" id="val-p4-demo">4</span>
+    <span class="score-label">改版目标</span>
+  </div>
+  <div class="note-cell"><textarea placeholder="备注">代码有gradeCode/phaseCode字段
+接通即可修复，非设计问题</textarea></div>
+</div>
+
+<!-- ── 中优先级 P5–P8 ── -->
+<div class="sec-label">🟡 中优先级痛点（P5–P8）· 8月 Demo 可选范围</div>
+
+<!-- P5 -->
+<div class="score-row" id="row-p5">
+  <div class="row-label">
+    <span class="p-code p-mid">P5 中</span>
+    <span class="p-name">成就外溢 · 模块互通</span>
+    <span class="p-desc">脑之岛完成训练，首页有反馈吗？</span>
+  </div>
+  <div class="score-cell cell-current" onclick="cycleScore(this,1)">
+    <div class="stars" id="stars-p5-current"></div>
+    <span class="score-val" id="val-p5-current">2</span>
+    <span class="score-label">内部完整但割裂</span>
+  </div>
+  <div class="score-cell cell-comp" onclick="cycleScore(this,2)">
+    <div class="stars" id="stars-p5-comp"></div>
+    <span class="score-val" id="val-p5-comp">4</span>
+    <span class="score-label">Finch行为→奖励链</span>
+  </div>
+  <div class="score-cell cell-demo" onclick="cycleScore(this,3)">
+    <div class="stars" id="stars-p5-demo"></div>
+    <span class="score-val" id="val-p5-demo">3</span>
+    <span class="score-label">改版目标</span>
+  </div>
+  <div class="note-cell"><textarea placeholder="备注">竞品：Finch 1行为=1奖励
+参考：Finch_成长激励流程分析.html §③</textarea></div>
+</div>
+
+<!-- P6 -->
+<div class="score-row" id="row-p6">
+  <div class="row-label">
+    <span class="p-code p-mid">P6 中</span>
+    <span class="p-name">解忧信箱反馈感</span>
+    <span class="p-desc">发完信后有"被接收"的感觉吗？</span>
+  </div>
+  <div class="score-cell cell-current" onclick="cycleScore(this,1)">
+    <div class="stars" id="stars-p6-current"></div>
+    <span class="score-val" id="val-p6-current">2</span>
+    <span class="score-label">发进虚空感</span>
+  </div>
+  <div class="score-cell cell-comp" onclick="cycleScore(this,2)">
+    <div class="stars" id="stars-p6-comp"></div>
+    <span class="score-val" id="val-p6-comp">4</span>
+    <span class="score-label">Woebot情感确认</span>
+  </div>
+  <div class="score-cell cell-demo" onclick="cycleScore(this,3)">
+    <div class="stars" id="stars-p6-demo"></div>
+    <span class="score-val" id="val-p6-demo">4</span>
+    <span class="score-label">改版目标</span>
+  </div>
+  <div class="note-cell"><textarea placeholder="备注">竞品：Woebot先情感确认再建议
+参考：Woebot_青少年对话流程分析.html §①STEP1</textarea></div>
+</div>
+
+<!-- P7 -->
+<div class="score-row" id="row-p7">
+  <div class="row-label">
+    <span class="p-code p-mid">P7 中</span>
+    <span class="p-name">换装与成长绑定</span>
+    <span class="p-desc">换装是成长奖励还是随机功能？</span>
+  </div>
+  <div class="score-cell cell-current" onclick="cycleScore(this,1)">
+    <div class="stars" id="stars-p7-current"></div>
+    <span class="score-val" id="val-p7-current">2</span>
+    <span class="score-label">语义断层</span>
+  </div>
+  <div class="score-cell cell-comp" onclick="cycleScore(this,2)">
+    <div class="stars" id="stars-p7-comp"></div>
+    <span class="score-val" id="val-p7-comp">3</span>
+    <span class="score-label">Finch有同样弱点</span>
+  </div>
+  <div class="score-cell cell-demo" onclick="cycleScore(this,3)">
+    <div class="stars" id="stars-p7-demo"></div>
+    <span class="score-val" id="val-p7-demo">4</span>
+    <span class="score-label">改版目标</span>
+  </div>
+  <div class="note-cell"><textarea placeholder="备注">⚠️ Finch同样有此弱点（换装与健康目标割裂）
+改版要确保兑换物与减压场景语义相关</textarea></div>
+</div>
+
+<!-- P8 -->
+<div class="score-row" id="row-p8">
+  <div class="row-label">
+    <span class="p-code p-mid">P8 中</span>
+    <span class="p-name">激励闭环清晰度</span>
+    <span class="p-desc">用户知道怎么赚星星、星星能做什么吗？</span>
+  </div>
+  <div class="score-cell cell-current" onclick="cycleScore(this,1)">
+    <div class="stars" id="stars-p8-current"></div>
+    <span class="score-val" id="val-p8-current">2</span>
+    <span class="score-label">获得消费路径不清</span>
+  </div>
+  <div class="score-cell cell-comp" onclick="cycleScore(this,2)">
+    <div class="stars" id="stars-p8-comp"></div>
+    <span class="score-val" id="val-p8-comp">4</span>
+    <span class="score-label">Finch能量闭环</span>
+  </div>
+  <div class="score-cell cell-demo" onclick="cycleScore(this,3)">
+    <div class="stars" id="stars-p8-demo"></div>
+    <span class="score-val" id="val-p8-demo">4</span>
+    <span class="score-label">改版目标</span>
+  </div>
+  <div class="note-cell"><textarea placeholder="备注">竞品：Finch「行为→能量→装扮」闭环可见
+参考：Finch_成长激励流程分析.html §⓪</textarea></div>
+</div>
+
+<!-- ── 低优先级 P9–P11 ── -->
+<div class="sec-label">🔵 低优先级痛点（P9–P11）· 长期优化</div>
+
+<!-- P9 -->
+<div class="score-row" id="row-p9">
+  <div class="row-label">
+    <span class="p-code p-low">P9 低</span>
+    <span class="p-name">信任感 · 免责声明</span>
+    <span class="p-desc">「AI生成仅供参考」是否削弱陪伴感？</span>
+  </div>
+  <div class="score-cell cell-current" onclick="cycleScore(this,1)">
+    <div class="stars" id="stars-p9-current"></div>
+    <span class="score-val" id="val-p9-current">3</span>
+    <span class="score-label">与陪伴承诺矛盾</span>
+  </div>
+  <div class="score-cell cell-comp" onclick="cycleScore(this,2)">
+    <div class="stars" id="stars-p9-comp"></div>
+    <span class="score-val" id="val-p9-comp">4</span>
+    <span class="score-label">Woebot合规设计</span>
+  </div>
+  <div class="score-cell cell-demo" onclick="cycleScore(this,3)">
+    <div class="stars" id="stars-p9-demo"></div>
+    <span class="score-val" id="val-p9-demo">4</span>
+    <span class="score-label">改版目标</span>
+  </div>
+  <div class="note-cell"><textarea placeholder="备注">Woebot的合规提示嵌入对话语境而非冷冰冰免责
+参考：Woebot_青少年对话流程分析.html §⑤</textarea></div>
+</div>
+
+<!-- P10 -->
+<div class="score-row" id="row-p10">
+  <div class="row-label">
+    <span class="p-code p-low">P10 低</span>
+    <span class="p-name">导航效率 · Tab利用率</span>
+    <span class="p-desc">底部6个Tab都有价值吗？</span>
+  </div>
+  <div class="score-cell cell-current" onclick="cycleScore(this,1)">
+    <div class="stars" id="stars-p10-current"></div>
+    <span class="score-val" id="val-p10-current">2</span>
+    <span class="score-label">咨询Tab是死链</span>
+  </div>
+  <div class="score-cell cell-comp" onclick="cycleScore(this,2)">
+    <div class="stars" id="stars-p10-comp"></div>
+    <span class="score-val" id="val-p10-comp">4</span>
+    <span class="score-label">Headspace 3Tab精简</span>
+  </div>
+  <div class="score-cell cell-demo" onclick="cycleScore(this,3)">
+    <div class="stars" id="stars-p10-demo"></div>
+    <span class="score-val" id="val-p10-demo">3</span>
+    <span class="score-label">改版目标</span>
+  </div>
+  <div class="note-cell"><textarea placeholder="备注">Headspace底部仅3个核心Tab，无死链
+参考：Headspace_首屏导航流程分析.html §⓪</textarea></div>
+</div>
+
+<!-- P11 -->
+<div class="score-row" id="row-p11">
+  <div class="row-label">
+    <span class="p-code p-low">P11 低</span>
+    <span class="p-name">任务情境化推送</span>
+    <span class="p-desc">任务推送和当前情绪状态有关联吗？</span>
+  </div>
+  <div class="score-cell cell-current" onclick="cycleScore(this,1)">
+    <div class="stars" id="stars-p11-current"></div>
+    <span class="score-val" id="val-p11-current">2</span>
+    <span class="score-label">列表式推送无语境</span>
+  </div>
+  <div class="score-cell cell-comp" onclick="cycleScore(this,2)">
+    <div class="stars" id="stars-p11-comp"></div>
+    <span class="score-val" id="val-p11-comp">4</span>
+    <span class="score-label">Daylio情绪驱动内容</span>
+  </div>
+  <div class="score-cell cell-demo" onclick="cycleScore(this,3)">
+    <div class="stars" id="stars-p11-demo"></div>
+    <span class="score-val" id="val-p11-demo">3</span>
+    <span class="score-label">改版目标</span>
+  </div>
+  <div class="note-cell"><textarea placeholder="备注">Daylio打卡结果驱动内容推荐顺序
+参考：核心竞品洞察汇总.html §② Daylio</textarea></div>
+</div>
+
+<!-- SUS 实测区 -->
+<div class="sus-row">
+  <div class="sus-label">
+    SUS 实测评分
+    <span>9月学生测评后填写 · 100分制</span>
+  </div>
+  <div class="sus-score-box current">
+    <span class="sus-val" id="sus-current">—</span>
+    <input type="number" min="0" max="100" placeholder="填入分数"
+      style="width:80px;border:1px solid #fde68a;border-radius:6px;padding:4px 8px;text-align:center;font-size:13px;margin-top:6px;"
+      oninput="document.getElementById('sus-current').textContent=this.value||'—'">
+    <div style="font-size:11px;color:#9ca3af;margin-top:4px;">现状APK基线</div>
+  </div>
+  <div class="sus-score-box comp">
+    <span class="sus-val" id="sus-comp">—</span>
+    <input type="number" min="0" max="100" placeholder="走查后填"
+      style="width:80px;border:1px solid #ddd6fe;border-radius:6px;padding:4px 8px;text-align:center;font-size:13px;margin-top:6px;"
+      oninput="document.getElementById('sus-comp').textContent=this.value||'—'">
+    <div style="font-size:11px;color:#9ca3af;margin-top:4px;">竞品自测分</div>
+  </div>
+  <div class="sus-score-box demo">
+    <span class="sus-val" id="sus-demo">—</span>
+    <input type="number" min="0" max="100" placeholder="9月测后填"
+      style="width:80px;border:1px solid #a7f3d0;border-radius:6px;padding:4px 8px;text-align:center;font-size:13px;margin-top:6px;"
+      oninput="document.getElementById('sus-demo').textContent=this.value||'—'">
+    <div style="font-size:11px;color:#9ca3af;margin-top:4px;">Demo实测分</div>
+  </div>
+  <div style="font-size:12px;color:#6b7280;line-height:1.7;">
+    68分及格<br>75分良好<br>80+优秀<br><span style="color:#059669;font-weight:600;">目标：+8分</span>
+  </div>
+</div>
+
+<!-- Footer -->
+<div style="margin-top:40px;padding:16px 20px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;font-size:12px;color:#9ca3af;line-height:1.8;">
+  <b style="color:#6b7280;">评分说明：</b>1分=严重问题，当前设计几乎无法完成该体验目标 · 2分=有明显缺陷，用户需要额外努力 · 3分=基本可用，有改进空间 · 4分=体验良好，符合行业水准 · 5分=行业领先，超出用户预期<br>
+  <b style="color:#6b7280;">竞品参考来源：</b>Headspace_首屏导航 · Replika_AI对话 · Finch_成长激励 · Woebot_青少年对话 · Daylio_情绪打卡（详见 Q3竞品/2.竞品深度分析/）<br>
+  <b style="color:#6b7280;">注意：</b>现状分和竞品分为设计师启发式估分，非真实用户数据。9月SUS实测后以实测数据为准。
+</div>
+
+</div>
+
+<script>
+const scores = {};
+
+function initRow(id, currentVal, compVal, demoVal) {
+  scores[id] = { current: currentVal, comp: compVal, demo: demoVal };
+  renderStars(id, 'current', currentVal);
+  renderStars(id, 'comp', compVal);
+  renderStars(id, 'demo', demoVal);
+}
+
+function renderStars(id, col, val) {
+  const container = document.getElementById(`stars-${id}-${col}`);
+  if (!container) return;
+  container.innerHTML = '';
+  for (let i = 1; i <= 5; i++) {
+    const s = document.createElement('div');
+    s.className = 'star' + (i <= val ? ' active' : '');
+    s.onclick = (e) => { e.stopPropagation(); setScore(id, col, i); };
+    container.appendChild(s);
+  }
+  const valEl = document.getElementById(`val-${id}-${col}`);
+  if (valEl) valEl.textContent = val;
+}
+
+function setScore(id, col, val) {
+  scores[id][col] = val;
+  renderStars(id, col, val);
+}
+
+function cycleScore(cell, col) {
+  // clicking the cell itself cycles +1
+}
+
+// Init all rows with preset values
+['p1','p2','p3','p4','p5','p6','p7','p8','p9','p10','p11'].forEach(id => {
+  const row = document.getElementById(`row-${id}`);
+  if (!row) return;
+  const cells = row.querySelectorAll('.score-cell');
+  const vals = {
+    p1: [1,4,4], p2: [1,4,4], p3: [1,4,4], p4: [2,4,4],
+    p5: [2,4,3], p6: [2,4,4], p7: [2,3,4], p8: [2,4,4],
+    p9: [3,4,4], p10: [2,4,3], p11: [2,4,3]
+  };
+  const v = vals[id];
+  initRow(id, v[0], v[1], v[2]);
+});
+</script>
+</body>
+</html>

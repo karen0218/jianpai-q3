@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI星球20天优化Demo计划 · 文件导航</title>
+  <style>
+    :root {
+      --ink: #1e293b;
+      --muted: #64748b;
+      --line: #dbe4ef;
+      --soft: #f6f8fb;
+      --blue: #2f70d0;
+      --teal: #16847a;
+      --amber: #a86613;
+      --red: #be4646;
+      --paper: #ffffff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.68;
+      background: #eef3f7;
+    }
+    main { max-width: 1080px; margin: 0 auto; padding: 48px 24px 72px; }
+    .hero { padding: 34px 0 26px; border-bottom: 1px solid var(--line); }
+    .eyebrow { color: var(--blue); font-size: 13px; font-weight: 700; }
+    h1 { margin: 10px 0 12px; font-size: 38px; line-height: 1.18; letter-spacing: 0; }
+    h2 { margin: 34px 0 14px; font-size: 23px; }
+    p { margin: 8px 0; }
+    .summary { max-width: 780px; color: var(--muted); font-size: 16px; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .card, .section { border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
+    .card { padding: 18px; }
+    .card h3 { margin: 8px 0 8px; font-size: 17px; }
+    .card p { color: var(--muted); font-size: 14px; }
+    .section { padding: 22px; margin-top: 18px; }
+    .tag { display: inline-flex; align-items: center; min-height: 24px; padding: 2px 8px; border-radius: 999px; color: var(--blue); background: #eaf1fb; font-size: 12px; font-weight: 700; }
+    .tag.teal { color: var(--teal); background: #e8f6f3; }
+    .tag.amber { color: var(--amber); background: #fff2dc; }
+    .tag.red { color: var(--red); background: #fdecec; }
+    table { width: 100%; border-collapse: collapse; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; }
+    th, td { padding: 12px 14px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; font-size: 14px; }
+    th { background: var(--soft); color: #334155; }
+    tr:last-child td { border-bottom: 0; }
+    a { color: var(--blue); text-decoration: none; font-weight: 700; }
+    a:hover { text-decoration: underline; }
+    code { padding: 2px 6px; border-radius: 6px; background: var(--soft); color: #475569; }
+    .note { border-left: 4px solid var(--teal); padding: 14px 16px; border-radius: 8px; background: #edf8f6; color: #335a56; }
+    @media (max-width: 820px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 30px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <div class="eyebrow">减压星球 Q3 改版 / Codex 工作区</div>
+      <h1>AI星球20天优化Demo计划<br>文件导航</h1>
+      <p class="summary">这个目录已经整理成主文件、下一阶段草稿、可填写工具、对齐参考、过程稿归档五类。日常只看前两类，过程稿不用打开。</p>
+    </section>
+
+    <section>
+      <h2>现在只看这 3 个</h2>
+      <div class="grid">
+        <article class="card">
+          <span class="tag">范围</span>
+          <h3><a href="01_当前主文件/Day01-02_核心Flow定范围_结果版.html">Day01-02 核心 Flow 定范围</a></h3>
+          <p>确认 20 天 demo 只围绕 Flow A Pad首页启动中枢、Flow B AI伙伴、Flow C 完成反馈推进。</p>
+        </article>
+        <article class="card">
+          <span class="tag teal">封版</span>
+          <h3><a href="01_当前主文件/Day01-05_封版检查表与竞品人工体验记录表.html">Day01-05 封版检查表</a></h3>
+          <p>当前最重要的可填写主文件，已经同步 Claude Code 的竞品洞察。</p>
+        </article>
+        <article class="card">
+          <span class="tag amber">竞品</span>
+          <h3><a href="01_当前主文件/Day03-05_竞品分析整合定稿版.html">Day03-05 竞品整合定稿</a></h3>
+          <p>以 Flow A/B/C 为主结构，整合 Codex 与 Claude Code 的竞品判断。</p>
+        </article>
+      </div>
+    </section>
+
+
+
+    <section class="section">
+      <h2>本周到 7.27 的 Check List</h2>
+      <table>
+        <tbody>
+          <tr><th>1. 竞品实机走查</th><td>主力任务。优先 Headspace、Finch、Woebot；每个 App 跑 P1/P2/P3 对应核心流程，并记录 SUS 原始分。</td></tr>
+          <tr><th>2. 三维度基线估分</th><td><a href="03_可填写工具/Day01-07_竞品走查与三维基线整合表_可填写版.html">打开竞品走查与三维基线整合表</a>，先确认当前 APK 估分，再做竞品实机走查并回填竞品参考分。</td></tr>
+          <tr><th>3. Day01-05 封版确认</th><td>打开封版检查表，确认 Flow A/B/C，尤其是 Flow A 已升级为 Pad 首页启动中枢。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>下一阶段文件</h2>
+      <p><a href="02_Day06-08_低保真草稿待更新/Day06-08_低保真Flow页面结构与关键文案_结果版.html">Day06-08 低保真 Flow 页面结构与关键文案</a></p>
+      <p class="note">这份先当草稿。正式进入 Day06-08 时，需要基于 Day01-05 封版表和 Day03-05 竞品整合定稿重新迭代，不直接视为最终版。</p>
+    </section>
+
+    <section class="section">
+      <h2>目录说明</h2>
+      <table>
+        <thead>
+          <tr><th>文件夹</th><th>放什么</th><th>什么时候打开</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>01_当前主文件</code></td><td>范围、封版、竞品整合定稿。</td><td>日常工作优先打开。</td></tr>
+          <tr><td><code>02_Day06-08_低保真草稿待更新</code></td><td>低保真页面结构与文案草稿。</td><td>进入 Day06-08 时迭代。</td></tr>
+          <tr><td><code>03_可填写工具</code></td><td>本周唯一主工具：竞品走查与三维基线整合表。</td><td>本周体验竞品、记录 SUS、回填 P0-P11 时用。</td></tr>
+          <tr><td><code>04_对齐参考</code></td><td>Claude 输出评审、资料使用索引。</td><td>需要解释“为什么这样整合”时看。</td></tr>
+          <tr><td><code>90_过程稿归档</code></td><td>早期过程稿、旧版说明。</td><td>一般不用看，除非追溯推理过程。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>当前工作判断</h2>
+      <table>
+        <tbody>
+          <tr><th>当前阶段</th><td>Day01-05 收口中：确认范围、竞品洞察、封版条件。</td></tr>
+          <tr><th>下一步</th><td>你确认 Day01-05 主文件后，再迭代 Day06-08 低保真 Flow 和页面文案。</td></tr>
+          <tr><th>主线原则</th><td>Flow A 与 Flow B 必做高保真；Flow A 不再是单一打卡流程，而是 Pad 首页启动中枢。Flow C 做轻闭环，不扩成完整地图、商店或成长系统。</td></tr>
+          <tr><th>安全红线</th><td>未成年人场景下，AI 记忆、危机响应、保密说明和成人化关系模型必须先过安全边界。</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

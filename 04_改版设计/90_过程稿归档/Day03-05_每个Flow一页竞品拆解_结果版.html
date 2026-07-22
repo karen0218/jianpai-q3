@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI星球 20天优化Demo · Day 03-05 每个Flow一页竞品拆解</title>
+  <style>
+    :root {
+      --ink: #1d2433;
+      --muted: #657285;
+      --line: #dfe6ef;
+      --soft: #f6f8fb;
+      --blue: #2f70d0;
+      --green: #2f8f6b;
+      --amber: #b97817;
+      --red: #c84d4d;
+      --violet: #6f56c9;
+      --card: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.65;
+      background: #eef2f6;
+    }
+
+    .page {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    aside {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 28px 22px;
+      border-right: 1px solid var(--line);
+      background: #fff;
+      overflow: auto;
+    }
+
+    aside h1 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    aside p {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    nav a {
+      display: block;
+      padding: 9px 10px;
+      color: #435063;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    nav a:hover { background: var(--soft); color: var(--blue); }
+
+    main {
+      padding: 42px 52px 72px;
+      max-width: 1240px;
+    }
+
+    .hero {
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      margin-bottom: 10px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+
+    h2 {
+      margin: 34px 0 14px;
+      font-size: 25px;
+      line-height: 1.36;
+    }
+
+    h3 {
+      margin: 22px 0 10px;
+      font-size: 17px;
+    }
+
+    .hero h2 {
+      margin: 0 0 12px;
+      font-size: 34px;
+      line-height: 1.22;
+    }
+
+    .summary {
+      max-width: 920px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .flow-page {
+      margin: 24px 0 30px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .flow-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      gap: 18px;
+      align-items: start;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .flow-head h2 {
+      margin: 0 0 8px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      margin: 0 6px 8px 0;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #eaf1fb;
+      color: var(--blue);
+    }
+
+    .tag.green { background: #e9f5ef; color: var(--green); }
+    .tag.amber { background: #fff4de; color: var(--amber); }
+    .tag.red { background: #fdeeee; color: var(--red); }
+    .tag.violet { background: #f0edff; color: var(--violet); }
+
+    .path {
+      margin: 10px 0 0;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: var(--soft);
+      font-weight: 700;
+    }
+
+    .focus-box {
+      padding: 14px;
+      border-radius: 8px;
+      background: #f8fafc;
+      color: #374151;
+      font-size: 14px;
+    }
+
+    .focus-box strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--ink);
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+
+    .card {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+    }
+
+    .card h3 {
+      margin-top: 0;
+    }
+
+    table {
+      width: 100%;
+      margin: 14px 0 22px;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 11px 12px;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      text-align: left;
+    }
+
+    th {
+      color: #334155;
+      background: #f7f9fc;
+      font-weight: 700;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+    th:last-child, td:last-child { border-right: 0; }
+
+    ul, ol { padding-left: 20px; }
+    a { color: var(--blue); }
+
+    .small {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .takeaway {
+      margin-top: 16px;
+      padding: 16px 18px;
+      border-left: 4px solid var(--blue);
+      border-radius: 8px;
+      background: #eef5ff;
+    }
+
+    .takeaway.green {
+      border-left-color: var(--green);
+      background: #edf8f2;
+    }
+
+    .takeaway.amber {
+      border-left-color: var(--amber);
+      background: #fff7e8;
+    }
+
+    .source-list {
+      columns: 2;
+      column-gap: 28px;
+    }
+
+    .source-list li {
+      break-inside: avoid;
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 980px) {
+      .page { display: block; }
+      aside { position: static; height: auto; }
+      main { padding: 28px 18px 56px; }
+      .flow-head, .grid-3 { grid-template-columns: 1fr; }
+      .hero h2 { font-size: 28px; }
+      table { font-size: 13px; }
+      th, td { padding: 10px; }
+      .source-list { columns: 1; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .page { display: block; }
+      aside { display: none; }
+      main { max-width: none; padding: 0; }
+      .flow-page {
+        break-after: page;
+        border: 0;
+        padding: 0;
+      }
+      .flow-page:last-of-type { break-after: auto; }
+      .card, table { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <aside>
+      <h1>Day 03-05<br>结果版</h1>
+      <p>每个 Flow 一页竞品拆解</p>
+      <nav>
+        <a href="#overview">产出说明</a>
+        <a href="#flow-a">Flow A：首页启动</a>
+        <a href="#flow-b">Flow B：AI伙伴</a>
+        <a href="#flow-c">Flow C：完成反馈</a>
+        <a href="#sources">来源链接</a>
+      </nav>
+    </aside>
+
+    <main>
+      <section class="hero" id="overview">
+        <div class="eyebrow">AI星球 / 减压星球 · 20天优化Demo</div>
+        <h2>Day 03-05 · 每个 Flow 一页竞品拆解</h2>
+        <p class="summary">本文件是结果版，不是工作指引。每个 Flow 独立成页，重点只看三件事：竞品如何降低用户压力、如何引导下一步、如何给反馈。最后转译成 AI星球 demo 的具体设计输入。</p>
+      </section>
+
+      <section class="flow-page" id="flow-a">
+        <div class="flow-head">
+          <div>
+            <span class="tag">Flow A</span>
+            <span class="tag violet">首页启动</span>
+            <h2>首页 → 今日状态 → 情绪打卡 → AI接住 → 今日小行动</h2>
+            <p class="path">核心验证：学生打开 App 后，能不能在低压力下表达状态，并自然进入下一步。</p>
+          </div>
+          <div class="focus-box">
+            <strong>本页参考竞品</strong>
+            Finch、How We Feel、Headspace / Ebb<br>
+            <span class="small">重点看情绪表达、首个行动、个性化推荐。</span>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>竞品</th>
+              <th>怎么降低用户压力</th>
+              <th>怎么引导下一步</th>
+              <th>怎么给反馈</th>
+              <th>转成AI星球Demo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Finch</strong></td>
+              <td>把自我照顾包装成“照顾伙伴”和轻量 check-in，不要求用户一上来解释复杂情绪。</td>
+              <td>从状态记录自然转向小目标、小任务、呼吸、反思等短行动，用户不用自己选一堆功能。</td>
+              <td>完成后用伙伴成长、鼓励语、奖励和进度回应用户，让“做了一件小事”被看见。</td>
+              <td>首页不要铺功能。先让小星问“今天比较像哪种状态”，完成后小星/吉塔给一句回应，再推荐 1 个今日小行动。</td>
+            </tr>
+            <tr>
+              <td><strong>How We Feel</strong></td>
+              <td>用情绪词、颜色和分类帮助用户找到表达，不把“说不清”当失败。</td>
+              <td>记录情绪后给用户看到模式、变化或下一步策略，让打卡不是孤立动作。</td>
+              <td>反馈重点不是评判，而是帮助用户理解“我现在是什么感觉，以及可能和什么有关”。</td>
+              <td>情绪打卡做成“低门槛词库”：有点烦、累、紧张、还好、开心、说不清。允许快速选择，不强迫长输入。</td>
+            </tr>
+            <tr>
+              <td><strong>Headspace / Ebb</strong></td>
+              <td>用陪伴式 AI 先承接用户表达，避免一开始就给训练清单或知识教育。</td>
+              <td>AI 根据当前状态推荐合适内容，把“聊天”导向呼吸、冥想、睡眠、放松等具体练习。</td>
+              <td>反馈由“理解 + 推荐理由”组成，让用户知道为什么现在适合做这件事。</td>
+              <td>今日推荐必须带理由：因为你刚才选择“紧张”，所以先来一个 2 分钟呼吸。只给一个主推荐，保留“换一个”。</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="grid-3">
+          <div class="card">
+            <h3>Demo页面输入</h3>
+            <ul>
+              <li>新版首页：一个主行动“今天感觉怎么样？”</li>
+              <li>情绪词选择：6-12 个状态词，含“说不清”。</li>
+              <li>AI接住卡：复述状态 + 温和回应。</li>
+              <li>今日小行动：1 个推荐 + 1 个换一个。</li>
+              <li>完成反馈：记录到“今天的一小步”。</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>关键交互</h3>
+            <ul>
+              <li>先状态，后功能。</li>
+              <li>用户可以不输入文字也完成打卡。</li>
+              <li>推荐内容跟随情绪词变化。</li>
+              <li>完成后回到首页时出现“已被记住”的轻反馈。</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>测试观察点</h3>
+            <ul>
+              <li>3 秒内是否知道先做什么。</li>
+              <li>是否觉得打卡不费劲。</li>
+              <li>是否感到 AI 回应了自己的状态。</li>
+              <li>是否愿意点今日小行动。</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="takeaway">
+          <strong>Flow A 设计结论：</strong>
+          首页不要再让“情绪打卡”和“AI聊天”平级竞争。新版主线应该是：先用低压力状态选择帮学生开始，再让 AI 接住，最后只推荐一个小行动。
+        </div>
+      </section>
+
+      <section class="flow-page" id="flow-b">
+        <div class="flow-head">
+          <div>
+            <span class="tag green">Flow B</span>
+            <span class="tag violet">AI伙伴</span>
+            <h2>全局AI入口 → 三IP选择/切换 → 对话回应 → 记忆/边界 → 下一步建议</h2>
+            <p class="path">核心验证：学生是否愿意和 AI 说、是否分得清三IP、是否觉得安全边界可信。</p>
+          </div>
+          <div class="focus-box">
+            <strong>本页参考竞品</strong>
+            Wysa、Headspace / Ebb、988 Lifeline、Crisis Text Line、The Trevor Project<br>
+            <span class="small">重点看AI陪伴、结构化支持、危机边界。</span>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>竞品/标杆</th>
+              <th>怎么降低用户压力</th>
+              <th>怎么引导下一步</th>
+              <th>怎么给反馈</th>
+              <th>转成AI星球Demo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Wysa</strong></td>
+              <td>用聊天方式承接情绪，先让用户说一点点，再通过结构化追问慢慢展开。</td>
+              <td>根据用户表达进入不同支持路径，例如情绪整理、认知练习、呼吸练习或寻求专业帮助。</td>
+              <td>反馈不是简单安慰，而是“我理解 + 我们可以试一个方法”。</td>
+              <td>三IP不能只换头像。小星少追问多陪伴，吉塔先稳定情绪，罗素帮拆问题和计划下一步。</td>
+            </tr>
+            <tr>
+              <td><strong>Headspace / Ebb</strong></td>
+              <td>AI 以陪伴和整理想法切入，降低用户进入心理内容的抵触。</td>
+              <td>对话后推荐具体练习，把“聊一聊”导向“做一个小动作”。</td>
+              <td>用个性化回应和推荐理由让用户感觉不是被丢进内容库。</td>
+              <td>每段 AI 对话结束都必须有行动卡：继续聊、做个小练习、记录到成长本。</td>
+            </tr>
+            <tr>
+              <td><strong>988 / Crisis Text Line / Trevor</strong></td>
+              <td>用清楚的“会发生什么”降低求助恐惧，说明用户不是立刻被审判或暴露。</td>
+              <td>当风险升高时，路径从 AI 陪伴转向安全支持、可信成年人、热线/文字支持等更合适的帮助。</td>
+              <td>反馈重点是确认安全和告诉用户下一步会怎样，避免神秘感和恐吓感。</td>
+              <td>边界文案改成温和透明：多数分享会被尊重；如果你可能伤害自己或别人，我会优先帮你找到安全支持。</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>三IP差异如何落到Flow里</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>IP</th>
+              <th>降低压力</th>
+              <th>引导下一步</th>
+              <th>反馈方式</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>小星</strong></td>
+              <td>允许说不清，不急着追问原因。</td>
+              <td>引导用户说一句、选一个感受、或先待一会儿。</td>
+              <td>“我听到了，我会陪你慢慢说。”</td>
+            </tr>
+            <tr>
+              <td><strong>吉塔</strong></td>
+              <td>先稳定身体和情绪，不讨论大道理。</td>
+              <td>引导呼吸、落地练习、找安全支持。</td>
+              <td>“我们先让身体慢下来，安全最重要。”</td>
+            </tr>
+            <tr>
+              <td><strong>罗素</strong></td>
+              <td>把混乱问题拆小，减少失控感。</td>
+              <td>引导列选项、分轻重缓急、定一个可执行步骤。</td>
+              <td>“这件事可以先分成两部分，我们先处理能控制的。”</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="grid-3">
+          <div class="card">
+            <h3>Demo页面输入</h3>
+            <ul>
+              <li>全局 AI 入口：不同页面都能叫出伙伴。</li>
+              <li>三IP选择页：用场景选人，而不是设定说明。</li>
+              <li>对话页：每个 IP 一组 2-3 轮脚本。</li>
+              <li>轻量记忆：可保留、可关闭、可删除。</li>
+              <li>边界提示：温和安全说明。</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>关键交互</h3>
+            <ul>
+              <li>角色可切换，降低选错压力。</li>
+              <li>AI 回复后必须给下一步，不只聊天。</li>
+              <li>记忆提示不能过细，避免侵犯感。</li>
+              <li>危机场景由研究员模拟，不让学生扮演。</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>测试观察点</h3>
+            <ul>
+              <li>是否能说出三IP差异。</li>
+              <li>是否愿意真实表达一点点。</li>
+              <li>是否觉得记忆安心或不舒服。</li>
+              <li>是否理解安全边界，不被吓到。</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="takeaway green">
+          <strong>Flow B 设计结论：</strong>
+          AI伙伴的重点不是“更像真人聊天”，而是让学生知道找谁、怎么说、说完能得到什么帮助，以及什么情况下会进入安全支持。
+        </div>
+      </section>
+
+      <section class="flow-page" id="flow-c">
+        <div class="flow-head">
+          <div>
+            <span class="tag amber">Flow C</span>
+            <span class="tag violet">完成反馈</span>
+            <h2>脑之岛/测评/放松训练 → 结果解释 → 奖励/成长记录 → AI回应</h2>
+            <p class="path">核心验证：学生做完一件事后，是否知道自己获得了什么，并愿意下次继续。</p>
+          </div>
+          <div class="focus-box">
+            <strong>本页参考竞品</strong>
+            Elevate、Lumosity、Duolingo、Finch<br>
+            <span class="small">重点看训练反馈、成长记录、轻量激励。</span>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>竞品</th>
+              <th>怎么降低用户压力</th>
+              <th>怎么引导下一步</th>
+              <th>怎么给反馈</th>
+              <th>转成AI星球Demo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Elevate</strong></td>
+              <td>把训练拆成短时、每日、可完成的小练习，避免用户面对一整套复杂训练。</td>
+              <td>训练后继续推荐下一项或明日计划，让用户知道不用自己规划。</td>
+              <td>反馈集中在能力维度和进步感，告诉用户今天练到了什么。</td>
+              <td>脑之岛完成后不要只显示完成。要告诉学生“今天练习了专注/记忆/反应中的哪一种”。</td>
+            </tr>
+            <tr>
+              <td><strong>Lumosity</strong></td>
+              <td>通过训练计划和能力分类减少“我该练什么”的选择压力。</td>
+              <td>用进度和表现趋势引导继续训练，让单次任务成为长期计划的一部分。</td>
+              <td>用可视化和解释把分数转成用户能理解的表现变化。</td>
+              <td>测评/训练结果不要只给分数。转成低压力解释：“这次你完成了一次注意力热身”。</td>
+            </tr>
+            <tr>
+              <td><strong>Duolingo</strong></td>
+              <td>每次任务很短，失败成本低，奖励即时出现，用户不会觉得要投入很久。</td>
+              <td>通过 streak、经验、下一课引导用户明天回来。</td>
+              <td>用即时奖励、成就、鼓励动效强化“我完成了”。</td>
+              <td>星星奖励要绑定原因：“完成一次放松练习，获得 3 颗放松星”。不做排行榜。</td>
+            </tr>
+            <tr>
+              <td><strong>Finch</strong></td>
+              <td>把自我照顾转成伙伴成长，用户不是在被考核，而是在照顾自己和伙伴。</td>
+              <td>完成后把用户带回伙伴、故事、装扮或下一项小目标。</td>
+              <td>反馈带情绪价值：伙伴回应你、成长一点点、奖励有温度。</td>
+              <td>完成页由小星/吉塔回应：“我看到你刚才完成了那 2 分钟，这已经是一小步了。”</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="grid-3">
+          <div class="card">
+            <h3>Demo页面输入</h3>
+            <ul>
+              <li>训练/测评完成页。</li>
+              <li>结果解释：不贴标签，不排名。</li>
+              <li>奖励获得：说明为什么获得。</li>
+              <li>成长记录：今天的一小步。</li>
+              <li>AI回应：伙伴看见你的完成。</li>
+              <li>首页回流：显示今日已完成状态。</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>关键交互</h3>
+            <ul>
+              <li>结果先解释意义，再展示奖励。</li>
+              <li>奖励不只是数值，要说明来源。</li>
+              <li>成长记录不做报告，做轻量时间线。</li>
+              <li>明天再来提示要温和，不制造压力。</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>测试观察点</h3>
+            <ul>
+              <li>是否知道刚才完成了什么。</li>
+              <li>是否理解这和减压/成长有关。</li>
+              <li>是否知道星星/奖励从哪来。</li>
+              <li>是否愿意下次再做一次。</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="takeaway amber">
+          <strong>Flow C 设计结论：</strong>
+          完成反馈不能只做“完成了 + 得分 + 奖励”。它要回答学生心里的问题：我刚才做这件事有什么用？它有没有被记住？下次我为什么还要回来？
+        </div>
+      </section>
+
+      <section id="sources">
+        <h2>来源链接</h2>
+        <p class="small">以下来源用于确认竞品真实存在及核心机制。实际画原型前，建议再由设计团队安装体验并补截图。</p>
+        <ul class="source-list">
+          <li><a href="https://apps.apple.com/us/app/finch-self-care-pet/id1528595748">Finch · App Store</a></li>
+          <li><a href="https://help.finchcare.com/hc/en-us/articles/42149821015693-New-User-Guide">Finch · New User Guide</a></li>
+          <li><a href="https://howwefeel.org/">How We Feel · 官网</a></li>
+          <li><a href="https://apps.apple.com/us/app/how-we-feel/id1562706384">How We Feel · App Store</a></li>
+          <li><a href="https://www.headspace.com/ai-mental-health-companion">Headspace Ebb · AI Mental Health Companion</a></li>
+          <li><a href="https://www.headspace.com/ai">Headspace · AI Principles</a></li>
+          <li><a href="https://www.wysa.com/faq">Wysa · FAQ</a></li>
+          <li><a href="https://988lifeline.org/get-help/what-to-expect/">988 Lifeline · What to Expect</a></li>
+          <li><a href="https://www.crisistextline.org/about-us/faq/">Crisis Text Line · FAQ</a></li>
+          <li><a href="https://www.thetrevorproject.org/get-help/">The Trevor Project · Get Help</a></li>
+          <li><a href="https://support.elevateapp.com/hc/en-us/articles/4402922583067-What-is-Elevate">Elevate · What is Elevate</a></li>
+          <li><a href="https://www.lumosity.com/en/brain-training/">Lumosity · Brain Training</a></li>
+          <li><a href="https://www.lumosity.com/en/science/inside-lumosity/measuring-progress/">Lumosity · Measuring Progress</a></li>
+          <li><a href="https://www.duolingo.com/learn">Duolingo · 官网</a></li>
+        </ul>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>减压星球 · 竞品Flow参考清单</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, 'PingFang SC', '微软雅黑', sans-serif;
+    background: #0f0f13;
+    color: #e2e8f0;
+    min-height: 100vh;
+    padding: 48px 24px;
+  }
+  .page-header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+  .page-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #f8fafc;
+    letter-spacing: 0.02em;
+    margin-bottom: 10px;
+  }
+  .page-header .sub {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 6px;
+  }
+  .page-header .meta {
+    font-size: 12px;
+    color: #475569;
+  }
+  .container { max-width: 960px; margin: 0 auto; }
+
+  .flow-card {
+    background: #16161d;
+    border: 1px solid #1e1e2e;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .flow-card:hover { border-color: #334155; }
+
+  .flow-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px 28px 20px;
+    border-bottom: 1px solid #1e1e2e;
+  }
+  .flow-number {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .flow-title-wrap {}
+  .flow-name { font-size: 17px; font-weight: 600; color: #f1f5f9; }
+  .flow-pain { font-size: 12px; color: #64748b; margin-top: 3px; }
+  .flow-pain span {
+    background: #1e1e2e;
+    border: 1px solid #334155;
+    border-radius: 4px;
+    padding: 2px 7px;
+    font-size: 11px;
+    margin-right: 4px;
+  }
+
+  .flow-body { padding: 24px 28px; }
+
+  .ref-block {
+    background: #0f0f13;
+    border: 1px solid #1e1e2e;
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+  }
+  .ref-block:last-child { margin-bottom: 0; }
+
+  .ref-top {
+    display: flex; align-items: center;
+    gap: 12px; margin-bottom: 12px;
+  }
+  .ref-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .ref-name { font-size: 16px; font-weight: 600; color: #f1f5f9; }
+  .ref-cat { font-size: 12px; color: #64748b; margin-top: 2px; }
+
+  .ref-badge {
+    margin-left: auto;
+    font-size: 11px; font-weight: 600;
+    padding: 4px 10px; border-radius: 20px;
+    white-space: nowrap;
+  }
+  .badge-must { background: #451a03; color: #fb923c; border: 1px solid #7c2d12; }
+  .badge-rec { background: #0c1a2e; color: #60a5fa; border: 1px solid #1e3a5f; }
+
+  .ref-row { margin-bottom: 10px; font-size: 13.5px; line-height: 1.7; }
+  .ref-row:last-child { margin-bottom: 0; }
+  .ref-label {
+    display: inline-block;
+    font-size: 11px; font-weight: 600;
+    padding: 2px 8px; border-radius: 4px;
+    margin-right: 8px; vertical-align: middle;
+  }
+  .label-why { background: #1a2535; color: #7dd3fc; }
+  .label-learn { background: #1a2518; color: #86efac; }
+  .label-apply { background: #231a35; color: #c4b5fd; }
+
+  /* color themes per flow */
+  .theme-1 .flow-number { background: #1e1e3a; color: #818cf8; }
+  .theme-2 .flow-number { background: #1a2a1a; color: #4ade80; }
+  .theme-3 .flow-number { background: #2a1a1a; color: #f87171; }
+  .theme-4 .flow-number { background: #1a2535; color: #60a5fa; }
+  .theme-5 .flow-number { background: #2a2010; color: #fbbf24; }
+  .theme-6 .flow-number { background: #1e2a2a; color: #34d399; }
+  .theme-7 .flow-number { background: #2a1a2a; color: #e879f9; }
+
+  .theme-1 .ref-icon { background: #1e1e3a; }
+  .theme-2 .ref-icon { background: #1a2a1a; }
+  .theme-3 .ref-icon { background: #2a1a1a; }
+  .theme-4 .ref-icon { background: #1a2535; }
+  .theme-5 .ref-icon { background: #2a2010; }
+  .theme-6 .ref-icon { background: #1e2a2a; }
+  .theme-7 .ref-icon { background: #2a1a2a; }
+
+  .summary-bar {
+    background: #16161d;
+    border: 1px solid #1e1e2e;
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-top: 40px;
+  }
+  .summary-bar h3 {
+    font-size: 14px; font-weight: 600;
+    color: #64748b; text-transform: uppercase;
+    letter-spacing: 0.08em; margin-bottom: 20px;
+  }
+  .summary-table { width: 100%; border-collapse: collapse; }
+  .summary-table th {
+    font-size: 11px; color: #475569; font-weight: 500;
+    text-align: left; padding: 8px 12px;
+    border-bottom: 1px solid #1e1e2e;
+  }
+  .summary-table td {
+    font-size: 13px; padding: 12px;
+    border-bottom: 1px solid #1a1a24;
+    vertical-align: middle;
+  }
+  .summary-table tr:last-child td { border-bottom: none; }
+  .must-dot {
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .must-dot::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: #fb923c;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .rec-dot {
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .rec-dot::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: #60a5fa;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .deadline-chip {
+    background: #1a2a1a; color: #4ade80;
+    border: 1px solid #166534;
+    font-size: 11px; font-weight: 600;
+    padding: 3px 10px; border-radius: 20px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="page-header">
+  <h1>减压星球 · 竞品 Flow 参考清单</h1>
+  <p class="sub">7大核心Flow × 行业标杆对标 · 基于A5/A6竞品分析报告</p>
+  <p class="meta">AI星球 v1.0.2801 · 2026.07 · 设计研究内部参考</p>
+</div>
+
+<!-- Flow 1 -->
+<div class="flow-card theme-1">
+  <div class="flow-header">
+    <div class="flow-number">1</div>
+    <div class="flow-title-wrap">
+      <div class="flow-name">情绪打卡</div>
+      <div class="flow-pain"><span>P1 首屏主角缺失</span><span>留存触点</span></div>
+    </div>
+  </div>
+  <div class="flow-body">
+    <div class="ref-block">
+      <div class="ref-top">
+        <div class="ref-icon">📓</div>
+        <div><div class="ref-name">Daylio</div><div class="ref-cat">情绪日记 · iOS/Android · 全球2000w+用户</div></div>
+        <span class="ref-badge badge-must">⭐ 必参考</span>
+      </div>
+      <div class="ref-row"><span class="ref-label label-why">为什么</span>把情绪记录压缩到5秒——选表情+打标签，零文字输入，打卡完成率是同类最高。情绪打卡Flow的事实行业标准。</div>
+      <div class="ref-row"><span class="ref-label label-learn">学什么</span>打卡完成后立即出现统计反馈（"你这周有4天都是平静"），连续记录的streak可见度极高，是日留存的关键钩子。打卡不是孤立动作，而是连续数据的一个点。</div>
+      <div class="ref-row"><span class="ref-label label-apply">对应改版</span>减压星球情绪打卡完成后，增加"今日情绪+近7天趋势"即时反馈卡片，让打卡行为有可见结果。</div>
+    </div>
+  </div>
+</div>
+
+<!-- Flow 2 -->
+<div class="flow-card theme-2">
+  <div class="flow-header">
+    <div class="flow-number">2</div>
+    <div class="flow-title-wrap">
+      <div class="flow-name">AI 对话</div>
+      <div class="flow-pain"><span>P2 AI无全局入口</span><span>P3 对话无记忆</span></div>
+    </div>
+  </div>
+  <div class="flow-body">
+    <div class="ref-block">
+      <div class="ref-top">
+        <div class="ref-icon">🤖</div>
+        <div><div class="ref-name">Replika</div><div class="ref-cat">AI情感伴侣 · iOS/Android · 持续关系建立标杆</div></div>
+        <span class="ref-badge badge-must">⭐ 必参考</span>
+      </div>
+      <div class="ref-row"><span class="ref-label label-why">为什么</span>把"第1次对话"和"第20次对话"设计成不同深度，关系感随使用频率真实递进。直接对标 P3（每次从零开始）。</div>
+      <div class="ref-row"><span class="ref-label label-learn">学什么</span>对话开头的历史钩子：「上次你提到最近压力大，这两天好一点了吗？」成本极低，关系感极强。新用户偏引导性问题，熟悉用户解锁更深层情绪探索。</div>
+      <div class="ref-row"><span class="ref-label label-apply">对应改版</span>吉塔/小星对话页顶部增加记忆摘要区，引用上次对话情绪标签，建立持续关系感。</div>
+    </div>
+    <div class="ref-block">
+      <div class="ref-top">
+        <div class="ref-icon">💬</div>
+        <div><div class="ref-name">Character.AI</div><div class="ref-cat">多角色AI对话 · 全球青少年用户量最大的AI对话产品</div></div>
+        <span class="ref-badge badge-must">⭐ 必参考</span>
+      </div>
+      <div class="ref-row"><span class="ref-label label-why">为什么</span>减压星球有3个有人格的IP角色（小星/吉塔/罗素），Character.AI是"多角色人格展示+选角色体验"的行业标杆——用户选角色前就能感受到每个角色说话方式不同。</div>
+      <div class="ref-row"><span class="ref-label label-learn">学什么</span>角色列表卡片：每个角色有人格标签+一句代表性语气预览，选之前就知道交互感觉。不同角色人格在对话中始终一致，用户会对某一个角色形成专属依附感。</div>
+      <div class="ref-row"><span class="ref-label label-apply">对应改版</span>小星/吉塔/罗素选择页面，加入人格标签和对话语气示例，让选角色本身变成有情感的决策，而不只是三张形象卡。</div>
+    </div>
+  </div>
+</div>
+
+<!-- Flow 3 -->
+<div class="flow-card theme-3">
+  <div class="flow-header">
+    <div class="flow-number">3</div>
+    <div class="flow-title-wrap">
+      <div class="flow-name">首屏导航 / 信息架构</div>
+      <div class="flow-pain"><span>P1 双卡片无主角</span><span>首次体验破坏</span></div>
+    </div>
+  </div>
+  <div class="flow-body">
+    <div class="ref-block">
+      <div class="ref-top">
+        <div class="ref-icon">🧘</div>
+        <div><div class="ref-name">Headspace</div><div class="ref-cat">冥想/心理健康 · iOS/Android · 首页设计标杆</div></div>
+        <span class="ref-badge badge-must">⭐ 必参考</span>
+      </div>
+      <div class="ref-row"><span class="ref-label label-why">为什么</span>Headspace首页只有一个主CTA（今日推荐），其他内容退到次级。根据用户时间段和情绪状态动态切换内容，直接对标P1（双卡片权重相当，无视觉主角）。</div>
+      <div class="ref-row"><span class="ref-label label-learn">学什么</span>情绪数据从"记录"变成"推荐引擎的输入"——打卡"焦虑"→主CTA换成"和吉塔聊聊"；打卡"开心"→推荐"脑之岛挑战"。首页是情绪数据的出口，不只是功能入口列表。</div>
+      <div class="ref-row"><span class="ref-label label-apply">对应改版</span>首页改为"主角卡片（当前最该做的一件事）+ 次级内容区"层级，打卡状态决定主角是谁。</div>
+    </div>
+  </div>
+</div>
+
+<!-- Flow 4 -->
+<div class="flow-card theme-4">
+  <div class="flow-header">
+    <div class="flow-number">4</div>
+    <div class="flow-title-wrap">
+      <div class="flow-name">脑之岛认知训练</div>
+      <div class="flow-pain"><span>P5 成就不外溢</span><span>模块数据孤岛</span></div>
+    </div>
+  </div>
+  <div class="flow-body">
+    <div class="ref-block">
+      <div class="ref-top">
+        <div class="ref-icon">🧠</div>
+        <div><div class="ref-name">Elevate</div><div class="ref-cat">认知训练 · iOS/Android · App Store年度精选</div></div>
+        <span class="ref-badge badge-must">⭐ 必参考</span>
+      </div>
+      <div class="ref-row"><span class="ref-label label-why">为什么</span>Elevate的训练完成后，技能进度条立即上升并动画反馈，成就外溢到主页的能力雷达图。脑之岛P5（成就封闭在模块内）的直接参照。</div>
+      <div class="ref-row"><span class="ref-label label-learn">学什么</span>每日训练入口极简（今日3个模块），完成后进度可视化立即呈现，且跨页可见（主页、个人成长页都能看到）。成就跨模块流通，不封存在单一Tab内。</div>
+      <div class="ref-row"><span class="ref-label label-apply">对应改版</span>脑之岛训练完成后，首页/IP悬浮球有感知反馈；勋章解锁传递到整体成长叙事，而不是"完成了又怎样"。</div>
+    </div>
+    <div class="ref-block">
+      <div class="ref-top">
+        <div class="ref-icon">🦉</div>
+        <div><div class="ref-name">Duolingo</div><div class="ref-cat">语言学习 · 连续打卡+里程碑庆祝设计标杆</div></div>
+        <span class="ref-badge badge-rec">推荐参考</span>
+      </div>
+      <div class="ref-row"><span class="ref-label label-learn">学什么</span>连续天数火焰条纹始终可见，每个7天/30天节点有特别庆祝动画，断签时IP发出情感化提醒。把"今天做了"变成"一直在做"的成就感。</div>
+    </div>
+  </div>
+</div>
+
+<!-- Flow 5 -->
+<div class="flow-card theme-5">
+  <div class="flow-header">
+    <div class="flow-number">5</div>
+    <div class="flow-title-wrap">
+      <div class="flow-name">内容探索 / 心理测评</div>
+      <div class="flow-pain"><span>内容分发</span><span>测评结果利用</span></div>
+    </div>
+  </div>
+  <div class="flow-body">
+    <div class="ref-block">
+      <div class="ref-top">
+        <div class="ref-icon">💆</div>
+        <div><div class="ref-name">壹心理</div><div class="ref-cat">心理健康 · 国内心理测评内容库最完整的C端产品</div></div>
+        <span class="ref-badge badge-must">⭐ 必参考</span>
+      </div>
+      <div class="ref-row"><span class="ref-label label-why">为什么</span>壹心理的"测评完成→报告→内容推荐"三步Flow是国内最成熟的，测评结果直接变成内容分发起点。面向中国用户语境最接近减压星球。</div>
+      <div class="ref-row"><span class="ref-label label-learn">学什么</span>测评报告页底部的"基于你的结果，推荐你看这些"——测评不是终点，而是内容推荐引擎的输入，测完即得到专属内容流。</div>
+      <div class="ref-row"><span class="ref-label label-apply">对应改版</span>测评完成后，减压星球的内容探索Tab立即更新推荐权重，测评结果驱动首屏内容变化。</div>
+    </div>
+  </div>
+</div>
+
+<!-- Flow 6 -->
+<div class="flow-card theme-6">
+  <div class="flow-header">
+    <div class="flow-number">6</div>
+    <div class="flow-title-wrap">
+      <div class="flow-name">解忧信箱 / 情绪记录</div>
+      <div class="flow-pain"><span>P6 写信无关闭反馈</span><span>情感断点</span></div>
+    </div>
+  </div>
+  <div class="flow-body">
+    <div class="ref-block">
+      <div class="ref-top">
+        <div class="ref-icon">📔</div>
+        <div><div class="ref-name">Reflectly</div><div class="ref-cat">AI情绪日记 · iOS/Android · App Store年度精选</div></div>
+        <span class="ref-badge badge-must">⭐ 必参考</span>
+      </div>
+      <div class="ref-row"><span class="ref-label label-why">为什么</span>Reflectly在用户写完日记后，AI给出一段个性化情感回应和正向总结——写作→被回应的闭环完整。直接对标P6（写信后无反馈）。</div>
+      <div class="ref-row"><span class="ref-label label-learn">学什么</span>"你的信已被好好收下"即时情感确认+24小时内AI回信的节奏——不是冷冰冰的"发送成功"，而是用户感受到被看见、被接住的情感确认。</div>
+      <div class="ref-row"><span class="ref-label label-apply">对应改版</span>解忧信箱发送后，增加即时情感确认动画（如信封飞出+小星接住），并设定AI回信的期待感。</div>
+    </div>
+  </div>
+</div>
+
+<!-- Flow 7 -->
+<div class="flow-card theme-7">
+  <div class="flow-header">
+    <div class="flow-number">7</div>
+    <div class="flow-title-wrap">
+      <div class="flow-name">成就 / 成长激励</div>
+      <div class="flow-pain"><span>P7 换装与成长割裂</span><span>激励闭环</span></div>
+    </div>
+  </div>
+  <div class="flow-body">
+    <div class="ref-block">
+      <div class="ref-top">
+        <div class="ref-icon">🐣</div>
+        <div><div class="ref-name">Finch</div><div class="ref-cat">自我关怀 · iOS/Android · App Store ID: 1528595748</div></div>
+        <span class="ref-badge badge-must">⭐ 必参考</span>
+      </div>
+      <div class="ref-row"><span class="ref-label label-why">为什么</span>完成自我关怀目标→小鸟去旅行→发回明信片，奖励与行为直接绑定且有惊喜感。心理健康类产品里激励闭环最完整的。A5报告明确引用。</div>
+      <div class="ref-row"><span class="ref-label label-learn">学什么</span>奖励要有具体来源，不能是凭空掉下来的礼物——"完成3次AI对话"解锁新换装道具，因果链清晰可见。用户知道"我做了什么，才得到了什么"。</div>
+      <div class="ref-row"><span class="ref-label label-apply">对应改版</span>减压星球换装/勋章系统与具体行为挂钩——打卡7天解锁小星新发型、完成测评解锁罗素新服装，让成就来源可溯。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 精简选法汇总 -->
+<div class="summary-bar">
+  <h3>精简选法 · 如果只跑 2–3 个 App（截止 7.31）</h3>
+  <table class="summary-table">
+    <tr>
+      <th>优先级</th>
+      <th>App</th>
+      <th>主要覆盖 Flow</th>
+      <th>对标痛点</th>
+      <th>下载</th>
+    </tr>
+    <tr>
+      <td><span class="must-dot">必跑</span></td>
+      <td><b>Replika</b></td>
+      <td>Flow 2 AI对话（持续记忆）</td>
+      <td>P3 对话无记忆</td>
+      <td>iOS/Android 免费</td>
+    </tr>
+    <tr>
+      <td><span class="must-dot">必跑</span></td>
+      <td><b>Character.AI</b></td>
+      <td>Flow 2 AI对话（多角色人格）</td>
+      <td>IP角色选择体验</td>
+      <td>iOS/Android 免费</td>
+    </tr>
+    <tr>
+      <td><span class="must-dot">必跑</span></td>
+      <td><b>Finch</b></td>
+      <td>Flow 7 成长激励</td>
+      <td>P7 换装/成就割裂</td>
+      <td>iOS/Android 免费</td>
+    </tr>
+    <tr>
+      <td><span class="rec-dot">可选</span></td>
+      <td><b>Headspace</b></td>
+      <td>Flow 3 首屏导航</td>
+      <td>P1 双卡片无主角</td>
+      <td>iOS/Android 免费试用</td>
+    </tr>
+    <tr>
+      <td><span class="rec-dot">可选</span></td>
+      <td><b>壹心理</b></td>
+      <td>Flow 5 内容探索/测评</td>
+      <td>内容分发逻辑</td>
+      <td>国内App Store 免费</td>
+    </tr>
+  </table>
+  <p style="margin-top:16px;font-size:12px;color:#475569;">注：竞品走查为设计师自测（样本=1），目的是提取改版设计灵感，非平行易用性评分比较。结果作为 7–8 月改版Demo的设计输入，不进入9月真实学生测评的数据维度。</p>
+</div>
+
+</div><!-- /container -->
+</body>
+</html>
