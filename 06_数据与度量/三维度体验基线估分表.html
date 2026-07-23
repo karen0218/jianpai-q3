@@ -389,7 +389,7 @@ body {
   <div class="row-label">
     <span class="p-code p-mid">P7 中</span>
     <span class="p-name">换装与成长绑定</span>
-    <span class="p-desc">换装是随机装饰功能，与减压场景语义断层</span>
+    <span class="p-desc">AI伙伴换装入口标"New"，与成长行为无绑定关系</span>
   </div>
   <div class="score-cell cell-current" onclick="cycleScore(this,1)">
     <div class="stars" id="stars-p7-current"></div>
@@ -406,8 +406,10 @@ body {
     <span class="score-val" id="val-p7-demo">4</span>
     <span class="score-label">改版目标</span>
   </div>
-  <div class="note-cell"><textarea placeholder="备注">⚠️ Finch同样有此弱点（换装与健康目标割裂）
-改版要确保兑换物与减压场景语义相关</textarea></div>
+  <div class="note-cell"><textarea placeholder="备注">换装（服饰/声音）与星星碎片系统相互独立
+星星碎片来源：给心理剧场资源评星获得
+星星碎片用途：只能兑换头像，不能换装
+改版：换装需与成长行为绑定，明确获取路径</textarea></div>
 </div>
 
 <!-- P8 -->
@@ -415,7 +417,7 @@ body {
   <div class="row-label">
     <span class="p-code p-mid">P8 中</span>
     <span class="p-name">激励闭环清晰度</span>
-    <span class="p-desc">星星获得和消费路径不透明，闭环不可见</span>
+    <span class="p-desc">评星→星星碎片→兑换头像，路径对用户不可见</span>
   </div>
   <div class="score-cell cell-current" onclick="cycleScore(this,1)">
     <div class="stars" id="stars-p8-current"></div>
@@ -432,8 +434,9 @@ body {
     <span class="score-val" id="val-p8-demo">4</span>
     <span class="score-label">改版目标</span>
   </div>
-  <div class="note-cell"><textarea placeholder="备注">竞品：Finch「行为→能量→装扮」闭环可见
-参考：Finch_成长激励流程分析.html §⓪</textarea></div>
+  <div class="note-cell"><textarea placeholder="备注">实际机制：给心理剧场资源评星→获得星星碎片→兑换头像
+首页有"使用星星碎片兑换头像吧"提示，但不告诉用户如何获得碎片
+问题：评星→碎片的因果关系对用户不可见，激励路径断裂</textarea></div>
 </div>
 
 <!-- ── 低优先级 P9–P11 ── -->
